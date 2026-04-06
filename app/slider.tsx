@@ -44,6 +44,7 @@ import { useCinematic } from "@/components/CinematicProvider";
 import { useTheme } from "@/components/hooks/useTheme";
 import MiniToggle from "@/components/MiniToggle";
 import FooterDef from "@/components/Footerdef";
+import AuthButtons from "@/components/AuthButtons";
 const PALETTE = [
   { hex: "#FF6B00", name: "Orange Safran" },
   { hex: "#FF4500", name: "Rouge Tandoori" },
@@ -682,6 +683,7 @@ const sections: NavSection[] = [
     label: "Apps",
     links: [
       { href: "https://bktk.indian-nepaliswad.fr/", label: "BKTK InterSociété", icon: Boxes },
+      { href: "/auth-demo", label: "Auth Demo", icon: Sparkles },
     ],
   },
 ];
@@ -2052,29 +2054,39 @@ export default function SliderLayout({
         >
           {pageTitle}
         </div>
-        <button
-          onClick={() => openPanel("appearance")}
-          className={`
-            flex h-10 w-10 items-center justify-center rounded-xl
-            transition-all duration-200
-            ${
-              isDark
-                ? "text-white bg-black/60 hover:bg-black border border-white/10"
-                : "text-zinc-900 bg-white/60 hover:bg-white border border-zinc-200"
-            }
-          `}
-        >
-          <Settings className="h-5 w-5" />
-        </button>
+
+        <div className="flex items-center gap-2">
+          <AuthButtons isDark={isDark} accent={accent} />
+          <button
+            onClick={() => openPanel("appearance")}
+            className={`
+              flex h-10 w-10 items-center justify-center rounded-xl
+              transition-all duration-200
+              ${
+                isDark
+                  ? "text-white bg-black/60 hover:bg-black border border-white/10"
+                  : "text-zinc-900 bg-white/60 hover:bg-white border border-zinc-200"
+              }
+            `}
+          >
+            <Settings className="h-5 w-5" />
+          </button>
+        </div>
       </header>
 
+      {/* Desktop Auth Header - Fixed Top Right */}
+      <div className="fixed top-4 right-4 z-40 hidden md:block animate-in slide-in-from-top-2 duration-700 delay-300">
+        <AuthButtons isDark={isDark} accent={accent} />
+      </div>
 
       <main
-        className={`min-h-screen transition-all duration-300 ${
-          settings.sidebarCollapsed
+        className={`
+          min-h-screen transition-all duration-500 ease-out animate-in fade-in-0 slide-in-from-bottom-4
+          ${settings.sidebarCollapsed
             ? "md:ml-17"
             : "md:ml-66"
-        }`}
+          }
+        `}
       >
         <CookieConsent
           accent={accent}

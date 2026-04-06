@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import dbConnect from '../../../lib/mongodb';
+import Subscriber from '../../../models/Subscriber';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -10,6 +12,23 @@ export async function POST(request: NextRequest) {
     if (!email || !name) {
       return NextResponse.json({ error: 'Email and name are required' }, { status: 400 });
     }
+
+    // Connect to database
+    await dbConnect();
+
+    // Check if subscriber already exists
+    const existingSubscriber = await Subscriber.findOne({ email: email.toLowerCase() });
+    if (existingSubscriber) {
+      return NextResponse.json({ error: 'Email already subscribed' }, { status: 409 });
+    }
+
+    // Create new subscriber
+    const subscriber = new Subscriber({
+      email: email.toLowerCase(),
+      name: name.trim(),
+    });
+
+    await subscriber.save();
 
     const htmlContent = `
 <!DOCTYPE html>

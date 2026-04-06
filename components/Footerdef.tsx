@@ -7,6 +7,7 @@ import {
   ExternalLink,
   Check,
 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 type FooterProps = {
   isDark?: boolean;
@@ -35,14 +36,10 @@ function hexToRgba(hex: string, alpha: number): string {
 }
 
 export default function FooterDef({ isDark = true, accent: accentProp }: FooterProps) {
+  const { openAuthModal, user } = useAuth();
   const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
   const [focused, setFocused] = useState(false);
   const [accent, setAccent] = useState(accentProp || "#8b5cf6");
-  const [showPopup, setShowPopup] = useState(false);
-  const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [popupSuccess, setPopupSuccess] = useState(false);
 
   useEffect(() => {
     if (accentProp) {
@@ -63,39 +60,7 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
     if (email.includes("@")) {
-      setShowPopup(true);
-    }
-  };
-
-  const handlePopupSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) return;
-    setLoading(true);
-    try {
-      const response = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, name }),
-      });
-      if (response.ok) {
-        setPopupSuccess(true);
-        setTimeout(() => {
-          setShowPopup(false);
-          setPopupSuccess(false);
-          setSubscribed(true);
-          setEmail("");
-          setName("");
-          setTimeout(() => setSubscribed(false), 3000);
-        }, 2000);
-      } else {
-        alert('Failed to subscribe. Please try again.');
-      }
-    } catch (error) {
-      alert('An error occurred. Please try again.');
-    } finally {
-      setLoading(false);
+      openAuthModal('newsletter', email);
     }
   };
 
@@ -307,7 +272,6 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
           </div>
           <div className="md:col-span-12 lg:col-span-4 flex flex-col items-center text-center lg:items-start lg:text-left space-y-7">
 
-            {/* Section Label */}
             <div
               className={`text-[11px] font-semibold uppercase tracking-wider ${
                 isDark ? "text-white/30" : "text-black/30"
@@ -316,14 +280,13 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
               Souscrire à la Newsletter
             </div>
 
-            {/* Newsletter Form */}
             <form onSubmit={handleSubscribe} className="w-full max-w-sm mx-auto lg:mx-0">
               <div
                 className="
                   flex flex-col sm:flex-row 
                   items-stretch sm:items-center 
                   gap-2 
-                  rounded-xl p-1 
+                  rounded-2xl p-1 
                   transition-all duration-300
                 "
                 style={{
@@ -346,14 +309,14 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
                 <input
                   type="email"
                   required
-                  placeholder="you@example.com"
+                  placeholder="votre@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   onFocus={() => setFocused(true)}
                   onBlur={() => setFocused(false)}
                   className={`
                     flex-1 bg-transparent 
-                    py-2.5 px-2 
+                    py-2.5 px-4
                     text-[13px] 
                     outline-none 
                     w-full
@@ -363,75 +326,22 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
 
                 <motion.button
                   type="submit"
-                  disabled={loading}
                   className="
                     flex items-center justify-center 
                     gap-1.5 
-                    rounded-lg 
-                    px-4 py-2 
-                    text-[12px] font-semibold 
+                    rounded-xl
+                    px-5 py-2.5
+                    text-[12px] font-bold
                     transition-all duration-300
                     w-full sm:w-auto
-                    disabled:opacity-50
+                    text-white
                   "
-                  style={
-                    subscribed
-                      ? {
-                          backgroundColor: "rgba(16,185,129,0.15)",
-                          color: "#10b981",
-                        }
-                      : {
-                          backgroundColor: isDark
-                            ? "rgba(255,255,255,0.1)"
-                            : "rgba(0,0,0,0.1)",
-                          color: isDark ? "white" : "black",
-                        }
-                  }
-                  whileHover={!subscribed && !loading ? { scale: 1.05 } : {}}
-                  whileTap={!subscribed && !loading ? { scale: 0.95 } : {}}
+                  style={{ backgroundColor: accent }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <AnimatePresence mode="wait">
-                    {subscribed ? (
-                      <motion.div
-                        key="subscribed"
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 10 }}
-                        className="flex items-center gap-1.5"
-                      >
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ delay: 0.2, type: "spring" }}
-                        >
-                          <Check className="h-3 w-3" />
-                        </motion.div>
-                        Subscribed
-                      </motion.div>
-                    ) : loading ? (
-                      <motion.div
-                        key="loading"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="flex items-center gap-1.5"
-                      >
-                        <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin"></div>
-                        Subscribing...
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="subscribe"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="flex items-center gap-1.5"
-                      >
-                        Subscribe
-                        <ArrowRight className="h-3 w-3" />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                  S&apos;abonner
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </motion.button>
               </div>
             </form>
@@ -441,7 +351,7 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
                 isDark ? "text-white/50" : "text-black/50"
               }`}
             >
-              En vous abonnant, vous créez automatiquement un compte Indian Nepali Swad avec connexion directe par email activée par défaut. Gérez vos réservations, laissez des avis sur nos plats délicieux et explorez tous nos sites en un clic ! Vous avez également l&apos;option d&apos;activer notre bot intelligent pour des recommandations personnalisées et un service client 24/7.
+              En vous abonnant, vous recevrez nos offres exclusives et les nouveautés de notre menu directement par email.
             </p>
 
             <div
@@ -480,10 +390,10 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
                   }}
                 >
                   <svg
-                    className="h-4.5 w-4.5 opacity-90 group-hover:opacity-100 transition-all"
+                    className="h-4.5 w-4.5 opacity-90 group-hover:opacity-100 transition-all font-bold"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="2"
+                    strokeWidth="2.5"
                     viewBox="0 0 24 24"
                   >
                     <path d="M17.657 16.657L13 21.314l-4.657-4.657A8 8 0 1117.657 16.657z" />
@@ -503,11 +413,11 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
                   target="_blank"
                   rel="noopener noreferrer"
                   className="
-                    flex h-9 w-9 
+                    flex h-10 w-10 
                     items-center justify-center 
                     rounded-xl 
                     transition-all duration-300 
-                    hover:scale-105
+                    hover:scale-110
                   "
                   style={{
                     backgroundColor: isDark
@@ -530,7 +440,7 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
                       : "rgba(0,0,0,0.4)";
                   }}
                 >
-                  <Icon className="h-4.5 w-4.5" isDark={isDark} />
+                  <Icon className="h-5 w-5" isDark={isDark} />
                 </a>
               ))}
             </div>
@@ -541,43 +451,10 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
       </div>
 
 
-      <p className="px-8 pb-2 max-w-6xl opacity-50 text-[10px] mx-auto leading-relaxed">
-        Pour annuler ou modifier votre réservation, veuillez suivre les instructions ci-dessous :
+      <p className="px-8 pb-2 max-w-6xl opacity-30 text-[9px] mx-auto leading-relaxed">
+        Pour annuler ou modifier votre réservation, veuillez suivre les instructions reçues par email.
       </p>
 
-      <ul className="px-8 pb-2 max-w-6xl opacity-50 text-[10px] mx-auto list-disc pl-5 space-y-2 leading-relaxed">
-        <li>
-          Consultez l’e-mail de confirmation reçu après votre réservation. Certaines options de modification ou d’annulation y sont disponibles.
-        </li>
-
-        <li>
-          Connectez-vous à votre compte INS, puis accédez à{" "}
-          <span className="font-medium">“Mes réservations”</span> via le panneau latéral gauche
-          (icône livre ouvert en bas à gauche).
-        </li>
-
-        <li>
-          Les services <span className="font-medium">sur place</span> et <span className="font-medium">à emporter</span> sont uniquement disponibles aux adresses suivantes :
-          <ul className="mt-2 space-y-1 pl-4 list-disc">
-            <li>
-              <a
-                className="underline"
-                href="https://www.google.com/maps/dir//4+Rue+Bargue,+75015+Paris"
-              >
-                4 Rue Bargue, 75015 Paris
-              </a>
-            </li>
-            <li>
-              <a
-                className="underline"
-                href="https://www.google.com/maps/dir//79+Rue+du+Landy,+93300+Aubervilliers"
-              >
-                79 Rue du Landy, 93300 Aubervilliers
-              </a>
-            </li>
-          </ul>
-        </li>
-      </ul>
       <div
         className="border-t"
         style={{
@@ -586,296 +463,26 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
             : "rgba(0,0,0,0.04)",
         }}
       >
-        <div className="mx-auto max-w-6xl px-5 py-4 md:px-8">
+        <div className="mx-auto max-w-6xl px-5 py-6 md:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             <div
               className={`flex items-center gap-2 text-[11px] ${
-                isDark ? "text-white/25" : "text-black/25"
+                isDark ? "text-white/20" : "text-black/20"
               }`}
             >
               <span
-                className="font-semibold transition-colors duration-300"
-                style={{ color: hexToRgba(accent, isDark ? 0.5 : 0.6) }}
+                className="font-bold tracking-tight"
+                style={{ color: hexToRgba(accent, isDark ? 0.4 : 0.5) }}
               >
                 INDIAN NEPALI SWAD
               </span>
-              <span>&copy;2017-{year} www.indian-nepaliswad.fr</span>
+              <span>&copy;2017-{year}</span>
               <span className="hidden sm:inline">•</span>
               <span className="hidden sm:inline">Tout droit reservé</span>
-            </div>
-            <div
-              className={`flex items-center gap-3 text-[11px] sm:hidden ${
-                isDark ? "text-white/25" : "text-black/25"
-              }`}
-            >
-              <Link href="/terms" className="hover:underline">
-                Terms
-              </Link>
-              <Link href="/privacy" className="hover:underline">
-                Privacy
-              </Link>
-              <Link href="/contact" className="hover:underline">
-                Contact
-              </Link>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Newsletter Popup Modal */}
-      <AnimatePresence>
-        {showPopup && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm"
-            style={{
-              backgroundColor: 'rgba(0, 0, 0, 0.3)',
-            }}
-            onClick={() => !loading && !popupSuccess && setShowPopup(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="relative rounded-3xl p-10 max-w-md w-full mx-4 shadow-2xl overflow-hidden"
-              style={{
-                backgroundColor: isDark 
-                  ? 'rgba(8, 8, 12, 0.85)' 
-                  : 'rgba(255, 255, 255, 0.90)',
-                backdropFilter: 'blur(20px)',
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
-                boxShadow: `0 20px 60px -10px ${hexToRgba(accent, 0.2)}, inset 0 1px 1px ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)'}`,
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Decorative gradient background */}
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background: `radial-gradient(circle at top right, ${hexToRgba(accent, 0.08)}, transparent 60%)`,
-                }}
-              />
-
-              <AnimatePresence mode="wait">
-                {!popupSuccess ? (
-                  <motion.div
-                    key="form"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                    className="relative z-10"
-                  >
-                    {/* Header */}
-                    <div className="text-center mb-8">
-                      <motion.div
-                        initial={{ scale: 0, rotate: -10 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
-                        className="w-14 h-14 rounded-2xl mx-auto mb-5 flex items-center justify-center backdrop-blur-lg"
-                        style={{
-                          backgroundColor: hexToRgba(accent, 0.15),
-                          border: `1.5px solid ${hexToRgba(accent, 0.3)}`,
-                        }}
-                      >
-                        <svg
-                          className="w-7 h-7"
-                          style={{ color: accent }}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                          />
-                        </svg>
-                      </motion.div>
-
-                      <motion.h2
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="text-3xl font-bold mb-2"
-                        style={{ color: isDark ? 'white' : 'rgba(0,0,0,0.95)' }}
-                      >
-                        Stay Connected
-                      </motion.h2>
-
-                      <motion.p
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.25 }}
-                        className="text-sm leading-relaxed"
-                        style={{ color: isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.65)' }}
-                      >
-                        Join our community and receive exclusive offers, special menus, reservation updates & culinary stories delivered to your inbox
-                      </motion.p>
-                    </div>
-
-                    {/* Form */}
-                    <form onSubmit={handlePopupSubmit} className="space-y-4">
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                      >
-                        <label
-                          className="block text-xs font-semibold uppercase tracking-wider mb-3"
-                          style={{ color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }}
-                        >
-                          Your Full Name
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="Enter your name"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          className="w-full px-4 py-3.5 rounded-xl backdrop-blur-sm transition-all duration-300 focus:outline-none"
-                          style={{
-                            backgroundColor: isDark 
-                              ? 'rgba(255,255,255,0.06)' 
-                              : 'rgba(0,0,0,0.04)',
-                            color: isDark ? 'white' : 'black',
-                            border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
-                          }}
-                          onFocus={(e) => {
-                            e.currentTarget.style.borderColor = hexToRgba(accent, 0.5);
-                            e.currentTarget.style.backgroundColor = isDark 
-                              ? 'rgba(255,255,255,0.08)' 
-                              : 'rgba(0,0,0,0.05)';
-                            e.currentTarget.style.boxShadow = `0 0 0 3px ${hexToRgba(accent, 0.1)}, inset 0 1px 2px ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`;
-                          }}
-                          onBlur={(e) => {
-                            e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
-                            e.currentTarget.style.backgroundColor = isDark 
-                              ? 'rgba(255,255,255,0.06)' 
-                              : 'rgba(0,0,0,0.04)';
-                            e.currentTarget.style.boxShadow = 'none';
-                          }}
-                          required
-                        />
-                      </motion.div>
-
-                      {/* Buttons */}
-                      <motion.div
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
-                        className="flex gap-3 pt-2"
-                      >
-                        <button
-                          type="button"
-                          onClick={() => setShowPopup(false)}
-                          disabled={loading}
-                          className="flex-1 px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-105 active:scale-95"
-                          style={{
-                            backgroundColor: isDark 
-                              ? 'rgba(255,255,255,0.06)' 
-                              : 'rgba(0,0,0,0.05)',
-                            color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)',
-                            border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
-                          }}
-                        >
-                          Maybe Later
-                        </button>
-
-                        <motion.button
-                          type="submit"
-                          disabled={loading || !name.trim()}
-                          className="flex-1 px-4 py-3 rounded-xl text-white font-semibold text-sm transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                          style={{
-                            backgroundColor: loading ? hexToRgba(accent, 0.8) : accent,
-                            boxShadow: `0 8px 24px -8px ${hexToRgba(accent, 0.4)}`,
-                          }}
-                          whileHover={!loading ? { boxShadow: `0 12px 32px -8px ${hexToRgba(accent, 0.5)}` } : {}}
-                        >
-                          {loading ? (
-                            <>
-                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                              <span>Subscribing...</span>
-                            </>
-                          ) : (
-                            <>
-                              <span>Subscribe</span>
-                              <ArrowRight className="w-4 h-4" />
-                            </>
-                          )}
-                        </motion.button>
-                      </motion.div>
-                    </form>
-
-                    {/* Privacy notice */}
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.5 }}
-                      className="text-xs text-center mt-4"
-                      style={{ color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)' }}
-                    >
-                      We respect your privacy • Unsubscribe anytime
-                    </motion.p>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="success"
-                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.8, y: -10 }}
-                    transition={{ duration: 0.4, type: "spring", stiffness: 200 }}
-                    className="text-center relative z-10"
-                  >
-                    <motion.div
-                      initial={{ scale: 0, rotate: -20 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
-                      className="w-20 h-20 rounded-2xl mx-auto mb-6 flex items-center justify-center mx-auto mb-6"
-                      style={{
-                        background: `linear-gradient(135deg, ${hexToRgba(accent, 0.3)}, ${hexToRgba(accent, 0.15)})`,
-                        border: `1.5px solid ${hexToRgba(accent, 0.5)}`,
-                      }}
-                    >
-                      <motion.div
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-                      >
-                        <Check className="w-10 h-10" style={{ color: accent }} />
-                      </motion.div>
-                    </motion.div>
-
-                    <motion.h2
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                      className="text-2xl font-bold mb-2"
-                      style={{ color: isDark ? 'white' : 'rgba(0,0,0,0.95)' }}
-                    >
-                      You're all set!
-                    </motion.h2>
-
-                    <motion.p
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.25 }}
-                      className="text-sm"
-                      style={{ color: isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.65)' }}
-                    >
-                      A confirmation email is on its way—check your inbox for special surprises
-                    </motion.p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
     </footer>
   );
 }

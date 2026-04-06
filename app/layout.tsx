@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import Slidercomponent from "./slider";
 import { CinematicProvider } from "@/components/CinematicProvider";
 import { ToastProvider } from "@/components/ToastHandle";
+import { AuthProvider } from "@/contexts/AuthContext";
 import "leaflet/dist/leaflet.css";
 
 export const metadata: Metadata = {
@@ -226,11 +227,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
         <CinematicProvider>
           <ToastProvider>
-            <Slidercomponent>
-              <div id="main-content" role="main">
-                {children}
-              </div>
-            </Slidercomponent>
+            <AuthProvider>
+              <Slidercomponent>
+                <div id="main-content" role="main">
+                  {children}
+                </div>
+              </Slidercomponent>
+            </AuthProvider>
           </ToastProvider>
         </CinematicProvider>
       </body>
