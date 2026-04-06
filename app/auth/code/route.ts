@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect("https://indian-nepaliswad.fr/auth/error?reason=missing");
     }
 
-    // Find verification code
+    // Validate OTP
     const record = await VerificationCode.findOne({
       email,
       code,
@@ -27,14 +27,14 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect("https://indian-nepaliswad.fr/auth/error?reason=invalid");
     }
 
-    // Find subscriber
+    // Find user
     const user = await Subscriber.findOne({ email });
 
     if (!user) {
       return NextResponse.redirect("https://indian-nepaliswad.fr/auth/error?reason=notfound");
     }
 
-    // Mark code as used
+    // Mark OTP as used
     record.used = true;
     await record.save();
 
@@ -43,10 +43,20 @@ export async function GET(req: NextRequest) {
     user.loginCount = (user.loginCount || 0) + 1;
     await user.save();
 
-    // Store session in cookie (simple version)
+    // Create session cookie
+    const sessionPayload = {
+      email: user.email,
+      name: user.name,
+      subscribedAt: user.subscribedAt,
+      newsletterSubscribed: user.newsletterSubscribed,
+      lastLoginAt: user.lastLoginAt,
+      loginCount: user.loginCount,
+    };
+
     const response = NextResponse.redirect("https://indian-nepaliswad.fr");
-    response.cookies.set("ins_session", JSON.stringify({ email }), {
-      httpOnly: true,
+
+    response.cookies.set("ins_user", JSON.stringify(sessionPayload), {
+      httpOnly: false, // must be readable by AuthProvider
       secure: true,
       sameSite: "strict",
       path: "/",
