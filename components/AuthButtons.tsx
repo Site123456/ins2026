@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from 'react';
 import { User, LogIn, UserPlus, LogOut, Settings, ChevronDown, Calendar, Bell } from 'lucide-react';
 import SettingsModal from './SettingsModal';
 import { useAuth } from '@/contexts/AuthContext';
+import Portal from "@/components/Portal";
 
 interface AuthButtonsProps {
   isDark: boolean;
@@ -75,106 +76,107 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
           </div>
           <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`} />
         </button>
-        {showDropdown && (
-          <div
-            className="fixed inset-0 z-10 sm:hidden bg-black/40 backdrop-blur-sm"
-            onClick={() => setShowDropdown(false)}
-          />
-        )}
+        <Portal>
+          {showDropdown && (
+            <div
+              className="fixed inset-0 z-10 sm:hidden bg-black/40 backdrop-blur-sm"
+              onClick={() => setShowDropdown(false)}
+            />
+          )}
 
-        {/* Dropdown */}
-        <div
-          className={`
-            absolute right-0 top-12 z-20 w-64 sm:w-56
-            transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
-            ${showDropdown
-              ? 'opacity-100 translate-y-0 scale-100'
-              : 'opacity-0 -translate-y-2 scale-95 pointer-events-none'
-            }
-          `}
-        >
+          {/* Dropdown */}
           <div
             className={`
-              rounded-2xl border shadow-2xl backdrop-blur-2xl overflow-hidden
-              ${isDark
-                ? 'bg-[#0a0a0f]/90 border-white/10'
-                : 'bg-white/90 border-zinc-200'
+              absolute right-0 top-12 z-20 w-64 sm:w-56
+              transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
+              ${showDropdown
+                ? 'opacity-100 translate-y-0 scale-100'
+                : 'opacity-0 -translate-y-2 scale-95 pointer-events-none'
               }
             `}
           >
-            {/* Header */}
-            <div className="p-4 border-b border-white/10">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-md">
-                  <span className="text-lg font-bold text-white">
-                    {user.name.charAt(0).toUpperCase()}
-                  </span>
+            <div
+              className={`
+                rounded-2xl border shadow-2xl backdrop-blur-2xl overflow-hidden
+                ${isDark
+                  ? 'bg-[#0a0a0f]/90 border-white/10'
+                  : 'bg-white/90 border-zinc-200'
+                }
+              `}
+            >
+              {/* Header */}
+              <div className="p-4 border-b border-white/10">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-md">
+                    <span className="text-lg font-bold text-white">
+                      {user.name.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm font-semibold truncate ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+                      {user.name}
+                    </p>
+                    <p className={`text-xs truncate ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                      {user.email}
+                    </p>
+                  </div>
                 </div>
 
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-semibold truncate ${isDark ? 'text-white' : 'text-zinc-900'}`}>
-                    {user.name}
-                  </p>
-                  <p className={`text-xs truncate ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-                    {user.email}
-                  </p>
+                {/* Stats */}
+                <div className="mt-4 grid grid-cols-2 gap-4 text-center">
+                  <div>
+                    <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+                      {user.loginCount}
+                    </p>
+                    <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Visites</p>
+                  </div>
+
+                  <div>
+                    <Bell
+                      className={`h-4 w-4 mx-auto ${
+                        user.newsletterSubscribed
+                          ? isDark ? 'text-emerald-400' : 'text-emerald-600'
+                          : isDark ? 'text-zinc-500' : 'text-zinc-400'
+                      }`}
+                    />
+                    <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Newsletter</p>
+                  </div>
                 </div>
               </div>
 
-              {/* Stats */}
-              <div className="mt-4 grid grid-cols-2 gap-4 text-center">
-                <div>
-                  <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>
-                    {user.loginCount}
-                  </p>
-                  <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Visites</p>
-                </div>
+              {/* Actions */}
+              <div className="p-2">
+                <button
+                  onClick={handleSettingsClick}
+                  className={`
+                    flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm
+                    transition-all duration-200 hover:bg-white/5 hover:translate-x-1
+                    ${isDark ? 'text-zinc-300' : 'text-zinc-700'}
+                  `}
+                >
+                  <Settings className="h-4 w-4" />
+                  Paramètres
+                </button>
 
-                <div>
-                  <Bell
-                    className={`h-4 w-4 mx-auto ${
-                      user.newsletterSubscribed
-                        ? isDark ? 'text-emerald-400' : 'text-emerald-600'
-                        : isDark ? 'text-zinc-500' : 'text-zinc-400'
-                    }`}
-                  />
-                  <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Newsletter</p>
-                </div>
+                <div className="border-t border-white/10 my-2" />
+
+                <button
+                  onClick={handleSignOut}
+                  className="
+                    flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm
+                    transition-all duration-200 hover:bg-rose-500/10 hover:translate-x-1
+                    text-rose-500
+                  "
+                >
+                  <LogOut className="h-4 w-4" />
+                  Déconnexion
+                </button>
               </div>
-            </div>
-
-            {/* Actions */}
-            <div className="p-2">
-              <button
-                onClick={handleSettingsClick}
-                className={`
-                  flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm
-                  transition-all duration-200 hover:bg-white/5 hover:translate-x-1
-                  ${isDark ? 'text-zinc-300' : 'text-zinc-700'}
-                `}
-              >
-                <Settings className="h-4 w-4" />
-                Paramètres
-              </button>
-
-              <div className="border-t border-white/10 my-2" />
-
-              <button
-                onClick={handleSignOut}
-                className="
-                  flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm
-                  transition-all duration-200 hover:bg-rose-500/10 hover:translate-x-1
-                  text-rose-500
-                "
-              >
-                <LogOut className="h-4 w-4" />
-                Déconnexion
-              </button>
             </div>
           </div>
-        </div>
 
-
+        </Portal>
         <SettingsModal
           isOpen={showSettingsModal}
           onClose={() => setShowSettingsModal(false)}

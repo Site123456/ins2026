@@ -2055,8 +2055,6 @@ export default function SliderLayout({
         >
           {pageTitle}
         </div>
-
-        {/* Right: Auth + Settings */}
         <div className="flex items-center gap-1.5 sm:gap-2">
           <AuthButtons isDark={isDark} accent={accent} />
 
