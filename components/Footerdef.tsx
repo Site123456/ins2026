@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect, SVGProps } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -39,6 +37,9 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
   const [subscribed, setSubscribed] = useState(false);
   const [focused, setFocused] = useState(false);
   const [accent, setAccent] = useState(accentProp || "#8b5cf6");
+  const [showPopup, setShowPopup] = useState(false);
+  const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (accentProp) {
@@ -59,9 +60,35 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
     if (email.includes("@")) {
-      setSubscribed(true);
-      setEmail("");
-      setTimeout(() => setSubscribed(false), 3000);
+      setShowPopup(true);
+    }
+  };
+
+  const handlePopupSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+    setLoading(true);
+    try {
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, name }),
+      });
+      if (response.ok) {
+        setSubscribed(true);
+        setShowPopup(false);
+        setEmail("");
+        setName("");
+        setTimeout(() => setSubscribed(false), 3000);
+      } else {
+        alert('Failed to subscribe. Please try again.');
+      }
+    } catch (error) {
+      alert('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -369,7 +396,7 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
                   {subscribed ? (
                     <>
                       <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
-                      Non Disponible
+                      Already subscribed
                     </>
                   ) : (
                     <>
@@ -557,6 +584,65 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
           </div>
         </div>
       </div>
+
+      {/* Popup Modal */}
+      {showPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div
+            className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4"
+            style={{
+              backgroundColor: isDark ? '#08080c' : '#ffffff',
+              border: `1px solid ${hexToRgba(accent, 0.2)}`,
+            }}
+          >
+            <h2
+              className="text-xl font-semibold mb-4 text-center"
+              style={{ color: isDark ? 'white' : 'black' }}
+            >
+              How should we call you?
+            </h2>
+            <form onSubmit={handlePopupSubmit}>
+              <input
+                type="text"
+                placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full p-3 rounded-lg border mb-4"
+                style={{
+                  borderColor: hexToRgba(accent, 0.3),
+                  backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                  color: isDark ? 'white' : 'black',
+                }}
+                required
+              />
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowPopup(false)}
+                  className="flex-1 p-3 rounded-lg border"
+                  style={{
+                    borderColor: hexToRgba(accent, 0.3),
+                    color: isDark ? 'white' : 'black',
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 p-3 rounded-lg text-white font-semibold"
+                  style={{
+                    backgroundColor: accent,
+                  }}
+                >
+                  {loading ? 'Subscribing...' : 'Subscribe'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </footer>
   );
 }
