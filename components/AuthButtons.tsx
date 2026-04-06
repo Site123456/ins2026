@@ -86,7 +86,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
           {/* Backdrop (mobile only) */}
           {showDropdown && (
             <div
-              className="fixed inset-0 z-[998] sm:hidden bg-black/40 backdrop-blur-sm"
+              className="fixed inset-0 z-[10] sm:hidden bg-black/40 backdrop-blur-sm"
               onClick={() => setShowDropdown(false)}
             />
           )}
@@ -95,7 +95,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
           <div
             id="auth-dropdown"
             className={`
-              fixed right-3 top-16 z-[999] w-64 sm:w-56
+              fixed right-3 top-20 z-[999] w-64 sm:w-56
               transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
               ${showDropdown
                 ? 'opacity-100 translate-y-0 scale-100'
