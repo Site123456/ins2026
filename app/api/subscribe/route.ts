@@ -39,9 +39,13 @@ export async function POST(request: NextRequest) {
           <!-- HEADER -->
           <tr>
             <td style="background:linear-gradient(135deg,#d32f2f,#b71c1c); padding:48px 32px; text-align:center; color:#fff; position:relative;">
-              <img src="https://indian-nepaliswad.fr/etc/logo.png" alt="INS" style="height:70px; margin-bottom:20px; filter:brightness(0) invert(1);" />
-              <h1 style="margin:0; font-size:30px; font-weight:800;">Account Created Successfully 🎉</h1>
-              <p style="margin:10px 0 0; font-size:15px; opacity:0.9;">Welcome to Indian Nepali Swad</p>
+              <!-- Logo with distinct white background -->
+              <div style="display:inline-block; background:#fff; padding:14px 14px; border-radius:16px; margin-bottom:24px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+                <img src="https://indian-nepaliswad.fr/etc/logo.png" alt="INS" style="height:60px; display:block;" />
+              </div>
+              
+              <h1 style="margin:0; font-size:32px; font-weight:800; letter-spacing:-0.5px;">Account Created Successfully 🎉</h1>
+              <p style="margin:12px 0 0; font-size:15px; opacity:0.95; font-weight:500;">Welcome to Indian Nepali Swad</p>
             </td>
           </tr>
 
@@ -59,31 +63,32 @@ export async function POST(request: NextRequest) {
               </p>
 
               <!-- ACCOUNT INFO -->
-              <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff5f5; border:1px solid #fecaca; border-radius:14px; padding:22px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg, #fef2f2 0%, #ffe4e6 100%); border:2px solid #fee2e2; border-radius:12px; padding:0; overflow:hidden;">
+                <!-- Header with icon -->
                 <tr>
-                  <td colspan="2" style="padding-bottom:14px;">
-                    <p style="margin:0; font-size:13px; font-weight:700; color:#b91c1c; text-transform:uppercase;">
+                  <td style="background:linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); padding:18px 24px; color:#fff;">
+                    <p style="margin:0; font-size:12px; font-weight:600; color:#fff; text-transform:uppercase; letter-spacing:0.8px; opacity:0.95;">
                       📋 Account Information
                     </p>
                   </td>
                 </tr>
 
+                <!-- Content -->
                 <tr>
-                  <td class="grid-2" width="50%" style="padding-right:12px;">
-                    <p style="margin:0; font-size:12px; color:#9ca3af;">Name</p>
-                    <p style="margin:4px 0 0; font-size:15px; font-weight:700; color:#1f2937;">${name}</p>
-                  </td>
+                  <td style="padding:24px;">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td class="grid-2" width="50%" style="padding-right:12px;">
+                          <p style="margin:0; font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px;">Name</p>
+                          <p style="margin:8px 0 0; font-size:16px; font-weight:700; color:#1f2937; line-height:1.4;">${name}</p>
+                        </td>
 
-                  <td class="grid-2" width="50%" style="padding-left:12px;">
-                    <p style="margin:0; font-size:12px; color:#9ca3af;">Email</p>
-                    <p style="margin:4px 0 0; font-size:15px; font-weight:700; color:#1f2937; word-break:break-all;">${email}</p>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td colspan="2" style="padding-top:16px; border-top:1px solid #fca5a5;">
-                    <p style="margin:0; font-size:12px; color:#9ca3af;">Status</p>
-                    <p style="margin:4px 0 0; font-size:14px; font-weight:700; color:#059669;">✓ Active</p>
+                        <td class="grid-2" width="50%" style="padding-left:12px;">
+                          <p style="margin:0; font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px;">Email</p>
+                          <p style="margin:8px 0 0; font-size:16px; font-weight:700; color:#1f2937; word-break:break-all; line-height:1.4;">${email}</p>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
               </table>
@@ -151,7 +156,8 @@ export async function POST(request: NextRequest) {
               <div style="text-align:center; font-size:12px; color:#6b7280; margin-top:20px;">
                 <p style="margin:0 0 10px;">
                   <strong style="color:#1f2937;">Indian Nepali Swad</strong><br />
-                  4 Rue Bargue, 75015 Paris, France
+                  4 Rue Bargue, 75015 Paris, France<br />
+                  79 Rue du Landy, 93300 Aubervilliers, France
                 </p>
 
                 <p style="margin:16px 0 0; font-size:10px; color:#9ca3af;">
