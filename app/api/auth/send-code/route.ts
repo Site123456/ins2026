@@ -108,7 +108,7 @@ export async function POST(request: NextRequest) {
                 <div style="font-size:48px; font-weight:900; color:#ef4444; letter-spacing:12px; font-family:ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace; line-height:1;">
                   ${code}
                 </div>
-                <div style="margin-top:16px; font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:700; letter-spacing:2px;">Sécurité INS</div>
+                <div style="margin-top:16px; font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:700; letter-spacing:2px;">Code de vérification Indian Nepali Swad</div>
               </div>
 
               <p style="font-size:14px; color:#94a3b8; text-align:center; line-height:1.6; margin:0;">
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
           <tr>
             <td style="padding:40px 32px; background-color:#111827; text-align:center;">
               <p style="margin:0; font-size:13px; color:#94a3b8; font-weight:500;">
-                &copy; 2026 Indian Nepali Swad Excellence
+                &copy; 2026 Indian Nepali Swad. All rights reserved.
               </p>
               <p style="margin:8px 0 0; font-size:11px; color:#4b5563;">
                 4 Rue Bargue, 75015 Paris &bull; 79 Rue du Landy, 93300 Aubervilliers
