@@ -224,9 +224,23 @@ const pageFade: Variants = {
 };
 
 const panelFade: Variants = {
-  initial: { opacity: 0, y: 8 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.25 } },
-  exit: { opacity: 0, y: 8, transition: { duration: 0.2 } },
+  initial: { opacity: 0, y: 20, scale: 0.95 },
+  animate: { 
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { 
+      duration: 0.5, 
+      ease: [0.16, 1, 0.3, 1], // Custom cubic-bezier for premium feel
+      staggerChildren: 0.1
+    } 
+  },
+  exit: { opacity: 0, y: 20, scale: 0.95, transition: { duration: 0.3 } },
+};
+
+const itemFade: Variants = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
 
@@ -622,7 +636,7 @@ const Page: React.FC = () => {
               <div className="flex flex-col gap-4 p-3">
 
                 {/* HEADER */}
-                <div className="flex items-center justify-between gap-3">
+                <motion.div variants={itemFade} className="flex items-center justify-between gap-3">
                   <div className="flex flex-col">
                     <h2 className="text-lg font-semibold tracking-tight">
                       INDIAN NEPALI SWAD
@@ -648,8 +662,8 @@ const Page: React.FC = () => {
                     />
                     {isOpen ? "Ouvert" : "Fermé"}
                   </div>
-                </div>
-                <div className="relative">
+                </motion.div>
+                <motion.div variants={itemFade} className="relative">
                   <button
                     type="button"
                     onClick={() => setZoneDropdownOpen((o) => !o)}
@@ -662,8 +676,8 @@ const Page: React.FC = () => {
                     `}
                   >
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 flex items-center justify-center rounded-full bg-(--accent)/18">
-                        <MapPin className="h-4 w-4 text-(--accent)" />
+                      <div className="h-8 w-8 flex items-center justify-center rounded-full bg-(--accent)/18 text-(--accent)">
+                        <MapPin className="h-4 w-4" />
                       </div>
 
                       <div className="leading-tight text-start">
@@ -734,15 +748,15 @@ const Page: React.FC = () => {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                </motion.div>
 
-                <p className="text-[10px] opacity-70 leading-relaxed">
+                <motion.p variants={itemFade} className="text-[10px] opacity-70 leading-relaxed">
                   Des plats inspirée des traditions indiennes et népalaises, préparée avec des ingrédients frais et un savoir‑faire artisanal.  
                   Retrouvez nos plats en livraison sur toutes nos sites via Deliveroo, ou à l&apos;emporter et sur place <Link href="https://www.google.com/maps/dir//4+Rue+Bargue,+75015+Paris" className="underline">(4 rue Bargue, 75015 Paris)</Link> ou <Link href="https://www.google.com/maps/dir//79+Rue+du+Landy,+93300+Aubervilliers" className="underline">(79 Rue du Landy, 93300 Aubervilliers)</Link>.
-                </p>
+                </motion.p>
 
                 {/* CTA ROW */}
-                <div className="flex flex-col sm:flex-row gap-2 w-full">
+                <motion.div variants={itemFade} className="flex flex-col sm:flex-row gap-2 w-full">
 
                   {/* Deliveroo CTA */}
                   <Link
@@ -803,7 +817,7 @@ const Page: React.FC = () => {
                     </svg>
                     +33 1 45 32 73 73
                   </Link>
-                </div>
+                </motion.div>
 
               </div>
             </motion.section>

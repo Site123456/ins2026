@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '../../../lib/mongodb';
-import Subscriber from '../../../models/Subscriber';
+import dbConnect from '@/lib/mongodb';
+import Subscriber from '@/models/Subscriber';
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     await dbConnect();
 
-    const subscriber = await Subscriber.findOneAndUpdate(
+    const subscriber = await (Subscriber as any).findOneAndUpdate(
       { email: email.toLowerCase() },
       { $set: { name: name.trim() } },
       { new: true }

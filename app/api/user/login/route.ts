@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
-import Subscriber from '@/models/Subscriber';
+import dbConnect from '../../../../lib/mongodb';
+import Subscriber from '../../../../models/Subscriber';
 
 export async function POST(request: NextRequest) {
   try {
