@@ -77,12 +77,6 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
           <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`} />
         </button>
         <Portal>
-          {showDropdown && (
-            <div
-              className="fixed inset-0 z-89 sm:hidden bg-black/40 backdrop-blur-sm"
-              onClick={() => setShowDropdown(false)}
-            />
-          )}
           <div
             className={`
               fixed right-2 top-18 z-101 w-64 sm:w-56
@@ -173,6 +167,12 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
               </div>
             </div>
           </div>
+          {showDropdown && (
+            <div
+              className="fixed inset-0 z-89 sm:hidden bg-black/40 backdrop-blur-sm"
+              onClick={() => setShowDropdown(false)}
+            />
+          )}
           <SettingsModal
             isOpen={showSettingsModal}
             onClose={() => setShowSettingsModal(false)}
