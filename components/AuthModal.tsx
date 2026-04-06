@@ -248,6 +248,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
         )}
       </AnimatePresence>
 
+
       {/* Modal Container */}
       <motion.div
         layout
@@ -256,111 +257,46 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
         animate="visible"
         exit="exit"
         className={`
-          relative w-full max-w-md mx-auto
-          overflow-hidden rounded-[2.5rem]
-          border backdrop-blur-3xl
-          shadow-[0_32px_128px_rgba(0,0,0,0.45)]
-          transition-all
-          ${isDark
-            ? "bg-[#0a0a0f]/90 border-white/10"
-            : "bg-white/90 border-zinc-200 shadow-black/10"
-          }
+          relative w-full max-w-md overflow-hidden rounded-[2.5rem] border shadow-[0_32px_128px_rgba(0,0,0,0.5)]
+          ${isDark ? 'bg-[#0a0a0f]/90 border-white/10' : 'bg-white border-zinc-200'}
+          backdrop-blur-3xl
         `}
       >
-
         {/* Animated Gradient Border Overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-20">
-          <div
-            className="absolute inset-[-100%]
-            animate-[spin_8s_linear_infinite]"
-            style={{
-              background: `conic-gradient(
-                from 0deg,
-                transparent 0deg,
-                transparent 120deg,
-                var(--accent) 180deg,
-                transparent 240deg,
-                transparent 360deg
-              )`
-            }}
-          />
+          <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_120deg,(--accent)_180deg,transparent_240deg,transparent_360deg)] animate-[spin_8s_linear_infinite]" />
         </div>
 
-        {/* Progress Bar */}
-        <div
-          className={`
-            absolute top-0 left-0 right-0 h-1.5
-            ${isDark ? "bg-white/5" : "bg-black/10"}
-          `}
-        >
-          <motion.div
-            className="h-full"
-            style={{
-              background: "var(--accent)",
-              boxShadow: "0 0 12px var(--accent)"
-            }}
-            initial={{ width: "0%" }}
-            animate={{ width: step === 1 ? "50%" : "100%" }}
+        {/* Progress Bar (at very top) */}
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-black/10">
+          <motion.div 
+            className="h-full bg-(--accent) shadow-[0_0_12px_var(--accent)]"
+            initial={{ width: '0%' }}
+            animate={{ width: step === 1 ? '50%' : '100%' }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           />
         </div>
 
         {/* Close & Back Buttons */}
-        <div className="flex items-center justify-between p-6 sm:p-8 pb-4">
-
-          {/* Back Button */}
+        <div className="flex items-center justify-between p-8 pb-4">
           {step === 2 ? (
             <motion.button
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              onClick={() => { setStep(1); setError(""); }}
-              className={`
-                group flex items-center gap-2 text-xs sm:text-sm font-bold
-                transition-colors
-                ${isDark ? "text-zinc-400 hover:text-white" : "text-zinc-600 hover:text-zinc-900"}
-              `}
+              onClick={() => { setStep(1); setError(''); }}
+              className="group flex items-center gap-2 text-sm font-bold text-zinc-400 hover:text-white transition-colors"
             >
-              <div
-                className={`
-                  p-1.5 rounded-lg border transition-all
-                  ${isDark
-                    ? "bg-white/5 border-white/5 group-hover:border-white/10"
-                    : "bg-black/5 border-black/10 group-hover:border-black/20"
-                  }
-                `}
-              >
-                <ArrowLeft
-                  className={`
-                    w-4 h-4 transition-transform
-                    group-hover:-translate-x-1
-                    ${isDark ? "text-white" : "text-zinc-800"}
-                  `}
-                />
+              <div className="p-1.5 rounded-lg bg-white/5 border border-white/5 group-hover:border-white/10 transition-all">
+                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
               </div>
               Retour
             </motion.button>
-          ) : (
-            <div />
-          )}
-
-          {/* Close Button */}
+          ) : <div />}
           <button
             onClick={onClose}
-            className={`
-              p-2.5 rounded-full border transition-all
-              hover:scale-110 active:scale-95
-              ${isDark
-                ? "bg-white/5 border-white/5 hover:border-white/20"
-                : "bg-black/5 border-black/10 hover:border-black/20"
-              }
-            `}
+            className="p-2.5 rounded-full bg-white/5 border border-white/5 hover:border-white/20 hover:scale-110 active:scale-95 transition-all"
           >
-            <X
-              className={`
-                w-5 h-5
-                ${isDark ? "text-zinc-400" : "text-zinc-700"}
-              `}
-            />
+            <X className="w-5 h-5 text-zinc-400" />
           </button>
         </div>
 
