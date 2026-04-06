@@ -146,6 +146,25 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
 
     setIsLoading(false);
   };
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pasted = e.clipboardData.getData("text").trim();
+
+    // Only digits
+    if (!/^\d+$/.test(pasted)) return;
+
+    // Must be 6 digits
+    if (pasted.length !== 6) return;
+
+    const digits = pasted.split("");
+
+    setOtp(digits);
+
+    // Autofocus last input
+    otpRefs.current[5]?.focus();
+
+    // Auto-verify
+    handleVerifyCode();
+  };
 
   // VERIFY CODE (sign-in only)
   const handleVerifyCode = async (e?: React.FormEvent) => {
@@ -543,36 +562,63 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                 <AnimatePresence>
                   {error && (
                     <motion.div
-                      variants={shakeVariants}
-                      animate="shake"
-                      initial={{ opacity: 0, y: 10 }}
+                      key="error"
+                      initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                      transition={{ duration: 0.25, ease: "easeOut" }}
                       className={`
-                        p-5 rounded-2xl flex gap-4 items-center border
+                        relative overflow-hidden p-5 rounded-2xl flex gap-4 items-start border
+                        backdrop-blur-sm shadow-lg
                         ${isDark
                           ? "bg-rose-500/10 border-rose-500/20"
-                          : "bg-rose-100 border-rose-300"}
+                          : "bg-rose-50 border-rose-200"
+                        }
                       `}
                     >
+                      {/* Soft glow behind icon */}
                       <div
                         className={`
-                          p-2 rounded-xl
-                          ${isDark ? "bg-rose-500/20" : "bg-rose-300"}
+                          absolute -left-6 -top-6 w-20 h-20 rounded-full blur-2xl opacity-30
+                          ${isDark ? "bg-rose-500/40 text-white" : "bg-rose-400/40 text-black"}
+                        `}
+                      />
+
+                      {/* Icon */}
+                      <div
+                        className={`
+                          p-2 rounded-xl shrink-0 relative z-10
+                          ${isDark ? "bg-rose-500/20" : "bg-rose-200"}
                         `}
                       >
-                        <AlertCircle className="w-5 h-5 text-rose-500 shrink-0" />
+                        <AlertCircle className="w-5 h-5 text-rose-500" />
                       </div>
 
-                      <p
-                        className={`
-                          text-sm font-bold
-                          ${isDark ? "text-rose-400" : "text-rose-700"}
-                        `}
-                      >
-                        {error}
-                      </p>
+                      {/* Text */}
+                      <div className="flex-1 relative z-10">
+                        <p
+                          className={`
+                            text-sm font-bold leading-relaxed
+                            ${isDark ? "text-rose-300" : "text-rose-700"}
+                          `}
+                        >
+                          {error}
+                        </p>
+
+                        {/* Optional subtle hint */}
+                        <p
+                          className={`
+                            text-[11px] mt-1 font-semibold tracking-wide uppercase
+                            ${isDark ? "text-rose-500/60" : "text-rose-600/60"}
+                          `}
+                        >
+                          Veuillez réessayer
+                        </p>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
+
               </motion.div>
             ) : (
               <motion.div
@@ -581,16 +627,17 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="space-y-10"
+                className="space-y-12"
               >
                 {/* HEADER */}
                 <div className="text-center space-y-4">
                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
+                    initial={{ scale: 0, rotate: -12 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 12 }}
                     className={`
-                      mx-auto w-20 h-20 rounded-[2rem] flex items-center justify-center mb-2 rotate-12
-                      bg-(--accent)/10
+                      mx-auto w-20 h-20 rounded-3xl flex items-center justify-center
+                      bg-(--accent)/10 shadow-sm
                     `}
                   >
                     <KeyRound className="w-10 h-10 text-(--accent)" />
@@ -598,7 +645,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
 
                   <h2
                     className={`
-                      text-3xl font-black
+                      text-3xl font-black tracking-tight
                       ${isDark ? "text-white" : "text-zinc-900"}
                     `}
                   >
@@ -607,51 +654,52 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
 
                   <p
                     className={`
-                      text-sm max-w-[280px] mx-auto leading-relaxed
+                      text-sm max-w-xs mx-auto leading-relaxed
                       ${isDark ? "text-zinc-400" : "text-zinc-600"}
                     `}
                   >
-                    Saisissez les 6 chiffres envoyés à{" "}
-                    <span className={isDark ? "text-white" : "text-zinc-900"}>{formData.email}</span>
+                    Entrez les 6 chiffres envoyés à{" "}
+                    <span className={isDark ? "text-white font-semibold" : "text-zinc-900 font-semibold"}>
+                      {formData.email}
+                    </span>
                   </p>
                 </div>
 
                 {/* OTP INPUTS */}
-                <div className="flex justify-between gap-2.5">
+                <div className="flex justify-between gap-3 max-w-sm mx-auto">
                   {otp.map((digit, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.1 * i }}
+                      transition={{ delay: 0.05 * i }}
                       className="relative group flex-1"
                     >
                       <input
-                        ref={(el) => { otpRefs.current[i] = el }}
+                        ref={(el: HTMLInputElement | null) => {
+                          otpRefs.current[i] = el;
+                          return undefined;
+                        }}
                         type="text"
-                        inputMode="decimal"
+                        inputMode="numeric"
                         maxLength={1}
                         value={digit}
                         onChange={(e) => handleOtpChange(i, e.target.value)}
                         onKeyDown={(e) => handleKeyDown(i, e)}
+                        onPaste={handlePaste}
                         className={`
                           w-full h-16 text-center text-3xl font-black rounded-2xl outline-none transition-all
                           border focus:border-(--accent) focus:ring-4 focus:ring-(--accent)/10
-
                           ${isDark
                             ? "bg-white/5 border-white/10 text-white placeholder:text-zinc-600"
                             : "bg-white border-black/10 text-zinc-900 placeholder:text-zinc-400"
                           }
-
-                          ${digit
-                            ? "text-(--accent) border-(--accent)/50 bg-(--accent)/5"
-                            : ""
-                          }
+                          ${digit ? "text-(--accent) border-(--accent)/50 bg-(--accent)/5" : ""}
                         `}
                       />
 
                       {/* Dot indicator */}
-                      {digit === "" && (
+                      {!digit && (
                         <div
                           className={`
                             absolute bottom-3 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full transition-colors
@@ -664,7 +712,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                 </div>
 
                 {/* ACTIONS */}
-                <div className="space-y-6">
+                <div className="space-y-8">
                   {/* VERIFY BUTTON */}
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -672,14 +720,12 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                     onClick={() => handleVerifyCode()}
                     disabled={isLoading || otp.join("").length < 6}
                     className={`
-                      w-full py-5 rounded-[1.25rem] font-black text-lg transition-all flex items-center justify-center gap-3
+                      w-full py-5 rounded-2xl font-black text-lg transition-all flex items-center justify-center gap-3
                       shadow-xl
-
                       ${isDark
                         ? "bg-white text-black hover:bg-zinc-200 shadow-black/20"
                         : "bg-black text-white hover:bg-zinc-800 shadow-black/30"
                       }
-
                       disabled:opacity-30 disabled:hover:bg-inherit
                     `}
                   >
@@ -767,8 +813,8 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                       className={`
                         p-5 rounded-2xl flex gap-4 items-center border
                         ${isDark
-                          ? "bg-rose-500/10 border-rose-500/20"
-                          : "bg-rose-100 border-rose-300"
+                          ? "bg-rose-500/10 border-rose-500/20 text-white shadow-[0_0_20px_rgba(255,0,0,0.1)]"
+                          : "bg-rose-100 border-rose-300 text-black shadow-[0_0_20px_rgba(255,0,0,0.05)]"
                         }
                       `}
                     >
@@ -793,6 +839,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                   )}
                 </AnimatePresence>
               </motion.div>
+
             )}
           </AnimatePresence>
 
