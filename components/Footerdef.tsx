@@ -254,8 +254,8 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
               }`}
             >
               Indian Nepali Swad propose une cuisine authentique et généreuse d&apos;Inde et du Népal,
-              préparée avec des épices traditionnelles et des recettes maison, avec livraison
-              disponible partout en Île‑de‑France ainsi qu&apos;à Bordeaux.
+              préparée avec des épices traditionnelles et des recettes maison. Réservations et livraison
+              disponibles partout en Île‑de‑France ainsi qu&apos;à Bordeaux.
               <Link
                 href="https://www.indian-nepaliswad.fr/"
                 className="transition-colors duration-300 ps-1"
@@ -435,6 +435,15 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
                 </motion.button>
               </div>
             </form>
+
+            <p
+              className={`text-[11px] leading-relaxed max-w-xs mx-auto lg:mx-0 ${
+                isDark ? "text-white/50" : "text-black/50"
+              }`}
+            >
+              En vous abonnant, vous créez automatiquement un compte Indian Nepali Swad avec connexion directe par email activée par défaut. Gérez vos réservations, laissez des avis sur nos plats délicieux et explorez tous nos sites en un clic ! Vous avez également l&apos;option d&apos;activer notre bot intelligent pour des recommandations personnalisées et un service client 24/7.
+            </p>
+
             <div
               className={`text-[11px] font-semibold uppercase tracking-wider ${
                 isDark ? "text-white/30" : "text-black/30"
@@ -485,6 +494,63 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
                 </a>
               ))}
             </div>
+            
+            {/* Bot Activation Section */}
+            <div className="w-full max-w-sm mx-auto lg:mx-0">
+              <div
+                className={`text-[11px] font-semibold uppercase tracking-wider mb-3 ${
+                  isDark ? "text-white/30" : "text-black/30"
+                }`}
+              >
+                Assistant IA
+              </div>
+              <button
+                className="
+                  group w-full py-3.5 rounded-xl 
+                  text-[14px] font-semibold 
+                  flex items-center justify-center gap-2
+                  transition-all duration-300
+                  border-2
+                "
+                style={{
+                  backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
+                  color: isDark ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)",
+                  borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
+                  boxShadow: `0 4px 14px -4px ${hexToRgba(accent, 0.1)}`,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = hexToRgba(accent, 0.1);
+                  e.currentTarget.style.borderColor = hexToRgba(accent, 0.3);
+                  e.currentTarget.style.color = accent;
+                  e.currentTarget.style.boxShadow = `0 6px 22px -4px ${hexToRgba(accent, 0.2)}`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)";
+                  e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
+                  e.currentTarget.style.color = isDark ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)";
+                  e.currentTarget.style.boxShadow = `0 4px 14px -4px ${hexToRgba(accent, 0.1)}`;
+                }}
+              >
+                <svg
+                  className="h-4.5 w-4.5 opacity-90 group-hover:opacity-100 transition-all"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Activer le Bot IA
+              </button>
+              <p
+                className={`text-[10px] leading-relaxed mt-2 text-center lg:text-left ${
+                  isDark ? "text-white/40" : "text-black/40"
+                }`}
+              >
+                Obtenez des recommandations personnalisées et un support instantané
+              </p>
+            </div>
+
             <div className="flex flex-wrap justify-center lg:justify-start items-center gap-2 pt-1">
               {socials.map(({ icon: Icon, href, label }) => (
                 <a
@@ -705,7 +771,7 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
                         className="text-sm leading-relaxed"
                         style={{ color: isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.65)' }}
                       >
-                        Join our community and receive exclusive offers, special menus & culinary stories delivered to your inbox
+                        Join our community and receive exclusive offers, special menus, reservation updates & culinary stories delivered to your inbox
                       </motion.p>
                     </div>
 

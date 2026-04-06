@@ -40,8 +40,8 @@ export async function POST(request: NextRequest) {
           <tr>
             <td style="background:linear-gradient(135deg,#d32f2f,#b71c1c); padding:48px 32px; text-align:center; color:#fff; position:relative;">
               <!-- Logo with distinct white background -->
-              <div style="display:inline-block; background:#fff; padding:14px 14px; border-radius:16px; margin-bottom:24px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-                <img src="https://indian-nepaliswad.fr/etc/logo.png" alt="INS" style="height:60px; display:block;" />
+              <div style="display:inline-block; background:#fff; padding:6px 6px; border-radius:16px; margin-bottom:14px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+                <img src="https://indian-nepaliswad.fr/etc/logo.png" alt="INS" style="height:80px; display:block;" />
               </div>
               
               <h1 style="margin:0; font-size:32px; font-weight:800; letter-spacing:-0.5px;">Account Created Successfully 🎉</h1>
