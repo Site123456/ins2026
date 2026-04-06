@@ -42,138 +42,186 @@ const itemVariants: Variants = {
   visible: { opacity: 1, y: 0 }
 };
 
-export default function AuthModal({ isOpen, onClose, mode: initialMode, email: initialEmail = '', isDark, accent }: AuthModalProps) {
+export default function AuthModal({ isOpen, onClose, mode: initialMode, email: initialEmail = '', isDark }: AuthModalProps) {
   const { requestCode, verifyCode } = useAuth();
-  
+
+  // MODE RULES
   const [mode, setMode] = useState<'signin' | 'signup' | 'newsletter'>(initialMode);
+  const requiresName = mode === "signup" || mode === "newsletter";
+  const requiresOtp = mode === "signin"; // NEW RULE
+
+  // STATE
   const [step, setStep] = useState<1 | 2>(1);
-  const [formData, setFormData] = useState({
-    email: '',
-    name: '',
-  });
-  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [formData, setFormData] = useState({ email: "", name: "" });
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [isCodeSent, setIsCodeSent] = useState(false);
 
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
+  // MODAL OPEN/CLOSE LIFECYCLE
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
       setMode(initialMode);
       setFormData(prev => ({ ...prev, email: initialEmail || prev.email }));
       setStep(1);
-      setError('');
-      setSuccess('');
+      setError("");
+      setSuccess("");
       setIsCodeSent(false);
-      setOtp(['', '', '', '', '', '']);
-      document.body.style.overflow = 'hidden';
+      setOtp(["", "", "", "", "", ""]);
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
       const timer = setTimeout(() => setIsVisible(false), 300);
       return () => clearTimeout(timer);
     }
   }, [isOpen, initialMode, initialEmail]);
 
+  // RESEND COOLDOWN TIMER
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (resendCooldown > 0) {
-      timer = setInterval(() => {
-        setResendCooldown(prev => prev - 1);
-      }, 1000);
-    }
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => setResendCooldown(prev => prev - 1), 1000);
     return () => clearInterval(timer);
   }, [resendCooldown]);
 
+  // VALIDATION
+  const validateForm = () => {
+    if (!formData.email.trim()) return "Veuillez entrer une adresse email.";
+    if (requiresName && !formData.name.trim()) return "Veuillez entrer votre nom complet.";
+    return null;
+  };
+
+  // REQUEST CODE (OTP only for sign-in)
   const handleRequestCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
+    setError("");
 
-    const result = await requestCode(formData.email, mode, formData.name);
-    
-    if (result.success) {
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      setIsLoading(false);
+      return;
+    }
+
+    const nameToSend = requiresName ? formData.name.trim() : undefined;
+
+    const result = await requestCode(formData.email.trim(), mode, nameToSend);
+
+    if (!result.success) {
+      setError(result.error || "Échec de l'envoi du code");
+      setIsLoading(false);
+      return;
+    }
+
+    // SIGN-IN → OTP REQUIRED
+    if (requiresOtp) {
       setStep(2);
       setIsCodeSent(true);
       setResendCooldown(30);
       setTimeout(() => setIsCodeSent(false), 4000);
-    } else {
-      setError(result.error || 'Échec de l\'envoi du code');
+      setIsLoading(false);
+      return;
     }
+
+    // SIGNUP / NEWSLETTER → DIRECT SUCCESS (NO OTP)
+    setSuccess(
+      mode === "signup"
+        ? "Bienvenue ! Votre compte a été créé avec succès ✨"
+        : "Merci ! Inscription à la newsletter réussie 📧"
+    );
+
+    setTimeout(() => {
+      onClose();
+      setFormData({ email: "", name: "" });
+      setOtp(["", "", "", "", "", ""]);
+      setStep(1);
+      setSuccess("");
+    }, 2500);
+
     setIsLoading(false);
   };
 
+  // VERIFY CODE (sign-in only)
   const handleVerifyCode = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    const code = otp.join('');
+    if (!requiresOtp) return;
+
+    const code = otp.join("");
     if (code.length < 6) return;
 
     setIsLoading(true);
-    setError('');
+    setError("");
 
-    const result = await verifyCode(formData.email, code, mode);
-    
+    const result = await verifyCode(formData.email.trim(), code, mode);
+
     if (result.success) {
-      setSuccess(
-        mode === 'signup' 
-          ? 'Bienvenue ! Votre compte a été créé avec succès ✨' 
-          : mode === 'newsletter' 
-          ? 'Merci ! Inscription à la newsletter réussie 📧'
-          : 'Heureux de vous revoir ! Connexion réussie 🔓'
-      );
+      setSuccess("Heureux de vous revoir ! Connexion réussie 🔓");
+
       setTimeout(() => {
         onClose();
-        setFormData({ email: '', name: '' });
-        setOtp(['', '', '', '', '', '']);
+        setFormData({ email: "", name: "" });
+        setOtp(["", "", "", "", "", ""]);
         setStep(1);
-        setSuccess('');
+        setSuccess("");
       }, 2500);
     } else {
-      setError(result.error || 'Code invalide ou expiré');
+      setError(result.error || "Code invalide ou expiré");
     }
+
     setIsLoading(false);
   };
 
+  // OTP INPUT HANDLING (sign-in only)
   const handleOtpChange = (index: number, value: string) => {
+    if (!requiresOtp) return;
     if (!/^\d*$/.test(value)) return;
-    
+
     const newOtp = [...otp];
     newOtp[index] = value.slice(-1);
     setOtp(newOtp);
 
-    if (value && index < 5) {
-      otpRefs.current[index + 1]?.focus();
-    }
+    if (value && index < 5) otpRefs.current[index + 1]?.focus();
 
-    if (newOtp.every(v => v !== '') && index === 5) {
+    if (newOtp.every(v => v !== "") && index === 5) {
       handleVerifyCode();
     }
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+    if (!requiresOtp) return;
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
       otpRefs.current[index - 1]?.focus();
     }
   };
 
+  // RESEND CODE (sign-in only)
   const handleResend = async () => {
-    if (resendCooldown > 0) return;
+    if (!requiresOtp || resendCooldown > 0) return;
+
     setIsLoading(true);
-    setError('');
-    const result = await requestCode(formData.email, mode, formData.name);
+    setError("");
+
+    const nameToSend = requiresName ? formData.name.trim() : undefined;
+
+    const result = await requestCode(formData.email.trim(), mode, nameToSend);
+
     if (result.success) {
       setIsCodeSent(true);
       setResendCooldown(30);
       setTimeout(() => setIsCodeSent(false), 4000);
     } else {
-      setError(result.error || 'Échec du renvoi');
+      setError(result.error || "Échec du renvoi");
     }
+
     setIsLoading(false);
   };
+
 
   if (!isVisible) return null;
 
@@ -365,56 +413,62 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                   </p>
                 </motion.div>
 
-                {/* FORM */}
-                <motion.form variants={itemVariants} onSubmit={handleRequestCode} className="space-y-5">
-                  {/* NAME FIELD */}
-                  <div className="space-y-2.5">
-                    <label
-                      className={`
-                        text-sm font-bold uppercase tracking-widest ml-1
-                        ${isDark ? "text-zinc-500" : "text-zinc-700"}
-                      `}
-                    >
-                      Identité Complète
-                    </label>
-
-                    <div className="relative group">
-                      <div
+                <motion.form
+                  variants={itemVariants}
+                  onSubmit={handleRequestCode}
+                  className="space-y-5"
+                >
+                  {/* NAME FIELD — only for signup */}
+                  {mode === "signup" && (
+                    <div className="space-y-2.5">
+                      <label
                         className={`
-                          absolute left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-xl
-                          border transition-all
-                          ${isDark
-                            ? "bg-white/5 border-white/5 group-focus-within:border-(--accent)/30"
-                            : "bg-black/5 border-black/10 group-focus-within:border-(--accent)/40"}
+                          text-sm font-bold uppercase tracking-widest ml-1
+                          ${isDark ? "text-zinc-500" : "text-zinc-700"}
                         `}
                       >
-                        <User
+                        Identité Complète
+                      </label>
+
+                      <div className="relative group">
+                        <div
                           className={`
-                            w-4 h-4 transition-colors
-                            ${isDark ? "text-zinc-500" : "text-zinc-600"}
-                            group-focus-within:text-(--accent)
+                            absolute left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-xl border transition-all
+                            ${isDark
+                              ? "bg-white/5 border-white/5 group-focus-within:border-(--accent)/30"
+                              : "bg-black/5 border-black/10 group-focus-within:border-(--accent)/40"}
+                          `}
+                        >
+                          <User
+                            className={`
+                              w-4 h-4 transition-colors
+                              ${isDark ? "text-zinc-500" : "text-zinc-600"}
+                              group-focus-within:text-(--accent)
+                            `}
+                          />
+                        </div>
+
+                        <input
+                          required={mode === "signup"}
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) =>
+                            setFormData((p) => ({ ...p, name: e.target.value }))
+                          }
+                          placeholder="Prénom & Nom"
+                          className={`
+                            w-full pl-14 pr-5 py-4 rounded-2xl outline-none transition-all border
+                            focus:ring-4 focus:ring-(--accent)/10 focus:border-(--accent)
+                            ${isDark
+                              ? "bg-white/5 border-white/10 text-white placeholder:text-zinc-600"
+                              : "bg-white border-black/10 text-zinc-900 placeholder:text-zinc-400"}
                           `}
                         />
                       </div>
-
-                      <input
-                        required
-                        type="text"
-                        value={formData.name}
-                        onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
-                        placeholder="Prénom & Nom"
-                        className={`
-                          w-full pl-14 pr-5 py-4 rounded-2xl outline-none transition-all
-                          border focus:ring-4 focus:ring-(--accent)/10 focus:border-(--accent)
-                          ${isDark
-                            ? "bg-white/5 border-white/10 text-white placeholder:text-zinc-600"
-                            : "bg-white border-black/10 text-zinc-900 placeholder:text-zinc-400"}
-                        `}
-                      />
                     </div>
-                  </div>
+                  )}
 
-                  {/* EMAIL FIELD */}
+                  {/* EMAIL FIELD — always shown */}
                   <div className="space-y-2.5">
                     <label
                       className={`
@@ -428,8 +482,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                     <div className="relative group">
                       <div
                         className={`
-                          absolute left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-xl
-                          border transition-all
+                          absolute left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-xl border transition-all
                           ${isDark
                             ? "bg-white/5 border-white/5 group-focus-within:border-(--accent)/30"
                             : "bg-black/5 border-black/10 group-focus-within:border-(--accent)/40"}
@@ -448,11 +501,13 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                         required
                         type="email"
                         value={formData.email}
-                        onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
+                        onChange={(e) =>
+                          setFormData((p) => ({ ...p, email: e.target.value }))
+                        }
                         placeholder="chef@indian-swad.fr"
                         className={`
-                          w-full pl-14 pr-5 py-4 rounded-2xl outline-none transition-all
-                          border focus:ring-4 focus:ring-(--accent)/10 focus:border-(--accent)
+                          w-full pl-14 pr-5 py-4 rounded-2xl outline-none transition-all border
+                          focus:ring-4 focus:ring-(--accent)/10 focus:border-(--accent)
                           ${isDark
                             ? "bg-white/5 border-white/10 text-white placeholder:text-zinc-600"
                             : "bg-white border-black/10 text-zinc-900 placeholder:text-zinc-400"}

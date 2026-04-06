@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AuthModal from '@/components/AuthModal';
-import { useTheme } from '@/components/hooks/useTheme'; // <-- your theme hook
+import { useTheme } from '@/components/hooks/useTheme';
 
 interface User {
   email: string;
@@ -13,21 +13,37 @@ interface User {
   loginCount: number;
 }
 
+type AuthMode = 'signin' | 'signup' | 'newsletter';
+
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  requestCode: (email: string, type: 'signin' | 'signup' | 'newsletter', name?: string) => Promise<{ success: boolean; error?: string }>;
-  verifyCode: (email: string, code: string, type: 'signin' | 'signup' | 'newsletter') => Promise<{ success: boolean; error?: string }>;
+
+  // Core actions
+  requestCode: (
+    email: string,
+    type: AuthMode,
+    name?: string
+  ) => Promise<{ success: boolean; error?: string }>;
+
+  verifyCode: (
+    email: string,
+    code: string,
+    type: AuthMode
+  ) => Promise<{ success: boolean; error?: string }>;
+
   signOut: () => void;
+
   updateNewsletterSubscription: (subscribed: boolean) => Promise<boolean>;
   updateProfile: (name: string) => Promise<boolean>;
+
   loading: boolean;
 
   // Modal controls
   isModalOpen: boolean;
-  modalMode: 'signin' | 'signup' | 'newsletter';
+  modalMode: AuthMode;
   modalEmail: string;
-  openAuthModal: (mode?: 'signin' | 'signup' | 'newsletter', email?: string) => void;
+  openAuthModal: (mode?: AuthMode, email?: string) => void;
   closeAuthModal: () => void;
 }
 
@@ -37,27 +53,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 🌙 Use global theme
-  const { theme, setTheme, isDark } = useTheme();
+  // Global theme
+  const { isDark } = useTheme();
 
-  // Check if user is already authenticated on mount
+  // Load user from localStorage
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const storedUser = localStorage.getItem('ins_user');
-        if (storedUser) {
-          const userData = JSON.parse(storedUser);
-          const response = await fetch(`/api/verify?email=${encodeURIComponent(userData.email)}`);
-          const data = await response.json();
+        const stored = localStorage.getItem('ins_user');
+        if (!stored) return setLoading(false);
 
-          if (data.isSubscribed) {
-            setUser(userData);
-          } else {
-            localStorage.removeItem('ins_user');
-          }
+        const parsed = JSON.parse(stored);
+        const res = await fetch(`/api/verify?email=${encodeURIComponent(parsed.email)}`);
+        const data = await res.json();
+
+        if (data.isSubscribed) {
+          setUser(parsed);
+        } else {
+          localStorage.removeItem('ins_user');
         }
-      } catch (error) {
-        console.error('Auth check failed:', error);
+      } catch {
         localStorage.removeItem('ins_user');
       } finally {
         setLoading(false);
@@ -67,42 +82,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuth();
   }, []);
 
-  const requestCode = async (email: string, type: 'signin' | 'signup' | 'newsletter', name?: string) => {
+  // --- AUTH ACTIONS ---------------------------------------------------------
+
+  const requestCode = async (email: string, type: AuthMode, name?: string) => {
     try {
-      const response = await fetch('/api/auth/send-code', {
+      const res = await fetch('/api/auth/send-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, type, name }),
       });
 
-      const data = await response.json();
-      if (response.ok) return { success: true };
+      const data = await res.json();
+      if (res.ok) return { success: true };
       return { success: false, error: data.error || 'Failed to send code' };
-    } catch (error) {
-      console.error('Request code error:', error);
-      return { success: false, error: 'An unexpected error occurred' };
+    } catch {
+      return { success: false, error: 'Unexpected error' };
     }
   };
 
-  const verifyCode = async (email: string, code: string, type: 'signin' | 'signup' | 'newsletter') => {
+  const verifyCode = async (email: string, code: string, type: AuthMode) => {
     try {
-      const response = await fetch('/api/auth/verify-code', {
+      const res = await fetch('/api/auth/verify-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code, type }),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (response.ok && data.user) {
+      if (res.ok && data.user) {
         setUser(data.user);
         localStorage.setItem('ins_user', JSON.stringify(data.user));
         return { success: true };
       }
+
       return { success: false, error: data.error || 'Invalid code' };
-    } catch (error) {
-      console.error('Verify code error:', error);
-      return { success: false, error: 'An unexpected error occurred' };
+    } catch {
+      return { success: false, error: 'Unexpected error' };
     }
   };
 
@@ -110,21 +126,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return false;
 
     try {
-      const response = await fetch('/api/user/newsletter', {
+      const res = await fetch('/api/user/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: user.email, subscribed }),
       });
 
-      if (response.ok) {
-        const updatedUser = { ...user, newsletterSubscribed: subscribed };
-        setUser(updatedUser);
-        localStorage.setItem('ins_user', JSON.stringify(updatedUser));
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('Newsletter update error:', error);
+      if (!res.ok) return false;
+
+      const updated = { ...user, newsletterSubscribed: subscribed };
+      setUser(updated);
+      localStorage.setItem('ins_user', JSON.stringify(updated));
+      return true;
+    } catch {
       return false;
     }
   };
@@ -133,49 +147,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!user) return false;
 
     try {
-      const response = await fetch('/api/user/profile', {
+      const res = await fetch('/api/user/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: user.email, name }),
       });
 
-      if (response.ok) {
-        const updatedUser = { ...user, name };
-        setUser(updatedUser);
-        localStorage.setItem('ins_user', JSON.stringify(updatedUser));
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('Profile update error:', error);
+      if (!res.ok) return false;
+
+      const updated = { ...user, name };
+      setUser(updated);
+      localStorage.setItem('ins_user', JSON.stringify(updated));
+      return true;
+    } catch {
       return false;
     }
-  };
-
-  // Modal state
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'signin' | 'signup' | 'newsletter'>('signin');
-  const [modalEmail, setModalEmail] = useState('');
-
-  const openAuthModal = (
-    mode: 'signin' | 'signup' | 'newsletter' = 'signin',
-    email: string = ''
-  ) => {
-    setModalMode(mode);
-    setModalEmail(email);
-    setIsModalOpen(true);
-  };
-
-
-  const closeAuthModal = () => {
-    setIsModalOpen(false);
-    setModalEmail('');
   };
 
   const signOut = () => {
     setUser(null);
     localStorage.removeItem('ins_user');
   };
+
+  // --- MODAL STATE ----------------------------------------------------------
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<AuthMode>('signin');
+  const [modalEmail, setModalEmail] = useState('');
+
+  const openAuthModal = (mode: AuthMode = 'signin', email = '') => {
+    setModalMode(mode);
+    setModalEmail(email);
+    setIsModalOpen(true);
+  };
+
+  const closeAuthModal = () => {
+    setIsModalOpen(false);
+    setModalEmail('');
+  };
+
+  // --- CONTEXT VALUE --------------------------------------------------------
 
   const value: AuthContextType = {
     user,
@@ -202,7 +213,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         onClose={closeAuthModal}
         mode={modalMode}
         email={modalEmail}
-        isDark={isDark}   // <-- now using global theme
+        isDark={isDark}
         accent="#8b5cf6"
       />
     </AuthContext.Provider>
@@ -210,7 +221,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within an AuthProvider');
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within an AuthProvider');
+  return ctx;
 }

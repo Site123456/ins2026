@@ -1,120 +1,91 @@
-import { NextRequest, NextResponse } from 'next/server';
-import dbConnect from '@/lib/mongodb';
-import VerificationCode from '@/models/VerificationCode';
-import Subscriber from '@/models/Subscriber';
+import { NextRequest, NextResponse } from "next/server";
+import dbConnect from "@/lib/mongodb";
+import VerificationCode from "@/models/VerificationCode";
+import Subscriber from "@/models/Subscriber";
 
 export async function POST(request: NextRequest) {
   try {
     const { email, code, type } = await request.json();
 
     if (!email || !code || !type) {
-      return NextResponse.json({ error: 'Email, code and type are required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Email, code et type requis." },
+        { status: 400 }
+      );
     }
 
     await dbConnect();
 
     const normalizedEmail = email.toLowerCase();
 
-    // Find valid code
-    const verificationData = await VerificationCode.findOne({
+    if (type !== "signin") {
+      return NextResponse.json(
+        {
+          error:
+            "La vérification par code n'est plus nécessaire pour cette action.",
+        },
+        { status: 400 }
+      );
+    }
+    const record = await VerificationCode.findOne({
       email: normalizedEmail,
-      type,
+      type: "signin",
       code,
       used: false,
-      expiresAt: { $gt: new Date() }
+      expiresAt: { $gt: new Date() },
     });
 
-    if (!verificationData) {
-      // Record failed attempt
+    if (!record) {
       await VerificationCode.updateOne(
-        { email: normalizedEmail, type, used: false },
+        { email: normalizedEmail, type: "signin", used: false },
         { $inc: { attempts: 1 } }
       );
-      return NextResponse.json({ error: 'Invalid or expired code. Please try again.' }, { status: 400 });
+
+      return NextResponse.json(
+        { error: "Code invalide ou expiré." },
+        { status: 400 }
+      );
+    }
+    record.used = true;
+    await record.save();
+
+    let user = await Subscriber.findOne({ email: normalizedEmail });
+
+    if (!user) {
+      user = await Subscriber.create({
+        email: normalizedEmail,
+        name: record.name || "Utilisateur",
+        newsletterSubscribed: false,
+        isActive: true,
+        loginCount: 1,
+        lastLoginAt: new Date(),
+      });
+    } else {
+      // Normal login
+      user.loginCount += 1;
+      user.lastLoginAt = new Date();
+      await user.save();
     }
 
-    // Mark code as used
-    verificationData.used = true;
-    await verificationData.save();
-
-    let subscriber = await Subscriber.findOne({ email: normalizedEmail });
-
-    if (type === 'signup') {
-      if (subscriber) {
-        // If they already exist (e.g. from newsletter), update their info instead of erroring
-        subscriber.name = verificationData.name || subscriber.name || 'Anonymous';
-        subscriber.isActive = true;
-        // Don't change newsletterSubscribed here unless they opt-in elsewhere
-        subscriber.loginCount += 1;
-        subscriber.lastLoginAt = new Date();
-        await subscriber.save();
-      } else {
-        // Create new subscriber from registration flow
-        subscriber = new Subscriber({
-          email: normalizedEmail,
-          name: verificationData.name || 'Prénom & Nom',
-          newsletterSubscribed: false, 
-          isActive: true,
-          loginCount: 1,
-          lastLoginAt: new Date()
-        });
-        await subscriber.save();
-      }
-    } else if (type === 'signin') {
-      if (!subscriber) {
-        // If user was not found but verified correctly, they likely need an account
-        // This makes the flow seamless: if they didn't have an account, they get one now.
-        subscriber = new Subscriber({
-          email: normalizedEmail,
-          name: verificationData.name || 'Prénom & Nom',
-          newsletterSubscribed: false,
-          isActive: true,
-          loginCount: 1,
-          lastLoginAt: new Date()
-        });
-        await subscriber.save();
-      } else {
-        // Regular signin: Update login stats
-        subscriber.loginCount += 1;
-        subscriber.lastLoginAt = new Date();
-        await subscriber.save();
-      }
-    } else if (type === 'newsletter') {
-      if (subscriber) {
-        subscriber.newsletterSubscribed = true; // Per request: newsletter sets newsletter true
-        await subscriber.save();
-      } else {
-        // Create new subscriber from newsletter flow
-        subscriber = new Subscriber({
-          email: normalizedEmail,
-          name: verificationData.name || 'Subscriber',
-          newsletterSubscribed: true,
-          isActive: true,
-          loginCount: 0
-        });
-        await subscriber.save();
-      }
-    }
-
-    if (!subscriber) {
-      return NextResponse.json({ error: 'Failed to find or create user profile.' }, { status: 500 });
-    }
-
-    // Return user data (matching interface in AuthContext)
     return NextResponse.json({
       success: true,
       user: {
-        email: subscriber.email,
-        name: subscriber.name,
-        subscribedAt: subscriber.subscribedAt,
-        newsletterSubscribed: subscriber.newsletterSubscribed,
-        lastLoginAt: subscriber.lastLoginAt,
-        loginCount: subscriber.loginCount
-      }
+        email: user.email,
+        name: user.name,
+        subscribedAt: user.subscribedAt,
+        newsletterSubscribed: user.newsletterSubscribed,
+        lastLoginAt: user.lastLoginAt,
+        loginCount: user.loginCount,
+      },
     });
-
   } catch (error) {
-    console.error('Erreur API verify-code:', error);
-    return NextResponse.json({ error: 'Erreur technique lors de la vérification. Veuillez réessayer.' }, { status: 500 });
+    console.error("Erreur API verify-code:", error);
+    return NextResponse.json(
+      {
+        error:
+          "Erreur technique lors de la vérification. Veuillez réessayer plus tard.",
+      },
+      { status: 500 }
+    );
   }
 }

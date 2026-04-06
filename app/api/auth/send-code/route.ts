@@ -11,7 +11,10 @@ export async function POST(request: NextRequest) {
     const { email, type, name } = await request.json();
 
     if (!email || !type) {
-      return NextResponse.json({ error: 'Email and type are required' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Email et type requis.' },
+        { status: 400 }
+      );
     }
 
     await dbConnect();
@@ -19,151 +22,242 @@ export async function POST(request: NextRequest) {
     const normalizedEmail = email.toLowerCase();
     const now = new Date();
 
-    // Check subscriber status (but don't block signin, just check for bans)
-    const subscriber = await Subscriber.findOne({ email: normalizedEmail });
+    // ---------------------------------------------------------------------
+    // 1. CHECK IF USER EXISTS
+    // ---------------------------------------------------------------------
+    const existingUser = await Subscriber.findOne({ email: normalizedEmail });
 
-    if (subscriber && !subscriber.isActive) {
-      return NextResponse.json({ error: 'Votre compte est suspendu. Veuillez contacter le support.' }, { status: 403 });
+    // If user exists → they MUST login, not signup/newsletter
+    if (existingUser && type !== 'signin') {
+      return NextResponse.json(
+        {
+          error: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
+          forceMode: "signin",
+        },
+        { status: 400 }
+      );
     }
 
-    // Check cooldown (30s) from either VerificationCode or Subscriber
-    const cooldownPeriod = 30 * 1000;
-    const lastSent = subscriber?.lastCodeSentAt || (await VerificationCode.findOne({ email: normalizedEmail, type }))?.createdAt;
+    // If user does NOT exist → they MUST signup/newsletter, not signin
+    if (!existingUser && type === 'signin') {
+      return NextResponse.json(
+        {
+          error: "Aucun compte trouvé. Veuillez créer un compte.",
+          forceMode: "signup",
+        },
+        { status: 400 }
+      );
+    }
 
-    if (lastSent && (now.getTime() - lastSent.getTime() < cooldownPeriod)) {
-      const waitTime = Math.ceil((cooldownPeriod - (now.getTime() - lastSent.getTime())) / 1000);
+    // If user exists but is banned
+    if (existingUser && !existingUser.isActive) {
+      return NextResponse.json(
+        { error: 'Votre compte est suspendu. Contactez le support.' },
+        { status: 403 }
+      );
+    }
+
+    // ---------------------------------------------------------------------
+    // 2. COOLDOWN CHECK (30 seconds)
+    // ---------------------------------------------------------------------
+    const cooldownMs = 30 * 1000;
+
+    const lastSent =
+      existingUser?.lastCodeSentAt ||
+      (await VerificationCode.findOne({ email: normalizedEmail, type }))?.createdAt;
+
+    if (lastSent && now.getTime() - lastSent.getTime() < cooldownMs) {
+      const wait = Math.ceil((cooldownMs - (now.getTime() - lastSent.getTime())) / 1000);
+      return NextResponse.json(
+        {
+          error: `Action trop rapide. Réessayez dans ${wait}s.`,
+          nextAllowedAt: new Date(lastSent.getTime() + cooldownMs),
+        },
+        { status: 429 }
+      );
+    }
+
+    // ---------------------------------------------------------------------
+    // 3. SIGNUP / NEWSLETTER → NO OTP REQUIRED
+    // ---------------------------------------------------------------------
+    if (type === 'signup' || type === 'newsletter') {
+      // Create user if not exists
+      if (!existingUser) {
+        await Subscriber.create({
+          email: normalizedEmail,
+          name: name?.trim() || 'Utilisateur',
+          subscribedAt: now,
+          newsletterSubscribed: type === 'newsletter',
+          loginCount: 0,
+          lastCodeSentAt: now,
+        });
+      }
+
       return NextResponse.json({
-        error: `Action trop rapide. Veuillez patienter ${waitTime}s avant un nouvel envoi.`,
-        nextAllowedAt: new Date(lastSent.getTime() + cooldownPeriod)
-      }, { status: 429 });
+        success: true,
+        message:
+          type === 'signup'
+            ? 'Compte créé avec succès.'
+            : 'Inscription à la newsletter réussie.',
+      });
     }
 
-    // Generate 6-digit code
+    // ---------------------------------------------------------------------
+    // 4. SIGN-IN → OTP REQUIRED
+    // ---------------------------------------------------------------------
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Save code
     await VerificationCode.findOneAndUpdate(
       { email: normalizedEmail, type },
       {
         code,
-        name,
-        expiresAt: new Date(now.getTime() + 10 * 60 * 1000), // 10 minutes
+        expiresAt: new Date(now.getTime() + 10 * 60 * 1000),
         used: false,
         attempts: 0,
-        createdAt: now
+        createdAt: now,
       },
       { upsert: true, new: true }
     );
 
-    // Update subscriber's lastCodeSentAt
-    if (subscriber) {
-      subscriber.lastCodeSentAt = now;
-      await subscriber.save();
+    // Update cooldown timestamp
+    if (existingUser) {
+      existingUser.lastCodeSentAt = now;
+      await existingUser.save();
     }
 
-    // Send email using Resend
     const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    @media only screen and (max-width: 600px) {
-      .container { padding: 24px 16px !important; }
-      .code-box { padding: 32px 16px !important; }
-      .code { font-size: 36px !important; letter-spacing: 6px !important; }
-    }
-  </style>
-</head>
-<body style="margin:0; padding:0; background-color:#f4f4f7; font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;-webkit-font-smoothing:antialiased;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f7; padding:40px 0;">
-    <tr>
-      <td align="center">
-        <table width="560" cellpadding="0" cellspacing="0" class="container" style="background-color:#ffffff; border-radius:32px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.08); border: 1px solid #eef2f6;">
-          
-          <!-- Header (Centéred & Modern) -->
-          <tr>
-            <td style="padding:48px 32px 32px; text-align:center;">
-              <div style="display:inline-block; background-color:#fff1f2; padding:12px; border-radius:24px; margin-bottom:24px;">
-                <img src="https://indian-nepaliswad.fr/etc/logo.png" alt="INS" style="height:64px; display:block;" />
-              </div>
-              <h1 style="margin:0; font-size:28px; font-weight:800; color:#111827; letter-spacing:-0.5px; line-height:1.2;">Verification Code</h1>
-              <p style="margin:12px 0 0; font-size:16px; color:#6b7280; font-weight:500;">Your secure login verification</p>
-            </td>
-          </tr>
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <style>
+        @media only screen and (max-width: 600px) {
+          .container { padding: 24px 16px !important; }
+          .code-box { padding: 32px 16px !important; }
+          .code { font-size: 36px !important; letter-spacing: 6px !important; }
+          .btn { padding: 14px 20px !important; font-size: 16px !important; }
+        }
+      </style>
+    </head>
 
-          <!-- Body -->
-          <tr>
-            <td style="padding:0 40px 48px;">
-              <div style="height:1px; background-color:#f1f5f9; margin-bottom:40px;"></div>
-              
-              <p style="font-size:16px; color:#374151; margin-bottom:32px; line-height:1.6; text-align:center;">
-                Bonjour${name ? ' <strong>' + name + '</strong>' : ''},<br>
-                Utilisez le code de sécurité ci-dessous pour finaliser votre ${type === 'signin' ? 'connexion' : 'inscription'}. Ce code expirera dans <strong>10 minutes</strong>.
-              </p>
-              
-              <!-- Premium Code Display -->
-              <div class="code-box" style="background-color:#f8fafc; border:2px solid #f1f5f9; border-radius:24px; padding:40px; text-align:center; margin-bottom:32px; position:relative;">
-                <div style="font-size:48px; font-weight:900; color:#ef4444; letter-spacing:12px; font-family:ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace; line-height:1;">
-                  ${code}
-                </div>
-                <div style="margin-top:16px; font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:700; letter-spacing:2px;">Code de vérification Indian Nepali Swad</div>
-              </div>
+    <body style="margin:0; padding:0; background-color:#f4f4f7; font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing:antialiased;">
 
-              <p style="font-size:14px; color:#94a3b8; text-align:center; line-height:1.6; margin:0;">
-                Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email en toute sécurité. 
-                Veuillez ne jamais partager ce code avec qui que ce soit.
-              </p>
-            </td>
-          </tr>
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f7; padding:40px 0;">
+        <tr>
+          <td align="center">
 
-          <!-- Footer Area -->
-          <tr>
-            <td style="padding:40px 32px; background-color:#111827; text-align:center;">
-              <p style="margin:0; font-size:13px; color:#94a3b8; font-weight:500;">
-                &copy; 2026 Indian Nepali Swad. All rights reserved.
-              </p>
-              <p style="margin:8px 0 0; font-size:11px; color:#4b5563;">
-                4 Rue Bargue, 75015 Paris &bull; 79 Rue du Landy, 93300 Aubervilliers
-              </p>
-            </td>
-          </tr>
-        </table>
-        
-        <!-- Bottom Links -->
-        <table width="560" cellpadding="0" cellspacing="0" style="margin-top:24px;">
-          <tr>
-            <td style="text-align:center;">
-              <a href="https://indian-nepaliswad.fr" style="font-size:12px; color:#94a3b8; text-decoration:none; margin:0 12px; font-weight:600;">Website</a>
-              <a href="#" style="font-size:12px; color:#94a3b8; text-decoration:none; margin:0 12px; font-weight:600;">Support</a>
-              <a href="#" style="font-size:12px; color:#94a3b8; text-decoration:none; margin:0 12px; font-weight:600;">Privacy</a>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>
+            <!-- Main Card -->
+            <table width="560" cellpadding="0" cellspacing="0" class="container" style="background-color:#ffffff; border-radius:32px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.08); border:1px solid #eef2f6;">
+
+              <!-- Header -->
+              <tr>
+                <td style="padding:48px 32px 32px; text-align:center;">
+                  <div style="display:inline-block; background-color:#fff1f2; padding:12px; border-radius:24px; margin-bottom:24px;">
+                    <img src="https://indian-nepaliswad.fr/etc/logo.png" alt="INS" style="height:64px; display:block;" />
+                  </div>
+
+                  <h1 style="margin:0; font-size:28px; font-weight:800; color:#111827; letter-spacing:-0.5px; line-height:1.2;">
+                    Code de Connexion
+                  </h1>
+
+                  <p style="margin:12px 0 0; font-size:16px; color:#6b7280; font-weight:500;">
+                    Authentification sécurisée
+                  </p>
+                </td>
+              </tr>
+
+              <!-- Body -->
+              <tr>
+                <td style="padding:0 40px 48px;">
+                  <div style="height:1px; background-color:#f1f5f9; margin-bottom:40px;"></div>
+
+                  <p style="font-size:16px; color:#374151; margin-bottom:32px; line-height:1.6; text-align:center;">
+                    Bonjour${existingUser?.name ? ' <strong>' + existingUser.name + '</strong>' : ''},<br>
+                    Voici votre code de connexion. Il expirera dans <strong>10 minutes</strong>.
+                  </p>
+
+                  <!-- Code Box -->
+                  <div class="code-box" style="background-color:#f8fafc; border:2px solid #f1f5f9; border-radius:24px; padding:40px; text-align:center; margin-bottom:32px;">
+                    <div class="code" style="font-size:48px; font-weight:900; color:#ef4444; letter-spacing:12px; font-family:ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;">
+                      ${code}
+                    </div>
+                    <div style="margin-top:16px; font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:700; letter-spacing:2px;">
+                      Code de vérification Indian Nepali Swad
+                    </div>
+                  </div>
+
+                  <!-- Sign In Button -->
+                  <div style="text-align:center; margin-bottom:32px;">
+                    <a href="https://indian-nepaliswad.fr/auth/code?email=${encodeURIComponent(normalizedEmail)}&code=${code}"
+                      class="btn"
+                      style="
+                        display:inline-block;
+                        background-color:#ef4444;
+                        color:#ffffff;
+                        padding:16px 28px;
+                        border-radius:14px;
+                        font-size:18px;
+                        font-weight:700;
+                        text-decoration:none;
+                        letter-spacing:0.5px;
+                        box-shadow:0 10px 20px rgba(239,68,68,0.25);
+                      ">
+                      Se connecter automatiquement
+                    </a>
+                  </div>
+
+                  <p style="font-size:14px; color:#94a3b8; text-align:center; line-height:1.6; margin:0;">
+                    Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.
+                    Ne partagez jamais ce code.
+                  </p>
+                </td>
+              </tr>
+
+              <!-- Footer -->
+              <tr>
+                <td style="padding:40px 32px; background-color:#111827; text-align:center;">
+                  <p style="margin:0; font-size:13px; color:#94a3b8; font-weight:500;">
+                    &copy; 2026 Indian Nepali Swad. Tous droits réservés.
+                  </p>
+                  <p style="margin:8px 0 0; font-size:11px; color:#4b5563;">
+                    4 Rue Bargue, 75015 Paris • 79 Rue du Landy, 93300 Aubervilliers
+                  </p>
+                </td>
+              </tr>
+
+            </table>
+
+          </td>
+        </tr>
+      </table>
+
+    </body>
+    </html>
     `;
 
-    const { data, error: sendError } = await resend.emails.send({
+
+    const { error: sendError } = await resend.emails.send({
       from: 'Indian Nepali Swad <noreply@bot.indian-nepaliswad.fr>',
       to: [normalizedEmail],
-      subject: `${code} is your verification code`,
+      subject: `${code} — Votre code de connexion`,
       html: htmlContent,
     });
 
     if (sendError) {
       console.error('Email send error:', sendError);
-      return NextResponse.json({ error: 'Une erreur est survenue lors de l\'envoi de l\'email de vérification.' }, { status: 500 });
+      return NextResponse.json(
+        { error: "Erreur lors de l'envoi de l'email." },
+        { status: 500 }
+      );
     }
 
-    return NextResponse.json({ success: true });
-
+    return NextResponse.json({ success: true, otp: true });
   } catch (error) {
     console.error('Erreur API send-code:', error);
-    return NextResponse.json({ error: 'Une erreur est survenue lors de l\'envoi du code. Réessayez plus tard.' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Erreur interne. Réessayez plus tard.' },
+      { status: 500 }
+    );
   }
 }
