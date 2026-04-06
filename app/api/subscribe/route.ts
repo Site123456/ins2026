@@ -15,143 +15,192 @@ export async function POST(request: NextRequest) {
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* Mobile overrides */
+    @media only screen and (max-width: 600px) {
+      .container { padding: 16px !important; }
+      .grid-2 { width: 100% !important; display: block !important; }
+      .feature-box { margin-bottom: 14px !important; }
+    }
+  </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, sans-serif; background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);">
-  <div style="max-width: 650px; margin: 0 auto; padding: 20px;">
-    
-    <!-- Header with background -->
-    <div style="background: linear-gradient(135deg, #d32f2f 0%, #c41c1c 100%); border-radius: 16px 16px 0 0; padding: 50px 30px; text-align: center; position: relative; overflow: hidden;">
-      <div style="position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; opacity: 0.5;"></div>
-      <div style="position: absolute; bottom: -60px; left: -60px; width: 250px; height: 250px; background: rgba(255,255,255,0.05); border-radius: 50%; opacity: 0.3;"></div>
-      <div style="position: relative; z-index: 1;">
-        <img src="https://indian-nepaliswad.fr/etc/logo.png" alt="Indian Nepali Swad" style="height: 70px; margin-bottom: 25px; filter: brightness(0) invert(1);">
-        <h1 style="margin: 0; color: white; font-size: 32px; font-weight: 800; letter-spacing: -0.8px;">
-          Account Created Successfully! 🎉
-        </h1>
-        <p style="margin: 12px 0 0; color: rgba(255,255,255,0.95); font-size: 15px; font-weight: 500;">
-          Welcome to Indian Nepali Swad
-        </p>
-      </div>
-    </div>
 
-    <!-- Main content -->
-    <div style="background: white; padding: 45px 35px; border-radius: 0 0 16px 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08);">
-      
-      <!-- Greeting -->
-      <p style="margin: 0 0 30px; font-size: 17px; line-height: 1.7; color: #1f2937; font-weight: 500;">
-        Hi <span style="color: #d32f2f; font-weight: 700; font-size: 18px;">${name}</span>,<br><br>
-        Your account has been created and you're now part of the <strong>Indian Nepali Swad</strong> community! 🙏<br><br>
-        <span style="color: #6b7280; font-size: 15px;">Explore an entirely fresh experience with personalized features, exclusive content, and much more.</span>
-      </p>
+<body style="margin:0; padding:0; background:#f5f6f8; font-family:'Segoe UI', Tahoma, sans-serif;">
 
-      <!-- Account Info Section -->
-      <div style="background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); border: 2px solid #fecaca; border-radius: 14px; padding: 25px; margin-bottom: 30px;">
-        <p style="margin: 0 0 18px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #c41c1c;">📋 Account Information</p>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 15px;">
-          <div>
-            <p style="margin: 0 0 6px; font-size: 12px; color: #9ca3af; font-weight: 600;">Account Name</p>
-            <p style="margin: 0; font-size: 15px; color: #1f2937; font-weight: 700;">${name}</p>
-          </div>
-          <div>
-            <p style="margin: 0 0 6px; font-size: 12px; color: #9ca3af; font-weight: 600;">Email Address</p>
-            <p style="margin: 0; font-size: 15px; color: #1f2937; font-weight: 700; word-break: break-all;">${email}</p>
-          </div>
-        </div>
-        <div style="border-top: 1px solid #fca5a5; padding-top: 15px;">
-          <p style="margin: 0 0 6px; font-size: 12px; color: #9ca3af; font-weight: 600;">Status</p>
-          <p style="margin: 0; font-size: 14px; color: #10b981; font-weight: 700;">✓ Active & Ready to Use</p>
-        </div>
-      </div>
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f6f8; padding:20px 0;">
+    <tr>
+      <td align="center">
 
-      <!-- Access & Permissions -->
-      <div style="margin-bottom: 30px;">
-        <p style="margin: 0 0 18px; font-size: 14px; font-weight: 700; color: #111827; text-transform: uppercase; letter-spacing: 0.5px;">🔓 Your Access & Permissions</p>
-        
-        <!-- Features Grid -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-          <div style="background: #f0fdf4; border: 2px solid #dcfce7; border-radius: 10px; padding: 16px; text-align: center;">
-            <p style="margin: 0 0 8px; font-size: 20px;">📅</p>
-            <p style="margin: 0 0 4px; font-size: 13px; font-weight: 700; color: #15803d;">Manage Reservations</p>
-            <p style="margin: 0; font-size: 12px; color: #4b5563;">Book & manage your table reservations</p>
-          </div>
-          
-          <div style="background: #eff6ff; border: 2px solid #bfdbfe; border-radius: 10px; padding: 16px; text-align: center;">
-            <p style="margin: 0 0 8px; font-size: 20px;">⭐</p>
-            <p style="margin: 0 0 4px; font-size: 13px; font-weight: 700; color: #1e40af;">Reviews & Ratings</p>
-            <p style="margin: 0; font-size: 12px; color: #4b5563;">Rate & review our delicious dishes</p>
-          </div>
+        <!-- MAIN WRAPPER -->
+        <table width="650" cellpadding="0" cellspacing="0" class="container" style="background:#fff; border-radius:18px; overflow:hidden; box-shadow:0 8px 28px rgba(0,0,0,0.08);">
 
-          <div style="background: #fef3c7; border: 2px solid #fcd34d; border-radius: 10px; padding: 16px; text-align: center;">
-            <p style="margin: 0 0 8px; font-size: 20px;">❤️</p>
-            <p style="margin: 0 0 4px; font-size: 13px; font-weight: 700; color: #92400e;">Manage Favorites</p>
-            <p style="margin: 0; font-size: 12px; color: #4b5563;">Save your favorite dishes & meals</p>
-          </div>
+          <!-- HEADER -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#d32f2f,#b71c1c); padding:48px 32px; text-align:center; color:#fff; position:relative;">
+              <img src="https://indian-nepaliswad.fr/etc/logo.png" alt="INS" style="height:70px; margin-bottom:20px; filter:brightness(0) invert(1);" />
+              <h1 style="margin:0; font-size:30px; font-weight:800;">Account Created Successfully 🎉</h1>
+              <p style="margin:10px 0 0; font-size:15px; opacity:0.9;">Welcome to Indian Nepali Swad</p>
+            </td>
+          </tr>
 
-          <div style="background: #f5f3ff; border: 2px solid #e9d5ff; border-radius: 10px; padding: 16px; text-align: center;">
-            <p style="margin: 0 0 8px; font-size: 20px;">💬</p>
-            <p style="margin: 0 0 4px; font-size: 13px; font-weight: 700; color: #6b21a8;">Comments & Feedback</p>
-            <p style="margin: 0; font-size: 12px; color: #4b5563;">Share your experience with our food</p>
-          </div>
-        </div>
+          <!-- BODY -->
+          <tr>
+            <td style="padding:40px 32px;">
 
-        <!-- Coming Soon -->
-        <div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 5px solid #f59e0b; border-radius: 8px; padding: 16px; margin-top: 16px;">
-          <p style="margin: 0; font-size: 13px; color: #78350f; line-height: 1.6;">
-            <strong>🚀 Coming Soon:</strong> More exclusive features are on the way! Order history, loyalty rewards, special member-only deals, and much more to enhance your experience.
-          </p>
-        </div>
-      </div>
+              <!-- GREETING -->
+              <p style="font-size:17px; color:#1f2937; line-height:1.7; margin:0 0 28px;">
+                Hi <strong style="color:#d32f2f; font-size:18px;">${name}</strong>,<br><br>
+                Your account is now active — welcome to the <strong>Indian Nepali Swad</strong> family!  
+                <span style="color:#6b7280; font-size:14px; display:block; margin-top:10px;">
+                  Enjoy a personalized experience, exclusive features, and more.
+                </span>
+              </p>
 
-      <!-- Divider -->
-      <div style="height: 2px; background: linear-gradient(to right, transparent, #e5e7eb, transparent); margin: 30px 0;"></div>
+              <!-- ACCOUNT INFO -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff5f5; border:1px solid #fecaca; border-radius:14px; padding:22px;">
+                <tr>
+                  <td colspan="2" style="padding-bottom:14px;">
+                    <p style="margin:0; font-size:13px; font-weight:700; color:#b91c1c; text-transform:uppercase;">
+                      📋 Account Information
+                    </p>
+                  </td>
+                </tr>
 
-      <!-- Newsletter Info -->
-      <div style="background: #f0f9ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 18px; margin-bottom: 30px;">
-        <p style="margin: 0 0 10px; font-size: 13px; font-weight: 700; color: #1e40af;">📬 You're Also Subscribed to Our Newsletter</p>
-        <p style="margin: 0; font-size: 13px; line-height: 1.6; color: #1e3a8a;">
-          Enjoy exclusive offers, menu updates, special promotions, and be the first to know about our latest events and dishes!
-        </p>
-      </div>
+                <tr>
+                  <td class="grid-2" width="50%" style="padding-right:12px;">
+                    <p style="margin:0; font-size:12px; color:#9ca3af;">Name</p>
+                    <p style="margin:4px 0 0; font-size:15px; font-weight:700; color:#1f2937;">${name}</p>
+                  </td>
 
-      <!-- CTA Buttons -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 30px;">
-        <a href="https://www.indian-nepaliswad.fr" style="display: block; background: white; color: #d32f2f; padding: 16px 24px; border-radius: 10px; text-decoration: none; font-weight: 700; font-size: 14px; border: 2px solid #d32f2f; text-align: center; transition: background 0.2s;">
-          Explore Our Menu
-        </a>
-      </div>
+                  <td class="grid-2" width="50%" style="padding-left:12px;">
+                    <p style="margin:0; font-size:12px; color:#9ca3af;">Email</p>
+                    <p style="margin:4px 0 0; font-size:15px; font-weight:700; color:#1f2937; word-break:break-all;">${email}</p>
+                  </td>
+                </tr>
 
-      <!-- Footer Section -->
-      <div style="border-top: 1px solid #e5e7eb; padding-top: 25px;">
-        <div style="text-align: center; font-size: 12px; color: #4b5563; line-height: 1.9;">
-          <p style="margin: 0 0 12px;">
-            <strong style="color: #1f2937; display: block; margin-bottom: 4px;">Indian Nepali Swad</strong>
-            4 Rue Bargue, 75015 Paris, France<br>
-            <span style="font-size: 11px; color: #9ca3af;">🍛 Experience authentic Indian & Nepali cuisine</span>
-          </p>
-          
-          <div style="margin: 15px 0; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
-            <a href="https://www.indian-nepaliswad.fr" style="color: #d32f2f; text-decoration: none; font-weight: 600; font-size: 11px;">Website</a>
-            <span style="color: #d1d5db;">•</span>
-            <a href="https://www.facebook.com/people/Indian-Nepali-Swad/" style="color: #d32f2f; text-decoration: none; font-weight: 600; font-size: 11px;">Facebook</a>
-            <span style="color: #d1d5db;">•</span>
-            <a href="https://www.instagram.com/indiannepaliswad/" style="color: #d32f2f; text-decoration: none; font-weight: 600; font-size: 11px;">Instagram</a>
-            <span style="color: #d1d5db;">•</span>
-            <a href="https://www.youtube.com/channel/UCHPsdHfepFygMiWvlLclhcA" style="color: #d32f2f; text-decoration: none; font-weight: 600; font-size: 11px;">YouTube</a>
-          </div>
+                <tr>
+                  <td colspan="2" style="padding-top:16px; border-top:1px solid #fca5a5;">
+                    <p style="margin:0; font-size:12px; color:#9ca3af;">Status</p>
+                    <p style="margin:4px 0 0; font-size:14px; font-weight:700; color:#059669;">✓ Active</p>
+                  </td>
+                </tr>
+              </table>
 
-          <p style="margin: 15px 0 0; font-size: 10px; color: #9ca3af; padding-top: 15px; border-top: 1px solid #e5e7eb;">
-            © 2026 Indian Nepali Swad - All Rights Reserved<br>
-            You're receiving this email because you created an account and subscribed to our newsletter or made an action with our bot via WhatsApp.<br>
-            <a href="#" style="color: #d32f2f; text-decoration: none;">Manage preferences</a> • <a href="#" style="color: #d32f2f; text-decoration: none;">Unsubscribe</a>
-          </p>
-        </div>
-      </div>
+              <!-- FEATURES TITLE -->
+              <p style="margin:32px 0 16px; font-size:14px; font-weight:700; color:#111827; text-transform:uppercase;">
+                Your Access & Features
+              </p>
 
-    </div>
+              <!-- FEATURES GRID (Email-safe table grid) -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td class="grid-2" width="50%" style="padding:7px;">
+                    <div class="feature-box" style="background:#f0fdf4; border:1px solid #dcfce7; padding:16px; border-radius:10px; text-align:center;">
+                      <div style="font-size:20px;">📅</div>
+                      <div style="font-size:13px; font-weight:700; color:#15803d;">Reservations</div>
+                      <div style="font-size:12px; color:#4b5563;">Book & manage tables</div>
+                    </div>
+                  </td>
 
-  </div>
+                  <td class="grid-2" width="50%" style="padding:7px;">
+                    <div class="feature-box" style="background:#eff6ff; border:1px solid #bfdbfe; padding:16px; border-radius:10px; text-align:center;">
+                      <div style="font-size:20px;">⭐</div>
+                      <div style="font-size:13px; font-weight:700; color:#1e40af;">Reviews</div>
+                      <div style="font-size:12px; color:#4b5563;">Rate dishes</div>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="grid-2" width="50%" style="padding:7px;">
+                    <div class="feature-box" style="background:#fef3c7; border:1px solid #fde68a; padding:16px; border-radius:10px; text-align:center;">
+                      <div style="font-size:20px;">❤️</div>
+                      <div style="font-size:13px; font-weight:700; color:#92400e;">Favorites</div>
+                      <div style="font-size:12px; color:#4b5563;">Save dishes</div>
+                    </div>
+                  </td>
+
+                  <td class="grid-2" width="50%" style="padding:7px;">
+                    <div class="feature-box" style="background:#f5f3ff; border:1px solid #e9d5ff; padding:16px; border-radius:10px; text-align:center;">
+                      <div style="font-size:20px;">💬</div>
+                      <div style="font-size:13px; font-weight:700; color:#6b21a8;">Feedback</div>
+                      <div style="font-size:12px; color:#4b5563;">Share experience</div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- COMING SOON -->
+              <div style="margin-top:18px; background:#fff7e6; border-left:4px solid #f59e0b; padding:14px; border-radius:8px;">
+                <p style="margin:0; font-size:13px; color:#78350f;">
+                  🚀 <strong>Coming Soon:</strong> Loyalty rewards, order history, and more.
+                </p>
+              </div>
+
+              <!-- CTA -->
+              <div style="margin:32px 0;">
+                <a href="https://www.indian-nepaliswad.fr" 
+                   style="display:block; background:#d32f2f; color:#fff; padding:16px; border-radius:10px; text-align:center; text-decoration:none; font-weight:700; font-size:15px;">
+                  Explore Our Menu
+                </a>
+              </div>
+
+              <!-- FOOTER -->
+              <div style="text-align:center; font-size:12px; color:#6b7280; margin-top:20px;">
+                <p style="margin:0 0 10px;">
+                  <strong style="color:#1f2937;">Indian Nepali Swad</strong><br />
+                  4 Rue Bargue, 75015 Paris, France
+                </p>
+
+                <p style="margin:16px 0 0; font-size:10px; color:#9ca3af;">
+                  © 2026 Indian Nepali Swad — All Rights Reserved
+                </p>
+              </div>
+
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#f5f6f8; height:8px;"></td>
+          </tr>
+          <tr>
+            <td style="padding:24px 32px; background:#f9fafb; border-top:1px solid #e5e7eb;">
+
+                <h3 style="margin:0 0 12px; font-size:14px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px;">
+                Legal & Account Policies
+                </h3>
+
+                <!-- ACCOUNT USAGE -->
+                <p style="margin:0 0 14px; font-size:12px; line-height:1.7; color:#4b5563;">
+                <strong style="color:#111827;">Account Usage:</strong>  
+                By creating an account with Indian Nepali Swad, you agree to use our services responsibly and in compliance with our platform rules.  
+                Misuse of features, fraudulent activity, unauthorized access attempts, or actions that disrupt our service may result in temporary or permanent restrictions.
+                </p>
+
+                <!-- TERMINATION -->
+                <p style="margin:0 0 14px; font-size:12px; line-height:1.7; color:#4b5563;">
+                <strong style="color:#111827;">Account Termination:</strong>  
+                We reserve the right to suspend or terminate accounts that violate our policies, engage in harmful behavior, or compromise the safety of our platform or community.  
+                You may request voluntary account deletion at any time by contacting our support team.
+                </p>
+
+                <!-- PRIVACY -->
+                <p style="margin:0; font-size:12px; line-height:1.7; color:#4b5563;">
+                <strong style="color:#111827;">Privacy & Data Protection:</strong>  
+                Your personal information is handled securely and used only to provide and improve our services.  
+                For full details, please review our Privacy Policy on our website.
+                </p>
+
+            </td>
+          </tr>
+
+
+        </table>
+      </td>
+    </tr>
+  </table>
+
 </body>
 </html>
 `;
