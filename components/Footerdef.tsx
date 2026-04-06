@@ -1,9 +1,11 @@
 import React, { useState, useEffect, SVGProps } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   ExternalLink,
+  Check,
 } from "lucide-react";
 
 type FooterProps = {
@@ -40,6 +42,7 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
   const [showPopup, setShowPopup] = useState(false);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [popupSuccess, setPopupSuccess] = useState(false);
 
   useEffect(() => {
     if (accentProp) {
@@ -77,11 +80,15 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
         body: JSON.stringify({ email, name }),
       });
       if (response.ok) {
-        setSubscribed(true);
-        setShowPopup(false);
-        setEmail("");
-        setName("");
-        setTimeout(() => setSubscribed(false), 3000);
+        setPopupSuccess(true);
+        setTimeout(() => {
+          setShowPopup(false);
+          setPopupSuccess(false);
+          setSubscribed(true);
+          setEmail("");
+          setName("");
+          setTimeout(() => setSubscribed(false), 3000);
+        }, 2000);
       } else {
         alert('Failed to subscribe. Please try again.');
       }
@@ -354,8 +361,9 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
                   `}
                 />
 
-                <button
+                <motion.button
                   type="submit"
+                  disabled={loading}
                   className="
                     flex items-center justify-center 
                     gap-1.5 
@@ -364,12 +372,13 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
                     text-[12px] font-semibold 
                     transition-all duration-300
                     w-full sm:w-auto
+                    disabled:opacity-50
                   "
                   style={
                     subscribed
                       ? {
-                          backgroundColor: "rgba(185,16,19,0.15)",
-                          color: "#ff0000",
+                          backgroundColor: "rgba(16,185,129,0.15)",
+                          color: "#10b981",
                         }
                       : {
                           backgroundColor: isDark
@@ -378,33 +387,52 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
                           color: isDark ? "white" : "black",
                         }
                   }
-                  onMouseEnter={(e) => {
-                    if (!subscribed) {
-                      e.currentTarget.style.backgroundColor = hexToRgba(accent, 0.2);
-                      e.currentTarget.style.color = accent;
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!subscribed) {
-                      e.currentTarget.style.backgroundColor = isDark
-                        ? "rgba(255,255,255,0.1)"
-                        : "rgba(0,0,0,0.1)";
-                      e.currentTarget.style.color = isDark ? "white" : "black";
-                    }
-                  }}
+                  whileHover={!subscribed && !loading ? { scale: 1.05 } : {}}
+                  whileTap={!subscribed && !loading ? { scale: 0.95 } : {}}
                 >
-                  {subscribed ? (
-                    <>
-                      <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
-                      Already subscribed
-                    </>
-                  ) : (
-                    <>
-                      Subscribe
-                      <ArrowRight className="h-3 w-3" />
-                    </>
-                  )}
-                </button>
+                  <AnimatePresence mode="wait">
+                    {subscribed ? (
+                      <motion.div
+                        key="subscribed"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 10 }}
+                        className="flex items-center gap-1.5"
+                      >
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: 0.2, type: "spring" }}
+                        >
+                          <Check className="h-3 w-3" />
+                        </motion.div>
+                        Subscribed
+                      </motion.div>
+                    ) : loading ? (
+                      <motion.div
+                        key="loading"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="flex items-center gap-1.5"
+                      >
+                        <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin"></div>
+                        Subscribing...
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="subscribe"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="flex items-center gap-1.5"
+                      >
+                        Subscribe
+                        <ArrowRight className="h-3 w-3" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
               </div>
             </form>
             <div
@@ -586,62 +614,172 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
       </div>
 
       {/* Popup Modal */}
-      {showPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-md w-full mx-4"
-            style={{
-              backgroundColor: isDark ? '#08080c' : '#ffffff',
-              border: `1px solid ${hexToRgba(accent, 0.2)}`,
-            }}
+      <AnimatePresence>
+        {showPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            onClick={() => !loading && !popupSuccess && setShowPopup(false)}
           >
-            <h2
-              className="text-xl font-semibold mb-4 text-center"
-              style={{ color: isDark ? 'white' : 'black' }}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl"
+              style={{
+                backgroundColor: isDark ? '#08080c' : '#ffffff',
+                border: `1px solid ${hexToRgba(accent, 0.2)}`,
+              }}
+              onClick={(e) => e.stopPropagation()}
             >
-              How should we call you?
-            </h2>
-            <form onSubmit={handlePopupSubmit}>
-              <input
-                type="text"
-                placeholder="Your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full p-3 rounded-lg border mb-4"
-                style={{
-                  borderColor: hexToRgba(accent, 0.3),
-                  backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
-                  color: isDark ? 'white' : 'black',
-                }}
-                required
-              />
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowPopup(false)}
-                  className="flex-1 p-3 rounded-lg border"
-                  style={{
-                    borderColor: hexToRgba(accent, 0.3),
-                    color: isDark ? 'white' : 'black',
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex-1 p-3 rounded-lg text-white font-semibold"
-                  style={{
-                    backgroundColor: accent,
-                  }}
-                >
-                  {loading ? 'Subscribing...' : 'Subscribe'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+              <AnimatePresence mode="wait">
+                {!popupSuccess ? (
+                  <motion.div
+                    key="form"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="text-center mb-6">
+                      <div
+                        className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
+                        style={{ backgroundColor: hexToRgba(accent, 0.1) }}
+                      >
+                        <svg
+                          className="w-8 h-8"
+                          style={{ color: accent }}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                          />
+                        </svg>
+                      </div>
+                      <h2
+                        className="text-2xl font-bold mb-2"
+                        style={{ color: isDark ? 'white' : 'black' }}
+                      >
+                        Join Our Newsletter
+                      </h2>
+                      <p
+                        className="text-sm"
+                        style={{ color: isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)' }}
+                      >
+                        Get the latest updates and exclusive offers
+                      </p>
+                    </div>
+
+                    <form onSubmit={handlePopupSubmit} className="space-y-4">
+                      <div>
+                        <label
+                          className="block text-sm font-medium mb-2"
+                          style={{ color: isDark ? 'white' : 'black' }}
+                        >
+                          How should we call you?
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Your name"
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="w-full p-4 rounded-xl border-2 transition-all duration-300 focus:outline-none"
+                          style={{
+                            borderColor: hexToRgba(accent, 0.3),
+                            backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                            color: isDark ? 'white' : 'black',
+                          }}
+                          required
+                        />
+                      </div>
+
+                      <div className="flex gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setShowPopup(false)}
+                          disabled={loading}
+                          className="flex-1 p-4 rounded-xl border-2 font-semibold transition-all duration-300 hover:scale-105"
+                          style={{
+                            borderColor: hexToRgba(accent, 0.3),
+                            color: isDark ? 'white' : 'black',
+                            backgroundColor: 'transparent',
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          disabled={loading}
+                          className="flex-1 p-4 rounded-xl text-white font-semibold transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                          style={{
+                            backgroundColor: accent,
+                          }}
+                        >
+                          {loading ? (
+                            <div className="flex items-center justify-center gap-2">
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                              Subscribing...
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-center gap-2">
+                              Subscribe
+                              <ArrowRight className="w-4 h-4" />
+                            </div>
+                          )}
+                        </button>
+                      </div>
+                    </form>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="success"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
+                    className="text-center"
+                  >
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                      className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
+                      style={{ backgroundColor: '#10b981' }}
+                    >
+                      <motion.div
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ delay: 0.5, duration: 0.5 }}
+                      >
+                        <Check className="w-10 h-10 text-white" />
+                      </motion.div>
+                    </motion.div>
+                    <h2
+                      className="text-2xl font-bold mb-2"
+                      style={{ color: isDark ? 'white' : 'black' }}
+                    >
+                      Welcome aboard!
+                    </h2>
+                    <p
+                      className="text-sm"
+                      style={{ color: isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)' }}
+                    >
+                      Check your email for confirmation
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
     </footer>
   );
