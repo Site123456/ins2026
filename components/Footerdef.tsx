@@ -451,9 +451,31 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
       </div>
 
 
-      <p className="px-8 pb-2 max-w-6xl opacity-30 text-[9px] mx-auto leading-relaxed">
-        Pour annuler ou modifier votre réservation, veuillez suivre les instructions reçues par email.
-      </p>
+      <div className="px-6 pb-6 max-w-6xl mx-auto text-center">
+        <div className="space-y-2 text-[10px] sm:text-[11px] leading-relaxed opacity-40">
+          <p>
+            Pour annuler ou modifier votre réservation, veuillez suivre les instructions reçues par email.
+          </p>
+
+          <p>
+            Les réservations sont garanties jusqu&apos;à 15 minutes après l&apos;heure prévue. Passé ce délai, elles
+            peuvent être annulées sans préavis.
+          </p>
+
+          <p>
+            Vos données sont entièrement sécurisées et stockées conformément aux normes européennes.
+          </p>
+          <ul>
+            <li>Stockage: France.</li>
+            <li>Pays de traitement (sans IA) : France.</li>
+            <li>Pays de traitement (avec IA et traitement automatisé) : France, Irlande, Allemagne.</li>
+          </ul>
+          <p>
+            Pour plus d&apos;informations, veuillez consulter notre politique de confidentialité sur notre site web.
+          </p>
+        </div>
+      </div>
+
 
       <div
         className="border-t"
