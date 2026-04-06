@@ -613,166 +613,252 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
         </div>
       </div>
 
-      {/* Popup Modal */}
+      {/* Newsletter Popup Modal */}
       <AnimatePresence>
         {showPopup && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm"
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
+            }}
             onClick={() => !loading && !popupSuccess && setShowPopup(false)}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl"
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="relative rounded-3xl p-10 max-w-md w-full mx-4 shadow-2xl overflow-hidden"
               style={{
-                backgroundColor: isDark ? '#08080c' : '#ffffff',
-                border: `1px solid ${hexToRgba(accent, 0.2)}`,
+                backgroundColor: isDark 
+                  ? 'rgba(8, 8, 12, 0.85)' 
+                  : 'rgba(255, 255, 255, 0.90)',
+                backdropFilter: 'blur(20px)',
+                border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                boxShadow: `0 20px 60px -10px ${hexToRgba(accent, 0.2)}, inset 0 1px 1px ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.5)'}`,
               }}
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Decorative gradient background */}
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  background: `radial-gradient(circle at top right, ${hexToRgba(accent, 0.08)}, transparent 60%)`,
+                }}
+              />
+
               <AnimatePresence mode="wait">
                 {!popupSuccess ? (
                   <motion.div
                     key="form"
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
+                    exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.3 }}
+                    className="relative z-10"
                   >
-                    <div className="text-center mb-6">
-                      <div
-                        className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
-                        style={{ backgroundColor: hexToRgba(accent, 0.1) }}
+                    {/* Header */}
+                    <div className="text-center mb-8">
+                      <motion.div
+                        initial={{ scale: 0, rotate: -10 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+                        className="w-14 h-14 rounded-2xl mx-auto mb-5 flex items-center justify-center backdrop-blur-lg"
+                        style={{
+                          backgroundColor: hexToRgba(accent, 0.15),
+                          border: `1.5px solid ${hexToRgba(accent, 0.3)}`,
+                        }}
                       >
                         <svg
-                          className="w-8 h-8"
+                          className="w-7 h-7"
                           style={{ color: accent }}
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
+                          strokeWidth={2}
                         >
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            strokeWidth={2}
                             d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                           />
                         </svg>
-                      </div>
-                      <h2
-                        className="text-2xl font-bold mb-2"
-                        style={{ color: isDark ? 'white' : 'black' }}
+                      </motion.div>
+
+                      <motion.h2
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-3xl font-bold mb-2"
+                        style={{ color: isDark ? 'white' : 'rgba(0,0,0,0.95)' }}
                       >
-                        Join Our Newsletter
-                      </h2>
-                      <p
-                        className="text-sm"
-                        style={{ color: isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)' }}
+                        Stay Connected
+                      </motion.h2>
+
+                      <motion.p
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.25 }}
+                        className="text-sm leading-relaxed"
+                        style={{ color: isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.65)' }}
                       >
-                        Get the latest updates and exclusive offers
-                      </p>
+                        Join our community and receive exclusive offers, special menus & culinary stories delivered to your inbox
+                      </motion.p>
                     </div>
 
+                    {/* Form */}
                     <form onSubmit={handlePopupSubmit} className="space-y-4">
-                      <div>
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.3 }}
+                      >
                         <label
-                          className="block text-sm font-medium mb-2"
-                          style={{ color: isDark ? 'white' : 'black' }}
+                          className="block text-xs font-semibold uppercase tracking-wider mb-3"
+                          style={{ color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }}
                         >
-                          How should we call you?
+                          Your Full Name
                         </label>
                         <input
                           type="text"
-                          placeholder="Your name"
+                          placeholder="Enter your name"
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          className="w-full p-4 rounded-xl border-2 transition-all duration-300 focus:outline-none"
+                          className="w-full px-4 py-3.5 rounded-xl backdrop-blur-sm transition-all duration-300 focus:outline-none"
                           style={{
-                            borderColor: hexToRgba(accent, 0.3),
-                            backgroundColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.02)',
+                            backgroundColor: isDark 
+                              ? 'rgba(255,255,255,0.06)' 
+                              : 'rgba(0,0,0,0.04)',
                             color: isDark ? 'white' : 'black',
+                            border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                          }}
+                          onFocus={(e) => {
+                            e.currentTarget.style.borderColor = hexToRgba(accent, 0.5);
+                            e.currentTarget.style.backgroundColor = isDark 
+                              ? 'rgba(255,255,255,0.08)' 
+                              : 'rgba(0,0,0,0.05)';
+                            e.currentTarget.style.boxShadow = `0 0 0 3px ${hexToRgba(accent, 0.1)}, inset 0 1px 2px ${isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`;
+                          }}
+                          onBlur={(e) => {
+                            e.currentTarget.style.borderColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+                            e.currentTarget.style.backgroundColor = isDark 
+                              ? 'rgba(255,255,255,0.06)' 
+                              : 'rgba(0,0,0,0.04)';
+                            e.currentTarget.style.boxShadow = 'none';
                           }}
                           required
                         />
-                      </div>
+                      </motion.div>
 
-                      <div className="flex gap-3">
+                      {/* Buttons */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.4 }}
+                        className="flex gap-3 pt-2"
+                      >
                         <button
                           type="button"
                           onClick={() => setShowPopup(false)}
                           disabled={loading}
-                          className="flex-1 p-4 rounded-xl border-2 font-semibold transition-all duration-300 hover:scale-105"
+                          className="flex-1 px-4 py-3 rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-105 active:scale-95"
                           style={{
-                            borderColor: hexToRgba(accent, 0.3),
-                            color: isDark ? 'white' : 'black',
-                            backgroundColor: 'transparent',
+                            backgroundColor: isDark 
+                              ? 'rgba(255,255,255,0.06)' 
+                              : 'rgba(0,0,0,0.05)',
+                            color: isDark ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.8)',
+                            border: `1.5px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
                           }}
                         >
-                          Cancel
+                          Maybe Later
                         </button>
-                        <button
+
+                        <motion.button
                           type="submit"
-                          disabled={loading}
-                          className="flex-1 p-4 rounded-xl text-white font-semibold transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={loading || !name.trim()}
+                          className="flex-1 px-4 py-3 rounded-xl text-white font-semibold text-sm transition-all duration-300 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                           style={{
-                            backgroundColor: accent,
+                            backgroundColor: loading ? hexToRgba(accent, 0.8) : accent,
+                            boxShadow: `0 8px 24px -8px ${hexToRgba(accent, 0.4)}`,
                           }}
+                          whileHover={!loading ? { boxShadow: `0 12px 32px -8px ${hexToRgba(accent, 0.5)}` } : {}}
                         >
                           {loading ? (
-                            <div className="flex items-center justify-center gap-2">
+                            <>
                               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                              Subscribing...
-                            </div>
+                              <span>Subscribing...</span>
+                            </>
                           ) : (
-                            <div className="flex items-center justify-center gap-2">
-                              Subscribe
+                            <>
+                              <span>Subscribe</span>
                               <ArrowRight className="w-4 h-4" />
-                            </div>
+                            </>
                           )}
-                        </button>
-                      </div>
+                        </motion.button>
+                      </motion.div>
                     </form>
+
+                    {/* Privacy notice */}
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.5 }}
+                      className="text-xs text-center mt-4"
+                      style={{ color: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.4)' }}
+                    >
+                      We respect your privacy • Unsubscribe anytime
+                    </motion.p>
                   </motion.div>
                 ) : (
                   <motion.div
                     key="success"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
-                    className="text-center"
+                    initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.8, y: -10 }}
+                    transition={{ duration: 0.4, type: "spring", stiffness: 200 }}
+                    className="text-center relative z-10"
                   >
                     <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                      className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
-                      style={{ backgroundColor: '#10b981' }}
+                      initial={{ scale: 0, rotate: -20 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+                      className="w-20 h-20 rounded-2xl mx-auto mb-6 flex items-center justify-center mx-auto mb-6"
+                      style={{
+                        background: `linear-gradient(135deg, ${hexToRgba(accent, 0.3)}, ${hexToRgba(accent, 0.15)})`,
+                        border: `1.5px solid ${hexToRgba(accent, 0.5)}`,
+                      }}
                     >
                       <motion.div
-                        initial={{ pathLength: 0 }}
-                        animate={{ pathLength: 1 }}
-                        transition={{ delay: 0.5, duration: 0.5 }}
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
                       >
-                        <Check className="w-10 h-10 text-white" />
+                        <Check className="w-10 h-10" style={{ color: accent }} />
                       </motion.div>
                     </motion.div>
-                    <h2
+
+                    <motion.h2
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
                       className="text-2xl font-bold mb-2"
-                      style={{ color: isDark ? 'white' : 'black' }}
+                      style={{ color: isDark ? 'white' : 'rgba(0,0,0,0.95)' }}
                     >
-                      Welcome aboard!
-                    </h2>
-                    <p
+                      You're all set!
+                    </motion.h2>
+
+                    <motion.p
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.25 }}
                       className="text-sm"
-                      style={{ color: isDark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)' }}
+                      style={{ color: isDark ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.65)' }}
                     >
-                      Check your email for confirmation
-                    </p>
+                      A confirmation email is on its way—check your inbox for special surprises
+                    </motion.p>
                   </motion.div>
                 )}
               </AnimatePresence>
