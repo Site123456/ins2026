@@ -75,34 +75,42 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
           </div>
           <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`} />
         </button>
+        {showDropdown && (
+          <div
+            className="fixed inset-0 z-10 sm:hidden bg-black/40 backdrop-blur-sm"
+            onClick={() => setShowDropdown(false)}
+          />
+        )}
 
         {/* Dropdown */}
         <div
           className={`
-            absolute right-0 top-12 z-20 w-56 overflow-hidden
-            transition-all duration-300 ease-out transform origin-top-right
+            absolute right-0 top-12 z-20 w-64 sm:w-56
+            transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
             ${showDropdown
-              ? 'opacity-100 scale-100 translate-y-0'
-              : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+              ? 'opacity-100 translate-y-0 scale-100'
+              : 'opacity-0 -translate-y-2 scale-95 pointer-events-none'
             }
           `}
         >
           <div
             className={`
-              rounded-xl border shadow-xl backdrop-blur-2xl
+              rounded-2xl border shadow-2xl backdrop-blur-2xl overflow-hidden
               ${isDark
-                ? 'bg-[#0a0a0f]/95 border-white/10'
-                : 'bg-white/95 border-zinc-200'
+                ? 'bg-[#0a0a0f]/90 border-white/10'
+                : 'bg-white/90 border-zinc-200'
               }
             `}
           >
-            <div className="p-4 border-b border-zinc-200/20">
+            {/* Header */}
+            <div className="p-4 border-b border-white/10">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-md">
                   <span className="text-lg font-bold text-white">
                     {user.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
+
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm font-semibold truncate ${isDark ? 'text-white' : 'text-zinc-900'}`}>
                     {user.name}
@@ -113,24 +121,29 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
                 </div>
               </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-4">
-                <div className="text-center">
-                  <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>{user.loginCount}</p>
+              {/* Stats */}
+              <div className="mt-4 grid grid-cols-2 gap-4 text-center">
+                <div>
+                  <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+                    {user.loginCount}
+                  </p>
                   <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Visites</p>
                 </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1">
-                    {user.newsletterSubscribed ? (
-                      <Bell className={`h-4 w-4 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
-                    ) : (
-                      <Bell className={`h-4 w-4 ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`} />
-                    )}
-                  </div>
+
+                <div>
+                  <Bell
+                    className={`h-4 w-4 mx-auto ${
+                      user.newsletterSubscribed
+                        ? isDark ? 'text-emerald-400' : 'text-emerald-600'
+                        : isDark ? 'text-zinc-500' : 'text-zinc-400'
+                    }`}
+                  />
                   <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Newsletter</p>
                 </div>
               </div>
             </div>
 
+            {/* Actions */}
             <div className="p-2">
               <button
                 onClick={handleSettingsClick}
@@ -143,10 +156,16 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
                 <Settings className="h-4 w-4" />
                 Paramètres
               </button>
-              <div className="border-t border-zinc-200/20 my-2" />
+
+              <div className="border-t border-white/10 my-2" />
+
               <button
                 onClick={handleSignOut}
-                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all duration-200 hover:bg-rose-500/10 hover:translate-x-1 text-rose-500"
+                className="
+                  flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm
+                  transition-all duration-200 hover:bg-rose-500/10 hover:translate-x-1
+                  text-rose-500
+                "
               >
                 <LogOut className="h-4 w-4" />
                 Déconnexion
@@ -154,6 +173,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
             </div>
           </div>
         </div>
+
 
         <SettingsModal
           isOpen={showSettingsModal}
@@ -180,7 +200,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
         `}
       >
         <LogIn className="h-4 w-4" />
-        <span className="hidden sm:inline">Se connecter</span>
+        <span className="inline">Se connecter</span>
       </button>
 
       <button
