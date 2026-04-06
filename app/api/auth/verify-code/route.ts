@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         // Create new subscriber from registration flow
         subscriber = new Subscriber({
           email: normalizedEmail,
-          name: verificationData.name || 'Anonymous',
+          name: verificationData.name || 'Prénom & Nom',
           newsletterSubscribed: false, 
           isActive: true,
           loginCount: 1,
@@ -62,13 +62,23 @@ export async function POST(request: NextRequest) {
       }
     } else if (type === 'signin') {
       if (!subscriber) {
-        return NextResponse.json({ error: 'Compte introuvable.' }, { status: 404 });
+        // If user was not found but verified correctly, they likely need an account
+        // This makes the flow seamless: if they didn't have an account, they get one now.
+        subscriber = new Subscriber({
+          email: normalizedEmail,
+          name: verificationData.name || 'Prénom & Nom',
+          newsletterSubscribed: false,
+          isActive: true,
+          loginCount: 1,
+          lastLoginAt: new Date()
+        });
+        await subscriber.save();
+      } else {
+        // Regular signin: Update login stats
+        subscriber.loginCount += 1;
+        subscriber.lastLoginAt = new Date();
+        await subscriber.save();
       }
-
-      // Update login stats
-      subscriber.loginCount += 1;
-      subscriber.lastLoginAt = new Date();
-      await subscriber.save();
     } else if (type === 'newsletter') {
       if (subscriber) {
         subscriber.newsletterSubscribed = true; // Per request: newsletter sets newsletter true
@@ -104,7 +114,7 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error) {
-    console.error('Verify code error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Erreur API verify-code:', error);
+    return NextResponse.json({ error: 'Erreur technique lors de la vérification. Veuillez réessayer.' }, { status: 500 });
   }
 }

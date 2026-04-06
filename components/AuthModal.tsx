@@ -309,24 +309,22 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                 </motion.div>
 
                 <motion.form variants={itemVariants} onSubmit={handleRequestCode} className="space-y-5">
-                  {(mode === 'signup' || mode === 'newsletter') && (
-                    <div className="space-y-2.5">
-                      <label className="text-sm font-bold text-zinc-500 uppercase tracking-widest ml-1">Identité</label>
-                      <div className="relative group">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-xl bg-white/5 border border-white/5 group-focus-within:border-(--accent)/30 transition-all">
-                          <User className="w-4 h-4 text-zinc-500 group-focus-within:text-(--accent)" />
-                        </div>
-                        <input
-                          required
-                          type="text"
-                          value={formData.name}
-                          onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))}
-                          placeholder="Votre nom complet"
-                          className="w-full pl-14 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-4 focus:ring-(--accent)/10 focus:border-(--accent) transition-all outline-none text-white placeholder:text-zinc-600"
-                        />
+                  <div className="space-y-2.5">
+                    <label className="text-sm font-bold text-zinc-500 uppercase tracking-widest ml-1">Identité Complète</label>
+                    <div className="relative group">
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-xl bg-white/5 border border-white/5 group-focus-within:border-(--accent)/30 transition-all">
+                        <User className="w-4 h-4 text-zinc-500 group-focus-within:text-(--accent)" />
                       </div>
+                      <input
+                        required
+                        type="text"
+                        value={formData.name}
+                        onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))}
+                        placeholder="Prénom & Nom"
+                        className="w-full pl-14 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-4 focus:ring-(--accent)/10 focus:border-(--accent) transition-all outline-none text-white placeholder:text-zinc-600"
+                      />
                     </div>
-                  )}
+                  </div>
 
                   <div className="space-y-2.5">
                     <label className="text-sm font-bold text-zinc-500 uppercase tracking-widest ml-1">Email</label>

@@ -46,8 +46,8 @@ export async function GET(request: NextRequest) {
       }
     });
   } catch (error) {
-    console.error('Verification error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Erreur API verify (POST):', error);
+    return NextResponse.json({ error: 'Une erreur technique est survenue.' }, { status: 500 });
   }
 }
 

@@ -19,15 +19,11 @@ export async function POST(request: NextRequest) {
     const normalizedEmail = email.toLowerCase();
     const now = new Date();
 
-    // Check subscriber status and cooldown
+    // Check subscriber status (but don't block signin, just check for bans)
     const subscriber = await Subscriber.findOne({ email: normalizedEmail });
     
-    if (type === 'signin' && !subscriber) {
-      return NextResponse.json({ error: 'Compte introuvable. Veuillez vous inscrire.' }, { status: 404 });
-    }
-
     if (subscriber && !subscriber.isActive) {
-      return NextResponse.json({ error: 'Compte désactivé. Veuillez contacter le support.' }, { status: 403 });
+      return NextResponse.json({ error: 'Votre compte est suspendu. Veuillez contacter le support.' }, { status: 403 });
     }
 
     // Check cooldown (30s) from either VerificationCode or Subscriber
@@ -37,7 +33,7 @@ export async function POST(request: NextRequest) {
     if (lastSent && (now.getTime() - lastSent.getTime() < cooldownPeriod)) {
       const waitTime = Math.ceil((cooldownPeriod - (now.getTime() - lastSent.getTime())) / 1000);
       return NextResponse.json({ 
-        error: `Veuillez patienter ${waitTime}s avant de demander un nouveau code.`,
+        error: `Action trop rapide. Veuillez patienter ${waitTime}s avant un nouvel envoi.`,
         nextAllowedAt: new Date(lastSent.getTime() + cooldownPeriod)
       }, { status: 429 });
     }
@@ -161,13 +157,13 @@ export async function POST(request: NextRequest) {
 
     if (sendError) {
       console.error('Email send error:', sendError);
-      return NextResponse.json({ error: 'Failed to send verification email' }, { status: 500 });
+      return NextResponse.json({ error: 'Une erreur est survenue lors de l\'envoi de l\'email de vérification.' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
 
   } catch (error) {
-    console.error('Send code error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Erreur API send-code:', error);
+    return NextResponse.json({ error: 'Une erreur est survenue lors de l\'envoi du code. Réessayez plus tard.' }, { status: 500 });
   }
 }
