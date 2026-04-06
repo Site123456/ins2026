@@ -186,7 +186,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
         exit={{ opacity: 0 }}
         onClick={onClose}
         className={`
-          fixed inset-0 z-[60]
+          fixed inset-0 z-[48]
           backdrop-blur-xl transition-all
           ${isDark ? "bg-black/70" : "bg-black/40"}
         `}
