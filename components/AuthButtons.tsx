@@ -77,7 +77,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
           <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`} />
         </button>
         <Portal>
-          <div>
+          <div className="relative z-50">
             <div
               className={`
                 fixed right-2 top-20 z-101 w-64 sm:w-56
