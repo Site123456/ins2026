@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import dbConnect from '@/lib/mongodb';
-import VerificationCode from '@/models/VerificationCode';
-import Subscriber from '@/models/Subscriber';
+import dbConnect from '../../../../lib/mongodb';
+import VerificationCode from '../../../../models/VerificationCode';
+import Subscriber from '../../../../models/Subscriber';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
