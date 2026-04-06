@@ -79,15 +79,13 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
         <Portal>
           {showDropdown && (
             <div
-              className="fixed inset-0 z-10 sm:hidden bg-black/40 backdrop-blur-sm"
+              className="fixed inset-0 z-99 sm:hidden bg-black/40 backdrop-blur-sm"
               onClick={() => setShowDropdown(false)}
             />
           )}
-
-          {/* Dropdown */}
           <div
             className={`
-              absolute right-0 top-12 z-20 w-64 sm:w-56
+              fixed right-2 top-12 z-101 w-64 sm:w-56
               transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
               ${showDropdown
                 ? 'opacity-100 translate-y-0 scale-100'
@@ -175,14 +173,13 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
               </div>
             </div>
           </div>
-
+          <SettingsModal
+            isOpen={showSettingsModal}
+            onClose={() => setShowSettingsModal(false)}
+            isDark={isDark}
+            accent={accent}
+          />
         </Portal>
-        <SettingsModal
-          isOpen={showSettingsModal}
-          onClose={() => setShowSettingsModal(false)}
-          isDark={isDark}
-          accent={accent}
-        />
       </div>
     );
   }

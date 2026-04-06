@@ -89,7 +89,7 @@ export default function SettingsModal({ isOpen, onClose, isDark, accent }: Setti
   if (!isVisible || !user) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-102 flex items-center justify-center p-4">
       {/* Animated backdrop */}
       <div
         className={`
@@ -98,8 +98,6 @@ export default function SettingsModal({ isOpen, onClose, isDark, accent }: Setti
         `}
         onClick={handleClose}
       />
-
-      {/* Animated modal */}
       <div
         className={`
           relative w-full max-w-md transform transition-all duration-300 ease-out
