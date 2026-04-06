@@ -169,7 +169,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
           </div>
           {showDropdown && (
             <div
-              className="fixed inset-0 z-89 sm:hidden bg-black/40 backdrop-blur-sm"
+              className="fixed inset-0 z-48 sm:hidden bg-black/40 backdrop-blur-sm"
               onClick={() => setShowDropdown(false)}
             />
           )}
