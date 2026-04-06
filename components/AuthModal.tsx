@@ -557,67 +557,63 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                     )}
                   </motion.button>
                 </motion.form>
-
-                {/* ERROR BLOCK */}
-                <AnimatePresence>
-                  {error && (
-                    <motion.div
-                      key="error"
-                      initial={{ opacity: 0, y: 12, scale: 0.98 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 8, scale: 0.98 }}
-                      transition={{ duration: 0.25, ease: "easeOut" }}
+                {error && (
+                  <motion.div
+                    key="error"
+                    initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                    transition={{ duration: 0.25, ease: "easeOut" }}
+                    className={`
+                      relative overflow-hidden p-5 rounded-2xl flex gap-4 items-start border
+                      backdrop-blur-sm shadow-lg
+                      ${isDark
+                        ? "bg-rose-500/10 border-rose-500/20"
+                        : "bg-rose-50 border-rose-200"
+                      }
+                    `}
+                  >
+                    {/* Soft glow behind icon */}
+                    <div
                       className={`
-                        relative overflow-hidden p-5 rounded-2xl flex gap-4 items-start border
-                        backdrop-blur-sm shadow-lg
-                        ${isDark
-                          ? "bg-rose-500/10 border-rose-500/20"
-                          : "bg-rose-50 border-rose-200"
-                        }
+                        absolute -left-6 -top-6 w-20 h-20 rounded-full blur-2xl opacity-30
+                        ${isDark ? "bg-rose-500/40 text-white" : "bg-rose-400/40 text-black"}
+                      `}
+                    />
+
+                    {/* Icon */}
+                    <div
+                      className={`
+                        p-2 rounded-xl shrink-0 relative z-10
+                        ${isDark ? "bg-rose-500/20" : "bg-rose-200"}
                       `}
                     >
-                      {/* Soft glow behind icon */}
-                      <div
-                        className={`
-                          absolute -left-6 -top-6 w-20 h-20 rounded-full blur-2xl opacity-30
-                          ${isDark ? "bg-rose-500/40 text-white" : "bg-rose-400/40 text-black"}
-                        `}
-                      />
+                      <AlertCircle className="w-5 h-5 text-rose-500" />
+                    </div>
 
-                      {/* Icon */}
-                      <div
+                    {/* Text */}
+                    <div className="flex-1 relative z-10">
+                      <p
                         className={`
-                          p-2 rounded-xl shrink-0 relative z-10
-                          ${isDark ? "bg-rose-500/20" : "bg-rose-200"}
+                          text-sm font-bold leading-relaxed
+                          ${isDark ? "text-rose-300" : "text-rose-700"}
                         `}
                       >
-                        <AlertCircle className="w-5 h-5 text-rose-500" />
-                      </div>
+                        {error}
+                      </p>
 
-                      {/* Text */}
-                      <div className="flex-1 relative z-10">
-                        <p
-                          className={`
-                            text-sm font-bold leading-relaxed
-                            ${isDark ? "text-rose-300" : "text-rose-700"}
-                          `}
-                        >
-                          {error}
-                        </p>
-
-                        {/* Optional subtle hint */}
-                        <p
-                          className={`
-                            text-[11px] mt-1 font-semibold tracking-wide uppercase
-                            ${isDark ? "text-rose-500/60" : "text-rose-600/60"}
-                          `}
-                        >
-                          Veuillez réessayer
-                        </p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                      {/* Optional subtle hint */}
+                      <p
+                        className={`
+                          text-[11px] mt-1 font-semibold tracking-wide uppercase
+                          ${isDark ? "text-rose-500/60" : "text-rose-600/60"}
+                        `}
+                      >
+                        Veuillez réessayer
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
 
               </motion.div>
             ) : (
@@ -802,42 +798,38 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                     )}
                   </div>
                 </div>
-
-                {/* ERROR */}
-                <AnimatePresence>
-                  {error && (
-                    <motion.div
-                      variants={shakeVariants}
-                      animate="shake"
-                      initial={{ opacity: 0, scale: 0.95 }}
+                {error && (
+                  <motion.div
+                    variants={shakeVariants}
+                    animate="shake"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    className={`
+                      p-5 rounded-2xl flex gap-4 items-center border
+                      ${isDark
+                        ? "bg-rose-500/10 border-rose-500/20 text-white shadow-[0_0_20px_rgba(255,0,0,0.1)]"
+                        : "bg-rose-100 border-rose-300 text-black shadow-[0_0_20px_rgba(255,0,0,0.05)]"
+                      }
+                    `}
+                  >
+                    <div
                       className={`
-                        p-5 rounded-2xl flex gap-4 items-center border
-                        ${isDark
-                          ? "bg-rose-500/10 border-rose-500/20 text-white shadow-[0_0_20px_rgba(255,0,0,0.1)]"
-                          : "bg-rose-100 border-rose-300 text-black shadow-[0_0_20px_rgba(255,0,0,0.05)]"
-                        }
+                        p-2 rounded-xl
+                        ${isDark ? "bg-rose-500/20" : "bg-rose-300"}
                       `}
                     >
-                      <div
-                        className={`
-                          p-2 rounded-xl
-                          ${isDark ? "bg-rose-500/20" : "bg-rose-300"}
-                        `}
-                      >
-                        <AlertCircle className="w-5 h-5 text-rose-500 shrink-0" />
-                      </div>
+                      <AlertCircle className="w-5 h-5 text-rose-500 shrink-0" />
+                    </div>
 
-                      <p
-                        className={`
-                          text-sm font-bold
-                          ${isDark ? "text-rose-400" : "text-rose-700"}
-                        `}
-                      >
-                        {error}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                    <p
+                      className={`
+                        text-sm font-bold
+                        ${isDark ? "text-rose-400" : "text-rose-700"}
+                      `}
+                    >
+                      {error}
+                    </p>
+                  </motion.div>
+                )}
               </motion.div>
 
             )}
