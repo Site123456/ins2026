@@ -43,7 +43,7 @@ const itemVariants: Variants = {
 };
 
 export default function AuthModal({ isOpen, onClose, mode: initialMode, email: initialEmail = '', isDark, accent }: AuthModalProps) {
-  const { requestCode, verifyCode, user } = useAuth();
+  const { requestCode, verifyCode } = useAuth();
   
   const [mode, setMode] = useState<'signin' | 'signup' | 'newsletter'>(initialMode);
   const [step, setStep] = useState<1 | 2>(1);
@@ -179,30 +179,70 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop with sophisticated blur */}
+      {/* Backdrop responsive + theme-aware */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-black/70 backdrop-blur-xl"
         onClick={onClose}
+        className={`
+          fixed inset-0 z-[60]
+          backdrop-blur-xl transition-all
+          ${isDark ? "bg-black/70" : "bg-black/40"}
+        `}
       />
 
-      {/* Code Sent Toast Notification */}
+      {/* Toast OTP */}
       <AnimatePresence>
         {isCodeSent && (
           <motion.div
             initial={{ opacity: 0, y: -40, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -40, scale: 0.9 }}
-            className="fixed top-8 left-1/2 -translate-x-1/2 z-[70] bg-zinc-900 border border-emerald-500/30 shadow-[0_0_40px_rgba(16,185,129,0.2)] rounded-2xl px-6 py-4 flex items-center gap-4"
+            className={`
+              fixed top-6 left-1/2 -translate-x-1/2 z-[70]
+              px-4 sm:px-6 py-3 sm:py-4 rounded-2xl shadow-xl
+              flex items-center gap-3 sm:gap-4
+              border backdrop-blur-xl
+              max-w-[90%] sm:max-w-md
+              ${isDark
+                ? "bg-zinc-900/90 border-emerald-500/30 shadow-[0_0_40px_rgba(16,185,129,0.2)]"
+                : "bg-white/90 border-emerald-500/20 shadow-[0_0_40px_rgba(16,185,129,0.15)]"
+              }
+            `}
           >
-            <div className="bg-emerald-500/20 p-2 rounded-full">
-              <ShieldCheck className="w-5 h-5 text-emerald-500" />
+            <div
+              className={`
+                p-2 rounded-full
+                ${isDark ? "bg-emerald-500/20" : "bg-emerald-500/10"}
+              `}
+            >
+              <ShieldCheck
+                className={`
+                  w-5 h-5
+                  ${isDark ? "text-emerald-400" : "text-emerald-600"}
+                `}
+              />
             </div>
-            <div>
-              <p className="text-sm font-bold text-white leading-none">Code de sécurité envoyé !</p>
-              <p className="text-xs text-zinc-400 mt-1">Consultez votre boîte mail {formData.email}</p>
+
+            <div className="flex flex-col">
+              <p
+                className={`
+                  text-sm font-bold leading-none
+                  ${isDark ? "text-white" : "text-zinc-900"}
+                `}
+              >
+                Code de sécurité envoyé !
+              </p>
+
+              <p
+                className={`
+                  text-xs mt-1
+                  ${isDark ? "text-zinc-400" : "text-zinc-600"}
+                `}
+              >
+                Consultez votre boîte mail : <span className="font-medium">{formData.email}</span>
+              </p>
             </div>
           </motion.div>
         )}
@@ -216,46 +256,111 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
         animate="visible"
         exit="exit"
         className={`
-          relative w-full max-w-md overflow-hidden rounded-[2.5rem] border shadow-[0_32px_128px_rgba(0,0,0,0.5)]
-          ${isDark ? 'bg-[#0a0a0f]/90 border-white/10' : 'bg-white border-zinc-200'}
-          backdrop-blur-3xl
+          relative w-full max-w-md mx-auto
+          overflow-hidden rounded-[2.5rem]
+          border backdrop-blur-3xl
+          shadow-[0_32px_128px_rgba(0,0,0,0.45)]
+          transition-all
+          ${isDark
+            ? "bg-[#0a0a0f]/90 border-white/10"
+            : "bg-white/90 border-zinc-200 shadow-black/10"
+          }
         `}
       >
+
         {/* Animated Gradient Border Overlay */}
         <div className="absolute inset-0 pointer-events-none opacity-20">
-          <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_120deg,(--accent)_180deg,transparent_240deg,transparent_360deg)] animate-[spin_8s_linear_infinite]" />
+          <div
+            className="absolute inset-[-100%]
+            animate-[spin_8s_linear_infinite]"
+            style={{
+              background: `conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                transparent 120deg,
+                var(--accent) 180deg,
+                transparent 240deg,
+                transparent 360deg
+              )`
+            }}
+          />
         </div>
 
-        {/* Progress Bar (at very top) */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-black/10">
-          <motion.div 
-            className="h-full bg-(--accent) shadow-[0_0_12px_var(--accent)]"
-            initial={{ width: '0%' }}
-            animate={{ width: step === 1 ? '50%' : '100%' }}
+        {/* Progress Bar */}
+        <div
+          className={`
+            absolute top-0 left-0 right-0 h-1.5
+            ${isDark ? "bg-white/5" : "bg-black/10"}
+          `}
+        >
+          <motion.div
+            className="h-full"
+            style={{
+              background: "var(--accent)",
+              boxShadow: "0 0 12px var(--accent)"
+            }}
+            initial={{ width: "0%" }}
+            animate={{ width: step === 1 ? "50%" : "100%" }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           />
         </div>
 
         {/* Close & Back Buttons */}
-        <div className="flex items-center justify-between p-8 pb-4">
+        <div className="flex items-center justify-between p-6 sm:p-8 pb-4">
+
+          {/* Back Button */}
           {step === 2 ? (
             <motion.button
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              onClick={() => { setStep(1); setError(''); }}
-              className="group flex items-center gap-2 text-sm font-bold text-zinc-400 hover:text-white transition-colors"
+              onClick={() => { setStep(1); setError(""); }}
+              className={`
+                group flex items-center gap-2 text-xs sm:text-sm font-bold
+                transition-colors
+                ${isDark ? "text-zinc-400 hover:text-white" : "text-zinc-600 hover:text-zinc-900"}
+              `}
             >
-              <div className="p-1.5 rounded-lg bg-white/5 border border-white/5 group-hover:border-white/10 transition-all">
-                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              <div
+                className={`
+                  p-1.5 rounded-lg border transition-all
+                  ${isDark
+                    ? "bg-white/5 border-white/5 group-hover:border-white/10"
+                    : "bg-black/5 border-black/10 group-hover:border-black/20"
+                  }
+                `}
+              >
+                <ArrowLeft
+                  className={`
+                    w-4 h-4 transition-transform
+                    group-hover:-translate-x-1
+                    ${isDark ? "text-white" : "text-zinc-800"}
+                  `}
+                />
               </div>
               Retour
             </motion.button>
-          ) : <div />}
+          ) : (
+            <div />
+          )}
+
+          {/* Close Button */}
           <button
             onClick={onClose}
-            className="p-2.5 rounded-full bg-white/5 border border-white/5 hover:border-white/20 hover:scale-110 active:scale-95 transition-all"
+            className={`
+              p-2.5 rounded-full border transition-all
+              hover:scale-110 active:scale-95
+              ${isDark
+                ? "bg-white/5 border-white/5 hover:border-white/20"
+                : "bg-black/5 border-black/10 hover:border-black/20"
+              }
+            `}
           >
-            <X className="w-5 h-5 text-zinc-400" />
+            <X
+              className={`
+                w-5 h-5
+                ${isDark ? "text-zinc-400" : "text-zinc-700"}
+              `}
+            />
           </button>
         </div>
 

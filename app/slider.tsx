@@ -1432,14 +1432,6 @@ export default function SliderLayout({
     []
   );
 
-  const togglePlan = useCallback((p: string) => {
-    setExpandedPlans((s) => {
-      const n = new Set(s);
-      n.has(p) ? n.delete(p) : n.add(p);
-      return n;
-    });
-  }, []);
-
   const openPanel = useCallback((tab: PanelTab) => {
     setActiveTab(tab);
     setPanelOpen(true);
