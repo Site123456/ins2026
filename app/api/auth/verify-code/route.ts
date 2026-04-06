@@ -18,15 +18,19 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email.toLowerCase();
 
+    // ------------------------------------------------------------
+    // OTP IS ONLY FOR SIGN-IN
+    // ------------------------------------------------------------
     if (type !== "signin") {
       return NextResponse.json(
-        {
-          error:
-            "La vérification par code n'est plus nécessaire pour cette action.",
-        },
+        { error: "Aucun code n'est requis pour cette action." },
         { status: 400 }
       );
     }
+
+    // ------------------------------------------------------------
+    // VALIDATE OTP
+    // ------------------------------------------------------------
     const record = await VerificationCode.findOne({
       email: normalizedEmail,
       type: "signin",
@@ -46,9 +50,13 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
     record.used = true;
     await record.save();
 
+    // ------------------------------------------------------------
+    // FIND OR CREATE USER
+    // ------------------------------------------------------------
     let user = await Subscriber.findOne({ email: normalizedEmail });
 
     if (!user) {
@@ -61,12 +69,14 @@ export async function POST(request: NextRequest) {
         lastLoginAt: new Date(),
       });
     } else {
-      // Normal login
       user.loginCount += 1;
       user.lastLoginAt = new Date();
       await user.save();
     }
 
+    // ------------------------------------------------------------
+    // RETURN USER
+    // ------------------------------------------------------------
     return NextResponse.json({
       success: true,
       user: {
@@ -78,13 +88,11 @@ export async function POST(request: NextRequest) {
         loginCount: user.loginCount,
       },
     });
+
   } catch (error) {
     console.error("Erreur API verify-code:", error);
     return NextResponse.json(
-      {
-        error:
-          "Erreur technique lors de la vérification. Veuillez réessayer plus tard.",
-      },
+      { error: "Erreur technique lors de la vérification. Veuillez réessayer plus tard." },
       { status: 500 }
     );
   }

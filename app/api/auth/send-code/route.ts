@@ -1,10 +1,95 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { Resend } from 'resend';
-import dbConnect from '@/lib/mongodb';
-import VerificationCode from '@/models/VerificationCode';
-import Subscriber from '@/models/Subscriber';
+import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
+import dbConnect from "@/lib/mongodb";
+import VerificationCode from "@/models/VerificationCode";
+import Subscriber from "@/models/Subscriber";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+function generateNewsletterEmail(name: string) {
+  return `
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f6f8;padding:20px 0">
+      <tr><td align="center">
+        <table width="650" style="background:#fff;border-radius:18px;overflow:hidden">
+          <tr>
+            <td style="background:#d32f2f;padding:40px;text-align:center;color:#fff">
+              <img src="https://indian-nepaliswad.fr/etc/logo.png" style="height:70px;margin-bottom:14px" />
+              <h1 style="margin:0;font-size:28px;font-weight:800">Bienvenue dans notre newsletter 🎉</h1>
+            </td>
+          </tr>
+
+          <tr><td style="padding:32px">
+            <p style="font-size:16px;color:#1f2937;line-height:1.7">
+              Bonjour <strong style="color:#d32f2f">${name}</strong>,<br><br>
+              Merci de rejoindre la communauté <strong>Indian Nepali Swad</strong> !
+              Vous recevrez bientôt nos nouveautés, offres exclusives et événements spéciaux.
+            </p>
+            <p style="margin-top:12px;font-size:12px;color:#6b7280;text-align:center">
+              Nous ne vous demenderons jamais de mot de passe — connectez-vous simplement avec votre email ou whatsapp pour une expérience fluide et sécurisée.
+            </p>
+          </td></tr>
+
+          <tr><td style="padding:24px;text-align:center;font-size:12px;color:#6b7280">
+            © 2026 Indian Nepali Swad — Tous droits réservés
+          </td></tr>
+        </table>
+      </td></tr>
+    </table>
+  `;
+}
+function generateAccountCreatedEmail(name: string, email: string) {
+  return `
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f6f8;padding:20px 0">
+      <tr><td align="center">
+        <table width="650" style="background:#fff;border-radius:18px;overflow:hidden">
+
+          <tr>
+            <td style="background:linear-gradient(135deg,#d32f2f,#b71c1c);padding:48px;text-align:center;color:#fff">
+              <img src="https://indian-nepaliswad.fr/etc/logo.png" style="height:80px;margin-bottom:14px" />
+              <h1 style="margin:0;font-size:32px;font-weight:800">Compte créé avec succès 🎉</h1>
+              <p style="margin:12px 0 0;font-size:15px;opacity:0.95">Bienvenue chez Indian Nepali Swad</p>
+            </td>
+          </tr>
+
+          <tr><td style="padding:40px 32px">
+            <p style="font-size:17px;color:#1f2937;line-height:1.7;margin-bottom:28px">
+              Bonjour <strong style="color:#d32f2f;font-size:18px">${name}</strong>,<br><br>
+              Votre compte est maintenant actif — bienvenue dans la famille INS !
+            </p>
+
+            <table width="100%" style="background:#fef2f2;border:2px solid #fee2e2;border-radius:12px;overflow:hidden">
+              <tr>
+                <td style="background:#d32f2f;padding:18px;color:#fff;font-size:12px;font-weight:600;text-transform:uppercase">
+                  Informations du compte
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:24px">
+                  <p style="margin:0;font-size:14px;color:#374151"><strong>Nom :</strong> ${name}</p>
+                  <p style="margin:8px 0 0;font-size:14px;color:#374151"><strong>Email :</strong> ${email}</p>
+                </td>
+              </tr>
+            </table>
+
+            <div style="margin-top:32px;text-align:center">
+              <a href="https://indian-nepaliswad.fr"
+                style="display:inline-block;background:#d32f2f;color:#fff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700">
+                Explorer le menu
+              </a>
+            </div>
+
+            <p style="margin-top:12px;font-size:12px;color:#6b7280;text-align:center">
+              Nous ne vous demenderons jamais de mot de passe — connectez-vous simplement avec votre email ou whatsapp pour une expérience fluide et sécurisée.
+            </p>
+            <p style="margin-top:32px;font-size:12px;color:#6b7280;text-align:center">
+              © 2026 Indian Nepali Swad — Tous droits réservés
+            </p>
+          </td></tr>
+
+        </table>
+      </td></tr>
+    </table>
+  `;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,7 +97,7 @@ export async function POST(request: NextRequest) {
 
     if (!email || !type) {
       return NextResponse.json(
-        { error: 'Email et type requis.' },
+        { error: "Email et type requis." },
         { status: 400 }
       );
     }
@@ -27,19 +112,19 @@ export async function POST(request: NextRequest) {
     // ---------------------------------------------------------------------
     const existingUser = await Subscriber.findOne({ email: normalizedEmail });
 
-    // If user exists → they MUST login, not signup/newsletter
-    if (existingUser && type !== 'signin') {
+    // USER EXISTS → SIGNUP SHOULD SWITCH TO SIGN-IN
+    if (existingUser && type === "signup") {
       return NextResponse.json(
         {
-          error: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
+          error: "Un compte existe déjà avec cet email.",
           forceMode: "signin",
         },
         { status: 400 }
       );
     }
 
-    // If user does NOT exist → they MUST signup/newsletter, not signin
-    if (!existingUser && type === 'signin') {
+    // USER DOES NOT EXIST → SIGN-IN SHOULD SWITCH TO SIGNUP
+    if (!existingUser && type === "signin") {
       return NextResponse.json(
         {
           error: "Aucun compte trouvé. Veuillez créer un compte.",
@@ -49,74 +134,87 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // If user exists but is banned
+    // USER EXISTS BUT IS BANNED
     if (existingUser && !existingUser.isActive) {
       return NextResponse.json(
-        { error: 'Votre compte est suspendu. Contactez le support.' },
+        { error: "Votre compte est suspendu. Contactez le support." },
         { status: 403 }
       );
     }
+      if (type === "signup" || type === "newsletter") {
+        const isNewsletter = type === "newsletter";
+        let user = existingUser;
 
-    // ---------------------------------------------------------------------
-    // 2. COOLDOWN CHECK (30 seconds)
-    // ---------------------------------------------------------------------
-    const cooldownMs = 30 * 1000;
+        if (user) {
+          // NEWSLETTER → activate + send confirmation email ONCE
+          if (isNewsletter) {
+            if (!user.newsletterSubscribed) {
+              user.newsletterSubscribed = true;
+              await user.save();
 
-    const lastSent =
-      existingUser?.lastCodeSentAt ||
-      (await VerificationCode.findOne({ email: normalizedEmail, type }))?.createdAt;
+              const html = generateNewsletterEmail(user.name || "Cher client");
 
-    if (lastSent && now.getTime() - lastSent.getTime() < cooldownMs) {
-      const wait = Math.ceil((cooldownMs - (now.getTime() - lastSent.getTime())) / 1000);
-      return NextResponse.json(
-        {
-          error: `Action trop rapide. Réessayez dans ${wait}s.`,
-          nextAllowedAt: new Date(lastSent.getTime() + cooldownMs),
-        },
-        { status: 429 }
-      );
-    }
-    if (type === "signup" || type === "newsletter") {
-      let user = await Subscriber.findOne({ email: normalizedEmail });
+              await resend.emails.send({
+                from: "Indian Nepali Swad <noreply@bot.indian-nepaliswad.fr>",
+                to: [normalizedEmail],
+                subject: "Bienvenue dans la newsletter Indian Nepali Swad",
+                html,
+              });
+            }
 
-      // If user already exists → do NOT block signup/newsletter
-      if (user) {
-        // Newsletter should simply activate newsletterSubscribed
-        if (type === "newsletter") {
-          user.newsletterSubscribed = true;
-          await user.save();
+            return NextResponse.json({
+              success: true,
+              message: "Newsletter activée.",
+            });
+          }
 
+          // SIGNUP → user exists → frontend must switch to signin
           return NextResponse.json({
-            success: true,
-            message: "Inscription à la newsletter confirmée.",
+            success: false,
+            forceMode: "signin",
+            message: "Un compte existe déjà avec cet email.",
           });
         }
 
-        // Signup: user already exists → treat as success (no OTP)
+        // ------------------------------------------------------------
+        // B. USER DOES NOT EXIST → CREATE ACCOUNT
+        // ------------------------------------------------------------
+        const newUser = await Subscriber.create({
+          email: normalizedEmail,
+          name: name?.trim() || "Utilisateur",
+          subscribedAt: new Date(),
+          isActive: true,
+          newsletterSubscribed: isNewsletter,
+          loginCount: 0,
+        });
+
+        // ------------------------------------------------------------
+        // C. SEND SINGLE WELCOME EMAIL (ACCOUNT OR NEWSLETTER)
+        // ------------------------------------------------------------
+        const html = isNewsletter
+          ? generateNewsletterEmail(newUser.name)
+          : generateAccountCreatedEmail(newUser.name, normalizedEmail);
+
+        const subject = isNewsletter
+          ? "Bienvenue dans la newsletter Indian Nepali Swad"
+          : "Votre compte a été créé avec succès 🎉";
+
+        await resend.emails.send({
+          from: "Indian Nepali Swad <noreply@bot.indian-nepaliswad.fr>",
+          to: [normalizedEmail],
+          subject,
+          html,
+        });
+
         return NextResponse.json({
           success: true,
-          message: "Vous êtes déjà inscrit.",
+          message: isNewsletter
+            ? "Inscription à la newsletter réussie."
+            : "Compte créé avec succès.",
         });
       }
 
-      // If user does NOT exist → create account
-      await Subscriber.create({
-        email: normalizedEmail,
-        name: name?.trim() || "Utilisateur",
-        subscribedAt: new Date(),
-        isActive: true,
-        newsletterSubscribed: type === "newsletter",
-        loginCount: 0,
-      });
 
-      return NextResponse.json({
-        success: true,
-        message:
-          type === "signup"
-            ? "Compte créé avec succès."
-            : "Inscription à la newsletter réussie.",
-      });
-    }
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
     await VerificationCode.findOneAndUpdate(
@@ -136,7 +234,11 @@ export async function POST(request: NextRequest) {
       existingUser.lastCodeSentAt = now;
       await existingUser.save();
     }
-    const loginUrl = `https://indian-nepaliswad.fr/auth/code?email=${encodeURIComponent(normalizedEmail)}&code=${code}`;
+
+    // Build login URL + QR
+    const loginUrl = `https://indian-nepaliswad.fr/auth/code?email=${encodeURIComponent(
+      normalizedEmail
+    )}&code=${code}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(loginUrl)}`;
 
     const htmlContent = `
@@ -181,8 +283,6 @@ export async function POST(request: NextRequest) {
                   </p>
                 </td>
               </tr>
-
-              <!-- Body -->
               <tr>
                 <td style="padding:0 40px 48px;">
                   <div style="height:1px; background-color:#f1f5f9; margin-bottom:40px;"></div>
@@ -242,6 +342,10 @@ export async function POST(request: NextRequest) {
               <!-- Footer -->
               <tr>
                 <td style="padding:40px 32px; background-color:#111827; text-align:center;">
+                
+                  <p style="margin-bottom:12px;font-size:12px;color:#6b7280;text-align:center">
+                    Nous ne vous demenderons jamais de mot de passe — connectez-vous simplement avec votre email ou whatsapp pour une expérience fluide et sécurisée.
+                  </p>
                   <p style="margin:0; font-size:13px; color:#94a3b8; font-weight:500;">
                     &copy; 2026 Indian Nepali Swad. Tous droits réservés.
                   </p>
@@ -260,17 +364,24 @@ export async function POST(request: NextRequest) {
     </body>
     </html>
     `;
+    const expirationTime = new Date(
+      now.getTime() + 10 * 60 * 1000
+    ).toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
+    const subject = `${code} est votre code de connexion (valable une fois jusqu'à ${expirationTime})`;
 
     const { error: sendError } = await resend.emails.send({
-      from: 'Indian Nepali Swad <noreply@bot.indian-nepaliswad.fr>',
+      from: "Indian Nepali Swad <noreply@bot.indian-nepaliswad.fr>",
       to: [normalizedEmail],
-      subject: `${code} — Votre code de connexion`,
+      subject,
       html: htmlContent,
     });
 
     if (sendError) {
-      console.error('Email send error:', sendError);
+      console.error("Email send error:", sendError);
       return NextResponse.json(
         { error: "Erreur lors de l'envoi de l'email." },
         { status: 500 }
@@ -279,9 +390,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, otp: true });
   } catch (error) {
-    console.error('Erreur API send-code:', error);
+    console.error("Erreur API send-code:", error);
     return NextResponse.json(
-      { error: 'Erreur interne. Réessayez plus tard.' },
+      { error: "Erreur interne. Réessayez plus tard." },
       { status: 500 }
     );
   }
