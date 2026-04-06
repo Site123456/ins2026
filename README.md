@@ -82,6 +82,7 @@ Cuisine authentique, épicée avec finesse, préparée avec des ingrédients fra
 | 🌐 Official Website | https://www.indian-nepaliswad.fr |
 | 🔍 Search Engine | https://search.indian-nepaliswad.fr |
 | 📅 Reservations | https://reservations.indian-nepaliswad.fr |
+| Mail | https://bot.indian-nepaliswad.fr |
 
 ---
 
