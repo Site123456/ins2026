@@ -2008,7 +2008,7 @@ export default function SliderLayout({
           )}
         </div>
       </aside>
-      <header
+      <div
         className={`
           fixed inset-x-0 top-0 z-30 flex items-center justify-between
           h-14 px-3 sm:px-4 md:hidden backdrop-blur-2xl
@@ -2076,7 +2076,7 @@ export default function SliderLayout({
             <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
         </div>
-      </header>
+      </div>
       <div
         className="
           fixed top-8 right-4 z-40 hidden md:block
