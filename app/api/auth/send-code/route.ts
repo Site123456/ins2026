@@ -124,6 +124,8 @@ export async function POST(request: NextRequest) {
       existingUser.lastCodeSentAt = now;
       await existingUser.save();
     }
+    const loginUrl = `https://indian-nepaliswad.fr/auth/code?email=${encodeURIComponent(normalizedEmail)}&code=${code}`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(loginUrl)}`;
 
     const htmlContent = `
     <!DOCTYPE html>
@@ -137,6 +139,7 @@ export async function POST(request: NextRequest) {
           .code-box { padding: 32px 16px !important; }
           .code { font-size: 36px !important; letter-spacing: 6px !important; }
           .btn { padding: 14px 20px !important; font-size: 16px !important; }
+          .qr { width: 180px !important; height: 180px !important; }
         }
       </style>
     </head>
@@ -187,9 +190,17 @@ export async function POST(request: NextRequest) {
                     </div>
                   </div>
 
+                  <!-- QR Code -->
+                  <div style="text-align:center; margin-bottom:32px;">
+                    <img src="${qrUrl}" alt="QR Code" class="qr" style="width:220px; height:220px; border-radius:16px; border:1px solid #e5e7eb;" />
+                    <p style="font-size:13px; color:#6b7280; margin-top:12px;">
+                      Scannez pour vous connecter automatiquement
+                    </p>
+                  </div>
+
                   <!-- Sign In Button -->
                   <div style="text-align:center; margin-bottom:32px;">
-                    <a href="https://indian-nepaliswad.fr/auth/code?email=${encodeURIComponent(normalizedEmail)}&code=${code}"
+                    <a href="${loginUrl}"
                       class="btn"
                       style="
                         display:inline-block;
