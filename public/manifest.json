@@ -1,0 +1,16 @@
+{
+  "name": "INDIAN NEPALI SWAD",
+  "short_name": "INS",
+  "description": "Gastronomie INDIENNE et NEPALAISE",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#010104",
+  "theme_color": "#010104",
+  "icons": [
+    {
+      "src": "/etc/logo.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}
