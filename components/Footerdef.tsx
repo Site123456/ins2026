@@ -449,34 +449,48 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
 
         </div>
       </div>
-
-
       <div className="px-6 pb-6 max-w-6xl mx-auto text-start">
         <div className="space-y-2 text-[10px] sm:text-[11px] leading-relaxed opacity-40">
+
           <p>
-            Pour annuler ou modifier votre réservation, veuillez suivre les instructions reçues par email.
+            Pour annuler ou modifier votre réservation, veuillez suivre les instructions reçues par email
+            ou contacter directement l&apos;équipe Indian Nepali Swad. Les réservations sont garanties jusqu&apos;à
+            5 minutes après l&apos;heure prévue ; passé ce délai, elles peuvent être annulées ou réattribuées
+            sans préavis.
           </p>
 
           <p>
-            Les réservations sont garanties jusqu&apos;à 5 minutes après l&apos;heure prévue. Passé ce délai, elles
-            peuvent être annulées sans préavis.
+            Indian Nepali Swad applique des standards élevés de sécurité et de confidentialité. L&apos;ensemble
+            des échanges est protégé par un chiffrement avancé (TLS 1.3) et nos systèmes sont supervisés
+            en continu afin de garantir l&apos;intégrité et la disponibilité des données.
           </p>
 
-          <p>
-            Vos données sont entièrement sécurisées et stockées conformément aux normes européennes.
-          </p>
           <ul className="ps-4">
-            <li>- Stockage: France.</li>
+            <li>- Stockage principal des données : France (infrastructures certifiées).</li>
             <li>- Pays de traitement (sans IA) : France.</li>
-            <li>- Pays de traitement (avec IA et traitement automatisé) : France, Irlande, Allemagne.</li>
+            <li>- Pays de traitement (avec IA ou automatisation) : France, Irlande, Allemagne.</li>
+            <li>- Certificats TLS.</li>
+            <li>- Sauvegardes : chiffrées, rotation contrôlée, accès strictement limité.</li>
           </ul>
+
           <p>
-            Pour plus d&apos;informations, veuillez consulter notre politique de confidentialité sur notre site web.
+            Nos pratiques sont alignées sur les référentiels internationaux : ISO 27001 (management de la
+            sécurité), ISO 27002 (contrôles de sécurité), ISO 27701 (protection des données).
           </p>
+
+          <p>
+            Indian Nepali Swad met en œuvre des mesures avancées : contrôle d&apos;accès renforcé, surveillance
+            continue, détection d&apos;anomalies, journalisation sécurisée, tests d&apos;intrusion réguliers et
+            politique stricte de minimisation des données.
+          </p>
+
+          <p>
+            Pour plus d&apos;informations, veuillez consulter notre politique de confidentialité
+            disponible sur notre site web.
+          </p>
+
         </div>
       </div>
-
-
       <div
         className="border-t"
         style={{
