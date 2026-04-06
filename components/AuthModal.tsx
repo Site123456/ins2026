@@ -95,8 +95,6 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
     if (requiresName && !formData.name.trim()) return "Veuillez entrer votre nom complet.";
     return null;
   };
-
-  // REQUEST CODE (OTP only for sign-in)
   const handleRequestCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -437,8 +435,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                   onSubmit={handleRequestCode}
                   className="space-y-5"
                 >
-                  {/* NAME FIELD — only for signup */}
-                  {mode === "signup" && (
+                  {mode != "signin" && (
                     <div className="space-y-2.5">
                       <label
                         className={`

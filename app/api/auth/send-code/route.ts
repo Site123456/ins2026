@@ -76,35 +76,47 @@ export async function POST(request: NextRequest) {
         { status: 429 }
       );
     }
+    if (type === "signup" || type === "newsletter") {
+      let user = await Subscriber.findOne({ email: normalizedEmail });
 
-    // ---------------------------------------------------------------------
-    // 3. SIGNUP / NEWSLETTER → NO OTP REQUIRED
-    // ---------------------------------------------------------------------
-    if (type === 'signup' || type === 'newsletter') {
-      // Create user if not exists
-      if (!existingUser) {
-        await Subscriber.create({
-          email: normalizedEmail,
-          name: name?.trim() || 'Utilisateur',
-          subscribedAt: now,
-          newsletterSubscribed: type === 'newsletter',
-          loginCount: 0,
-          lastCodeSentAt: now,
+      // If user already exists → do NOT block signup/newsletter
+      if (user) {
+        // Newsletter should simply activate newsletterSubscribed
+        if (type === "newsletter") {
+          user.newsletterSubscribed = true;
+          await user.save();
+
+          return NextResponse.json({
+            success: true,
+            message: "Inscription à la newsletter confirmée.",
+          });
+        }
+
+        // Signup: user already exists → treat as success (no OTP)
+        return NextResponse.json({
+          success: true,
+          message: "Vous êtes déjà inscrit.",
         });
       }
+
+      // If user does NOT exist → create account
+      await Subscriber.create({
+        email: normalizedEmail,
+        name: name?.trim() || "Utilisateur",
+        subscribedAt: new Date(),
+        isActive: true,
+        newsletterSubscribed: type === "newsletter",
+        loginCount: 0,
+      });
 
       return NextResponse.json({
         success: true,
         message:
-          type === 'signup'
-            ? 'Compte créé avec succès.'
-            : 'Inscription à la newsletter réussie.',
+          type === "signup"
+            ? "Compte créé avec succès."
+            : "Inscription à la newsletter réussie.",
       });
     }
-
-    // ---------------------------------------------------------------------
-    // 4. SIGN-IN → OTP REQUIRED
-    // ---------------------------------------------------------------------
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
     await VerificationCode.findOneAndUpdate(
@@ -192,7 +204,9 @@ export async function POST(request: NextRequest) {
 
                   <!-- QR Code -->
                   <div style="text-align:center; margin-bottom:32px;">
-                    <img src="${qrUrl}" alt="QR Code" class="qr" style="width:220px; height:220px; border-radius:16px; border:1px solid #e5e7eb;" />
+                    <div style="padding:16px; background-color:#e0e7ff; display:inline-block; border-radius:16px; margin-bottom:14px; ">
+                      <img src="${qrUrl}" alt="QR Code" class="qr" style="width:220px; height:220px;" />
+                    </div>
                     <p style="font-size:13px; color:#6b7280; margin-top:12px;">
                       Scannez pour vous connecter automatiquement
                     </p>
@@ -214,7 +228,7 @@ export async function POST(request: NextRequest) {
                         letter-spacing:0.5px;
                         box-shadow:0 10px 20px rgba(239,68,68,0.25);
                       ">
-                      Se connecter automatiquement
+                      Connexion automatique
                     </a>
                   </div>
 
