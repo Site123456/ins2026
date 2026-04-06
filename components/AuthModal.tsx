@@ -338,78 +338,183 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                 exit="exit"
                 className="space-y-8"
               >
+                {/* HEADER */}
                 <motion.div variants={itemVariants}>
-                  <h2 className="text-4xl font-black dark:text-white tracking-tight">
-                    {mode === 'signin' ? 'Bon retour' : mode === 'newsletter' ? 'Rejoindre' : 'Créer un compte'}
+                  <h2
+                    className={`
+                      text-4xl font-black tracking-tight
+                      ${isDark ? "text-white" : "text-zinc-900"}
+                    `}
+                  >
+                    {mode === "signin"
+                      ? "Bon retour"
+                      : mode === "newsletter"
+                      ? "Rejoindre"
+                      : "Créer un compte"}
                   </h2>
-                  <p className="mt-3 text-zinc-400 text-lg">
-                    {mode === 'signup' 
-                      ? 'Réservez votre place au sommet de la gastronomie.' 
-                      : 'L\'excellence indienne à portée de clic.'}
+
+                  <p
+                    className={`
+                      mt-3 text-lg
+                      ${isDark ? "text-zinc-400" : "text-zinc-600"}
+                    `}
+                  >
+                    {mode === "signup"
+                      ? "Réservez votre place au sommet de la gastronomie."
+                      : "L'excellence indienne à portée de clic."}
                   </p>
                 </motion.div>
 
+                {/* FORM */}
                 <motion.form variants={itemVariants} onSubmit={handleRequestCode} className="space-y-5">
+                  {/* NAME FIELD */}
                   <div className="space-y-2.5">
-                    <label className="text-sm font-bold text-zinc-500 uppercase tracking-widest ml-1">Identité Complète</label>
+                    <label
+                      className={`
+                        text-sm font-bold uppercase tracking-widest ml-1
+                        ${isDark ? "text-zinc-500" : "text-zinc-700"}
+                      `}
+                    >
+                      Identité Complète
+                    </label>
+
                     <div className="relative group">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-xl bg-white/5 border border-white/5 group-focus-within:border-(--accent)/30 transition-all">
-                        <User className="w-4 h-4 text-zinc-500 group-focus-within:text-(--accent)" />
+                      <div
+                        className={`
+                          absolute left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-xl
+                          border transition-all
+                          ${isDark
+                            ? "bg-white/5 border-white/5 group-focus-within:border-(--accent)/30"
+                            : "bg-black/5 border-black/10 group-focus-within:border-(--accent)/40"}
+                        `}
+                      >
+                        <User
+                          className={`
+                            w-4 h-4 transition-colors
+                            ${isDark ? "text-zinc-500" : "text-zinc-600"}
+                            group-focus-within:text-(--accent)
+                          `}
+                        />
                       </div>
+
                       <input
                         required
                         type="text"
                         value={formData.name}
-                        onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))}
+                        onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
                         placeholder="Prénom & Nom"
-                        className="w-full pl-14 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-4 focus:ring-(--accent)/10 focus:border-(--accent) transition-all outline-none text-white placeholder:text-zinc-600"
+                        className={`
+                          w-full pl-14 pr-5 py-4 rounded-2xl outline-none transition-all
+                          border focus:ring-4 focus:ring-(--accent)/10 focus:border-(--accent)
+                          ${isDark
+                            ? "bg-white/5 border-white/10 text-white placeholder:text-zinc-600"
+                            : "bg-white border-black/10 text-zinc-900 placeholder:text-zinc-400"}
+                        `}
                       />
                     </div>
                   </div>
 
+                  {/* EMAIL FIELD */}
                   <div className="space-y-2.5">
-                    <label className="text-sm font-bold text-zinc-500 uppercase tracking-widest ml-1">Email</label>
+                    <label
+                      className={`
+                        text-sm font-bold uppercase tracking-widest ml-1
+                        ${isDark ? "text-zinc-500" : "text-zinc-700"}
+                      `}
+                    >
+                      Email
+                    </label>
+
                     <div className="relative group">
-                      <div className="absolute left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-xl bg-white/5 border border-white/5 group-focus-within:border-(--accent)/30 transition-all">
-                        <Mail className="w-4 h-4 text-zinc-500 group-focus-within:text-(--accent)" />
+                      <div
+                        className={`
+                          absolute left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-xl
+                          border transition-all
+                          ${isDark
+                            ? "bg-white/5 border-white/5 group-focus-within:border-(--accent)/30"
+                            : "bg-black/5 border-black/10 group-focus-within:border-(--accent)/40"}
+                        `}
+                      >
+                        <Mail
+                          className={`
+                            w-4 h-4 transition-colors
+                            ${isDark ? "text-zinc-500" : "text-zinc-600"}
+                            group-focus-within:text-(--accent)
+                          `}
+                        />
                       </div>
+
                       <input
                         required
                         type="email"
                         value={formData.email}
-                        onChange={(e) => setFormData(p => ({ ...p, email: e.target.value }))}
+                        onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
                         placeholder="chef@indian-swad.fr"
-                        className="w-full pl-14 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-4 focus:ring-(--accent)/10 focus:border-(--accent) transition-all outline-none text-white placeholder:text-zinc-600"
+                        className={`
+                          w-full pl-14 pr-5 py-4 rounded-2xl outline-none transition-all
+                          border focus:ring-4 focus:ring-(--accent)/10 focus:border-(--accent)
+                          ${isDark
+                            ? "bg-white/5 border-white/10 text-white placeholder:text-zinc-600"
+                            : "bg-white border-black/10 text-zinc-900 placeholder:text-zinc-400"}
+                        `}
                       />
                     </div>
                   </div>
 
+                  {/* SUBMIT BUTTON */}
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     disabled={isLoading}
-                    className="w-full py-5 bg-(--accent) hover:brightness-110 disabled:opacity-50 disabled:hover:brightness-100 rounded-[1.25rem] text-white font-black text-lg transition-all shadow-[0_20px_40px_rgba(239,68,68,0.25)] flex items-center justify-center gap-3"
+                    className={`
+                      w-full py-5 rounded-[1.25rem] font-black text-lg transition-all
+                      flex items-center justify-center gap-3
+                      bg-(--accent) text-white
+                      hover:brightness-110 disabled:opacity-50 disabled:hover:brightness-100
+                      shadow-[0_20px_40px_rgba(139,92,246,0.25)]
+                    `}
                   >
                     {isLoading ? (
                       <Loader2 className="w-6 h-6 animate-spin" />
                     ) : (
-                      <>Recevoir le code <ArrowLeft className="w-5 h-5 rotate-180" /></>
+                      <>
+                        Recevoir le code <ArrowLeft className="w-5 h-5 rotate-180" />
+                      </>
                     )}
                   </motion.button>
                 </motion.form>
 
+                {/* ERROR BLOCK */}
                 <AnimatePresence>
                   {error && (
-                    <motion.div 
+                    <motion.div
                       variants={shakeVariants}
                       animate="shake"
                       initial={{ opacity: 0, y: 10 }}
-                      className="p-5 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex gap-4 items-center"
+                      className={`
+                        p-5 rounded-2xl flex gap-4 items-center border
+                        ${isDark
+                          ? "bg-rose-500/10 border-rose-500/20"
+                          : "bg-rose-100 border-rose-300"}
+                      `}
                     >
-                      <div className="bg-rose-500/20 p-2 rounded-xl">
+                      <div
+                        className={`
+                          p-2 rounded-xl
+                          ${isDark ? "bg-rose-500/20" : "bg-rose-300"}
+                        `}
+                      >
                         <AlertCircle className="w-5 h-5 text-rose-500 shrink-0" />
                       </div>
-                      <p className="text-sm font-bold text-rose-400">{error}</p>
+
+                      <p
+                        className={`
+                          text-sm font-bold
+                          ${isDark ? "text-rose-400" : "text-rose-700"}
+                        `}
+                      >
+                        {error}
+                      </p>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -423,20 +528,40 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                 exit="exit"
                 className="space-y-10"
               >
+                {/* HEADER */}
                 <div className="text-center space-y-4">
-                  <motion.div 
+                  <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="mx-auto w-20 h-20 bg-(--accent)/10 rounded-[2rem] flex items-center justify-center mb-2 rotate-12"
+                    className={`
+                      mx-auto w-20 h-20 rounded-[2rem] flex items-center justify-center mb-2 rotate-12
+                      bg-(--accent)/10
+                    `}
                   >
                     <KeyRound className="w-10 h-10 text-(--accent)" />
                   </motion.div>
-                  <h2 className="text-3xl font-black">Vérification</h2>
-                  <p className="text-zinc-400 text-sm max-w-[280px] mx-auto leading-relaxed">
-                    Saisissez les 6 chiffres envoyés à <span className="text-white font-black break-all">{formData.email}</span>
+
+                  <h2
+                    className={`
+                      text-3xl font-black
+                      ${isDark ? "text-white" : "text-zinc-900"}
+                    `}
+                  >
+                    Vérification
+                  </h2>
+
+                  <p
+                    className={`
+                      text-sm max-w-[280px] mx-auto leading-relaxed
+                      ${isDark ? "text-zinc-400" : "text-zinc-600"}
+                    `}
+                  >
+                    Saisissez les 6 chiffres envoyés à{" "}
+                    <span className={isDark ? "text-white" : "text-zinc-900"}>{formData.email}</span>
                   </p>
                 </div>
 
+                {/* OTP INPUTS */}
                 <div className="flex justify-between gap-2.5">
                   {otp.map((digit, i) => (
                     <motion.div
@@ -447,7 +572,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                       className="relative group flex-1"
                     >
                       <input
-                        ref={el => { otpRefs.current[i] = el; }}
+                        ref={(el) => { otpRefs.current[i] = el }}
                         type="text"
                         inputMode="decimal"
                         maxLength={1}
@@ -455,48 +580,101 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                         onChange={(e) => handleOtpChange(i, e.target.value)}
                         onKeyDown={(e) => handleKeyDown(i, e)}
                         className={`
-                          w-full h-16 text-center text-3xl font-black bg-white/5 border border-white/10 rounded-2xl 
-                          focus:border-(--accent) focus:ring-4 focus:ring-(--accent)/10 outline-none transition-all
-                          ${digit ? 'text-(--accent) border-(--accent)/50 bg-(--accent)/5' : 'text-white'}
+                          w-full h-16 text-center text-3xl font-black rounded-2xl outline-none transition-all
+                          border focus:border-(--accent) focus:ring-4 focus:ring-(--accent)/10
+
+                          ${isDark
+                            ? "bg-white/5 border-white/10 text-white placeholder:text-zinc-600"
+                            : "bg-white border-black/10 text-zinc-900 placeholder:text-zinc-400"
+                          }
+
+                          ${digit
+                            ? "text-(--accent) border-(--accent)/50 bg-(--accent)/5"
+                            : ""
+                          }
                         `}
                       />
-                      {digit === '' && (
-                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-white/20 group-focus-within:bg-(--accent) transition-colors" />
+
+                      {/* Dot indicator */}
+                      {digit === "" && (
+                        <div
+                          className={`
+                            absolute bottom-3 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full transition-colors
+                            ${isDark ? "bg-white/20 group-focus-within:bg-(--accent)" : "bg-black/20 group-focus-within:bg-(--accent)"}
+                          `}
+                        />
                       )}
                     </motion.div>
                   ))}
                 </div>
 
+                {/* ACTIONS */}
                 <div className="space-y-6">
+                  {/* VERIFY BUTTON */}
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleVerifyCode()}
-                    disabled={isLoading || otp.join('').length < 6}
-                    className="w-full py-5 bg-white text-black hover:bg-zinc-200 disabled:opacity-30 disabled:hover:bg-white rounded-[1.25rem] font-black text-lg transition-all shadow-xl shadow-black/20"
+                    disabled={isLoading || otp.join("").length < 6}
+                    className={`
+                      w-full py-5 rounded-[1.25rem] font-black text-lg transition-all flex items-center justify-center gap-3
+                      shadow-xl
+
+                      ${isDark
+                        ? "bg-white text-black hover:bg-zinc-200 shadow-black/20"
+                        : "bg-black text-white hover:bg-zinc-800 shadow-black/30"
+                      }
+
+                      disabled:opacity-30 disabled:hover:bg-inherit
+                    `}
                   >
-                    {isLoading ? <Loader2 className="w-7 h-7 animate-spin mx-auto text-black" /> : 'Finaliser la connexion'}
+                    {isLoading ? (
+                      <Loader2
+                        className={`
+                          w-7 h-7 animate-spin mx-auto
+                          ${isDark ? "text-black" : "text-white"}
+                        `}
+                      />
+                    ) : (
+                      "Finaliser la connexion"
+                    )}
                   </motion.button>
 
+                  {/* RESEND CODE */}
                   <div className="flex flex-col items-center gap-4">
                     <button
                       disabled={resendCooldown > 0 || isLoading}
                       onClick={handleResend}
-                      className="group text-sm font-bold text-zinc-500 hover:text-white disabled:text-zinc-700 transition-all flex items-center gap-2.5"
+                      className={`
+                        group text-sm font-bold transition-all flex items-center gap-2.5
+                        ${isDark
+                          ? "text-zinc-500 hover:text-white disabled:text-zinc-700"
+                          : "text-zinc-600 hover:text-black disabled:text-zinc-400"
+                        }
+                      `}
                     >
-                      <div className={`p-1.5 rounded-lg border border-white/5 flex items-center justify-center ${resendCooldown > 0 ? '' : 'group-hover:border-white/20 group-hover:bg-white/5'}`}>
+                      <div
+                        className={`
+                          p-1.5 rounded-lg border flex items-center justify-center transition-all
+                          ${isDark
+                            ? "border-white/5 group-hover:border-white/20 group-hover:bg-white/5"
+                            : "border-black/10 group-hover:border-black/20 group-hover:bg-black/5"
+                          }
+                        `}
+                      >
                         {resendCooldown > 0 ? (
                           <div className="relative w-4 h-4 flex items-center justify-center">
                             <span className="text-[10px] font-black text-(--accent)">{resendCooldown}</span>
+
                             <svg className="absolute inset-0 w-full h-full -rotate-90">
-                              <circle 
-                                cx="50%" cy="50%" r="7" 
-                                fill="none" stroke="currentColor" strokeWidth="2" 
-                                className="text-white/5"
+                              <circle
+                                cx="50%" cy="50%" r="7"
+                                fill="none" strokeWidth="2"
+                                className={isDark ? "text-white/5" : "text-black/10"}
                               />
-                              <circle 
-                                cx="50%" cy="50%" r="7" 
-                                fill="none" stroke="currentColor" strokeWidth="2" 
+                              <circle
+                                cx="50%" cy="50%" r="7"
+                                fill="none" strokeWidth="2"
                                 className="text-(--accent)"
                                 strokeDasharray="44"
                                 strokeDashoffset={44 * (1 - resendCooldown / 30)}
@@ -504,32 +682,58 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                             </svg>
                           </div>
                         ) : (
-                          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+                          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
                         )}
                       </div>
-                      {resendCooldown > 0 ? 'Code renvoyé' : 'Renvoyer un nouveau code'}
+
+                      {resendCooldown > 0 ? "Code renvoyé" : "Renvoyer un nouveau code"}
                     </button>
-                    
+
                     {resendCooldown > 0 && (
-                      <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">
+                      <p
+                        className={`
+                          text-[10px] font-bold uppercase tracking-widest
+                          ${isDark ? "text-zinc-600" : "text-zinc-500"}
+                        `}
+                      >
                         Sécurité active • Patientez {resendCooldown}s
                       </p>
                     )}
                   </div>
                 </div>
 
+                {/* ERROR */}
                 <AnimatePresence>
                   {error && (
-                    <motion.div 
+                    <motion.div
                       variants={shakeVariants}
                       animate="shake"
                       initial={{ opacity: 0, scale: 0.95 }}
-                      className="p-5 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex gap-4 items-center"
+                      className={`
+                        p-5 rounded-2xl flex gap-4 items-center border
+                        ${isDark
+                          ? "bg-rose-500/10 border-rose-500/20"
+                          : "bg-rose-100 border-rose-300"
+                        }
+                      `}
                     >
-                      <div className="bg-rose-500/20 p-2 rounded-xl">
+                      <div
+                        className={`
+                          p-2 rounded-xl
+                          ${isDark ? "bg-rose-500/20" : "bg-rose-300"}
+                        `}
+                      >
                         <AlertCircle className="w-5 h-5 text-rose-500 shrink-0" />
                       </div>
-                      <p className="text-sm font-bold text-rose-400">{error}</p>
+
+                      <p
+                        className={`
+                          text-sm font-bold
+                          ${isDark ? "text-rose-400" : "text-rose-700"}
+                        `}
+                      >
+                        {error}
+                      </p>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -539,21 +743,41 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
 
           {/* Switch Link */}
           {!success && step === 1 && (
-            <motion.div 
+            <motion.div
               variants={itemVariants}
-              className={`mt-10 pt-6 border-t ${isDark ? 'border-white/5' : 'border-zinc-100'} text-center`}
+              className={`
+                mt-10 pt-6 text-center transition-all
+                border-t
+                ${isDark ? "border-white/5" : "border-zinc-200"}
+              `}
             >
-              <p className="text-sm font-bold text-zinc-500 tracking-wide uppercase">
-                {mode === 'signin' ? "Nouveau client ?" : "Déjà un compte ?"}
+              <p
+                className={`
+                  text-sm font-bold tracking-wide uppercase
+                  ${isDark ? "text-zinc-500" : "text-zinc-600"}
+                `}
+              >
+                {mode === "signin" ? "Nouveau client ?" : "Déjà un compte ?"}
+
                 <button
-                  onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(''); }}
-                  className="ml-2 text-white hover:underline transition-all font-black decoration-2 underline-offset-4 decoration-(--accent)"
+                  onClick={() => {
+                    setMode(mode === "signin" ? "signup" : "signin");
+                    setError("");
+                  }}
+                  className={`
+                    ml-2 font-black underline-offset-4 decoration-2 transition-all
+                    ${isDark
+                      ? "text-white hover:text-(--accent) decoration-(--accent)"
+                      : "text-zinc-900 hover:text-(--accent) decoration-(--accent)"
+                    }
+                  `}
                 >
-                  {mode === 'signin' ? "S'inscrire" : "Se connecter"}
+                  {mode === "signin" ? "S'inscrire" : "Se connecter"}
                 </button>
               </p>
             </motion.div>
           )}
+
         </div>
       </motion.div>
     </div>
