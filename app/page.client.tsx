@@ -573,8 +573,7 @@ const Page: React.FC = () => {
             <motion.div
               className="
                 pointer-events-none absolute z-2
-                right-4 top-18
-                md:top-6
+                right-4 top-18 md:top-24
               "
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}

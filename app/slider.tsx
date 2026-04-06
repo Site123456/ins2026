@@ -2010,17 +2010,16 @@ export default function SliderLayout({
       </aside>
       <header
         className={`
-          fixed inset-x-0 top-0 z-30
-          flex h-14 items-center justify-between
-          px-4 md:hidden backdrop-blur-2xl
+          fixed inset-x-0 top-0 z-30 flex items-center justify-between
+          h-14 px-3 sm:px-4 md:hidden backdrop-blur-2xl
           transition-all duration-300
           ${
             isDark
               ? scrolled
-                ? "bg-[#0a0a0f]/55 border-b border-white/4 shadow-lg shadow-black/20"
+                ? "bg-[#0a0a0f]/60 border-b border-white/10 shadow-lg shadow-black/20"
                 : "bg-transparent border-b border-transparent"
               : scrolled
-              ? "bg-[#fdfcfb]/55 border-b border-zinc-200 shadow-lg shadow-black/5"
+              ? "bg-white/70 border-b border-zinc-200 shadow-lg shadow-black/5"
               : "bg-white border-b border-transparent"
           }
         `}
@@ -2032,52 +2031,61 @@ export default function SliderLayout({
             setMobileOpen(true);
           }}
           className={`
-            flex h-10 w-10 items-center justify-center rounded-xl
+            flex items-center justify-center rounded-xl
             transition-all duration-200
+            h-9 w-9 sm:h-10 sm:w-10
             ${
               isDark
                 ? "text-white bg-black/60 hover:bg-black border border-white/10"
-                : "text-zinc-900 bg-white/60 hover:bg-white border border-zinc-200"
+                : "text-zinc-900 bg-white/70 hover:bg-white border border-zinc-200"
             }
           `}
         >
-          <Menu className="h-5 w-5" />
+          <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
         </button>
 
+        {/* Title (left-aligned, responsive, overflow-safe) */}
         <div
           className={`
-            absolute left-1/2 -translate-x-1/2
-            max-w-[60%] truncate
-            text-sm font-medium pointer-events-none
+            flex-1 ml-3 truncate
+            text-[11px] xs:text-xs sm:text-sm
+            font-medium
             ${isDark ? "text-white/80" : "text-zinc-800"}
           `}
         >
           {pageTitle}
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Right: Auth + Settings */}
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <AuthButtons isDark={isDark} accent={accent} />
+
           <button
             onClick={() => openPanel("appearance")}
             className={`
-              flex h-10 w-10 items-center justify-center rounded-xl
+              flex items-center justify-center rounded-xl
               transition-all duration-200
+              h-9 w-9 sm:h-10 sm:w-10
               ${
                 isDark
                   ? "text-white bg-black/60 hover:bg-black border border-white/10"
-                  : "text-zinc-900 bg-white/60 hover:bg-white border border-zinc-200"
+                  : "text-zinc-900 bg-white/70 hover:bg-white border border-zinc-200"
               }
             `}
           >
-            <Settings className="h-5 w-5" />
+            <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
         </div>
       </header>
-
-      {/* Desktop Auth Header - Fixed Top Right */}
-      <div className="fixed top-4 right-4 z-40 hidden md:block animate-in slide-in-from-top-2 duration-700 delay-300">
+      <div
+        className="
+          fixed top-8 right-4 z-40 hidden md:block
+          animate-in slide-in-from-top-2 duration-700 delay-300
+        "
+      >
         <AuthButtons isDark={isDark} accent={accent} />
       </div>
+
 
       <main
         className={`
