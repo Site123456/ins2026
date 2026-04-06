@@ -80,7 +80,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
           <div>
             <div
               className={`
-                fixed right-2 top-18 z-101 w-64 sm:w-56
+                fixed right-2 top-20 z-101 w-64 sm:w-56
                 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
                 ${showDropdown
                   ? 'opacity-100 translate-y-0 scale-100'
@@ -168,11 +168,9 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
                 </div>
               </div>
             </div>
-            
             {showDropdown && (
               <div
-                className="fixed inset-0 z-48 sm:hidden bg-black/40 backdrop-blur-sm"
-                onClick={() => setShowDropdown(false)}
+                className="fixed inset-0 z-48 sm:hidden bg-black/40 backdrop-blur-sm pointer-events-none"
               />
             )}
           </div>
