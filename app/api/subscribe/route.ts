@@ -17,18 +17,22 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     // Check if subscriber already exists
-    const existingSubscriber = await Subscriber.findOne({ email: email.toLowerCase() });
-    if (existingSubscriber) {
-      return NextResponse.json({ error: 'Email already subscribed' }, { status: 409 });
+    let subscriber = await Subscriber.findOne({ email: email.toLowerCase() });
+    
+    if (subscriber) {
+      subscriber.name = name.trim() || subscriber.name;
+      subscriber.newsletterSubscribed = true;
+      await subscriber.save();
+    } else {
+      // Create new subscriber
+      subscriber = new Subscriber({
+        email: email.toLowerCase(),
+        name: name.trim(),
+        newsletterSubscribed: true,
+        isActive: true,
+      });
+      await subscriber.save();
     }
-
-    // Create new subscriber
-    const subscriber = new Subscriber({
-      email: email.toLowerCase(),
-      name: name.trim(),
-    });
-
-    await subscriber.save();
 
     const htmlContent = `
 <!DOCTYPE html>

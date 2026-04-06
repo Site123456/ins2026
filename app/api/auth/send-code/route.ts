@@ -17,29 +17,28 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     const normalizedEmail = email.toLowerCase();
+    const now = new Date();
 
-    // Check subscriber status for signin
-    if (type === 'signin') {
-      const subscriber = await Subscriber.findOne({ email: normalizedEmail });
-      if (!subscriber) {
-        return NextResponse.json({ error: 'Account not found. Please sign up first.' }, { status: 404 });
-      }
-      if (!subscriber.isActive) {
-        return NextResponse.json({ error: 'Account deactivated. Please contact support.' }, { status: 403 });
-      }
+    // Check subscriber status and cooldown
+    const subscriber = await Subscriber.findOne({ email: normalizedEmail });
+    
+    if (type === 'signin' && !subscriber) {
+      return NextResponse.json({ error: 'Compte introuvable. Veuillez vous inscrire.' }, { status: 404 });
     }
 
-    // Check if a code was sent recently (cooldown 30s)
-    const existingCode = await VerificationCode.findOne({
-      email: normalizedEmail,
-      type,
-      createdAt: { $gt: new Date(Date.now() - 30 * 1000) }
-    });
+    if (subscriber && !subscriber.isActive) {
+      return NextResponse.json({ error: 'Compte désactivé. Veuillez contacter le support.' }, { status: 403 });
+    }
 
-    if (existingCode) {
+    // Check cooldown (30s) from either VerificationCode or Subscriber
+    const cooldownPeriod = 30 * 1000;
+    const lastSent = subscriber?.lastCodeSentAt || (await VerificationCode.findOne({ email: normalizedEmail, type }))?.createdAt;
+
+    if (lastSent && (now.getTime() - lastSent.getTime() < cooldownPeriod)) {
+      const waitTime = Math.ceil((cooldownPeriod - (now.getTime() - lastSent.getTime())) / 1000);
       return NextResponse.json({ 
-        error: 'Please wait before requesting another code.',
-        nextAllowedAt: new Date(existingCode.createdAt.getTime() + 30 * 1000)
+        error: `Veuillez patienter ${waitTime}s avant de demander un nouveau code.`,
+        nextAllowedAt: new Date(lastSent.getTime() + cooldownPeriod)
       }, { status: 429 });
     }
 
@@ -52,13 +51,19 @@ export async function POST(request: NextRequest) {
       { 
         code, 
         name,
-        expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
+        expiresAt: new Date(now.getTime() + 10 * 60 * 1000), // 10 minutes
         used: false,
         attempts: 0,
-        createdAt: new Date()
+        createdAt: now
       },
       { upsert: true, new: true }
     );
+
+    // Update subscriber's lastCodeSentAt
+    if (subscriber) {
+      subscriber.lastCodeSentAt = now;
+      await subscriber.save();
+    }
 
     // Send email using Resend
     const htmlContent = `
@@ -69,50 +74,74 @@ export async function POST(request: NextRequest) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     @media only screen and (max-width: 600px) {
-      .container { padding: 16px !important; }
-      .code { font-size: 32px !important; letter-spacing: 4px !important; }
+      .container { padding: 24px 16px !important; }
+      .code-box { padding: 32px 16px !important; }
+      .code { font-size: 36px !important; letter-spacing: 6px !important; }
     }
   </style>
 </head>
-<body style="margin:0; padding:0; background:#f9fafb; font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb; padding:40px 0;">
+<body style="margin:0; padding:0; background-color:#f4f4f7; font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;-webkit-font-smoothing:antialiased;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f7; padding:40px 0;">
     <tr>
       <td align="center">
-        <table width="500" cellpadding="0" cellspacing="0" class="container" style="background:#fff; border-radius:24px; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,0.05); border: 1px solid #f1f5f9;">
-          <!-- Header -->
+        <table width="560" cellpadding="0" cellspacing="0" class="container" style="background-color:#ffffff; border-radius:32px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.08); border: 1px solid #eef2f6;">
+          
+          <!-- Header (Centéred & Modern) -->
           <tr>
-            <td style="background:linear-gradient(135deg,#ef4444,#dc2626); padding:40px 32px; text-align:center;">
-              <div style="display:inline-block; background:#fff; padding:8px; border-radius:16px; margin-bottom:20px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+            <td style="padding:48px 32px 32px; text-align:center;">
+              <div style="display:inline-block; background-color:#fff1f2; padding:12px; border-radius:24px; margin-bottom:24px;">
                 <img src="https://indian-nepaliswad.fr/etc/logo.png" alt="INS" style="height:64px; display:block;" />
               </div>
-              <h1 style="margin:0; font-size:24px; font-weight:800; color:#fff; letter-spacing:-0.5px;">Verification Code</h1>
+              <h1 style="margin:0; font-size:28px; font-weight:800; color:#111827; letter-spacing:-0.5px; line-height:1.2;">Verification Code</h1>
+              <p style="margin:12px 0 0; font-size:16px; color:#6b7280; font-weight:500;">Your secure login verification</p>
             </td>
           </tr>
+
           <!-- Body -->
           <tr>
-            <td style="padding:40px 32px; text-align:center;">
-              <p style="font-size:16px; color:#4b5563; margin-bottom:32px; line-height:1.6;">
-                Hello${name ? ' <strong>' + name + '</strong>' : ''},<br>
-                Use the following code to complete your ${type === 'signin' ? 'sign in' : 'sign up'}. This code will expire in 10 minutes.
+            <td style="padding:0 40px 48px;">
+              <div style="height:1px; background-color:#f1f5f9; margin-bottom:40px;"></div>
+              
+              <p style="font-size:16px; color:#374151; margin-bottom:32px; line-height:1.6; text-align:center;">
+                Bonjour${name ? ' <strong>' + name + '</strong>' : ''},<br>
+                Utilisez le code de sécurité ci-dessous pour finaliser votre ${type === 'signin' ? 'connexion' : 'inscription'}. Ce code expirera dans <strong>10 minutes</strong>.
               </p>
               
-              <div style="background:#f8fafc; border:2px dashed #e2e8f0; border-radius:16px; padding:24px; margin-bottom:32px;">
-                <div style="font-size:42px; font-weight:800; color:#ef4444; letter-spacing:8px; font-family:monospace; margin-bottom:8px;">${code}</div>
-                <p style="margin:0; font-size:12px; color:#94a3b8; text-transform:uppercase; font-weight:600; letter-spacing:1px;">Security Code</p>
+              <!-- Premium Code Display -->
+              <div class="code-box" style="background-color:#f8fafc; border:2px solid #f1f5f9; border-radius:24px; padding:40px; text-align:center; margin-bottom:32px; position:relative;">
+                <div style="font-size:48px; font-weight:900; color:#ef4444; letter-spacing:12px; font-family:ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace; line-height:1;">
+                  ${code}
+                </div>
+                <div style="margin-top:16px; font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:700; letter-spacing:2px;">Sécurité INS</div>
               </div>
 
-              <p style="font-size:14px; color:#6b7280; line-height:1.6;">
-                If you didn't request this code, you can safely ignore this email.
+              <p style="font-size:14px; color:#94a3b8; text-align:center; line-height:1.6; margin:0;">
+                Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email en toute sécurité. 
+                Veuillez ne jamais partager ce code avec qui que ce soit.
               </p>
             </td>
           </tr>
-          <!-- Footer -->
+
+          <!-- Footer Area -->
           <tr>
-            <td style="padding:32px; background:#f8fafc; border-top:1px solid #f1f5f9; text-align:center;">
-              <p style="margin:0; font-size:12px; color:#94a3b8;">
-                © 2026 Indian Nepali Swad<br>
-                4 Rue Bargue, 75015 Paris | 79 Rue du Landy, 93300 Aubervilliers
+            <td style="padding:40px 32px; background-color:#111827; text-align:center;">
+              <p style="margin:0; font-size:13px; color:#94a3b8; font-weight:500;">
+                &copy; 2026 Indian Nepali Swad Excellence
               </p>
+              <p style="margin:8px 0 0; font-size:11px; color:#4b5563;">
+                4 Rue Bargue, 75015 Paris &bull; 79 Rue du Landy, 93300 Aubervilliers
+              </p>
+            </td>
+          </tr>
+        </table>
+        
+        <!-- Bottom Links -->
+        <table width="560" cellpadding="0" cellspacing="0" style="margin-top:24px;">
+          <tr>
+            <td style="text-align:center;">
+              <a href="https://indian-nepaliswad.fr" style="font-size:12px; color:#94a3b8; text-decoration:none; margin:0 12px; font-weight:600;">Website</a>
+              <a href="#" style="font-size:12px; color:#94a3b8; text-decoration:none; margin:0 12px; font-weight:600;">Support</a>
+              <a href="#" style="font-size:12px; color:#94a3b8; text-decoration:none; margin:0 12px; font-weight:600;">Privacy</a>
             </td>
           </tr>
         </table>

@@ -46,6 +46,8 @@ const SubscriberSchema = new mongoose.Schema<ISubscriber>({
   lastCodeSentAt: {
     type: Date,
   },
+}, {
+  timestamps: true,
 });
 
 // Create indexes for better performance

@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { X, Mail, User, CheckCircle, AlertCircle, Loader2, ArrowLeft, RefreshCw, KeyRound } from 'lucide-react';
+import { X, Mail, User, CheckCircle, AlertCircle, Loader2, ArrowLeft, RefreshCw, KeyRound, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -13,6 +13,34 @@ interface AuthModalProps {
   isDark: boolean;
   accent: string;
 }
+
+const shakeVariants: Variants = {
+  shake: {
+    x: [0, -10, 10, -10, 10, 0],
+    transition: { duration: 0.4 }
+  }
+};
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0, scale: 0.95, y: 20 },
+  visible: { 
+    opacity: 1, 
+    scale: 1, 
+    y: 0,
+    transition: { 
+      type: 'spring', 
+      damping: 25, 
+      stiffness: 300,
+      staggerChildren: 0.1
+    }
+  },
+  exit: { opacity: 0, scale: 0.95, y: 20, transition: { duration: 0.2 } }
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0 }
+};
 
 export default function AuthModal({ isOpen, onClose, mode: initialMode, email: initialEmail = '', isDark, accent }: AuthModalProps) {
   const { requestCode, verifyCode, user } = useAuth();
@@ -42,13 +70,14 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
       setError('');
       setSuccess('');
       setIsCodeSent(false);
+      setOtp(['', '', '', '', '', '']);
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
       const timer = setTimeout(() => setIsVisible(false), 300);
       return () => clearTimeout(timer);
     }
-  }, [isOpen, initialMode]);
+  }, [isOpen, initialMode, initialEmail]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -71,9 +100,9 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
       setStep(2);
       setIsCodeSent(true);
       setResendCooldown(30);
-      setTimeout(() => setIsCodeSent(false), 3000);
+      setTimeout(() => setIsCodeSent(false), 4000);
     } else {
-      setError(result.error || 'Failed to send code');
+      setError(result.error || 'Échec de l\'envoi du code');
     }
     setIsLoading(false);
   };
@@ -91,10 +120,10 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
     if (result.success) {
       setSuccess(
         mode === 'signup' 
-          ? 'Bienvenue ! Votre compte a été créé.' 
+          ? 'Bienvenue ! Votre compte a été créé avec succès ✨' 
           : mode === 'newsletter' 
-          ? 'Merci ! Inscription à la newsletter réussie.'
-          : 'Heureux de vous revoir !'
+          ? 'Merci ! Inscription à la newsletter réussie 📧'
+          : 'Heureux de vous revoir ! Connexion réussie 🔓'
       );
       setTimeout(() => {
         onClose();
@@ -102,7 +131,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
         setOtp(['', '', '', '', '', '']);
         setStep(1);
         setSuccess('');
-      }, 2000);
+      }, 2500);
     } else {
       setError(result.error || 'Code invalide ou expiré');
     }
@@ -119,6 +148,10 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
     if (value && index < 5) {
       otpRefs.current[index + 1]?.focus();
     }
+
+    if (newOtp.every(v => v !== '') && index === 5) {
+      handleVerifyCode();
+    }
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -130,11 +163,14 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
   const handleResend = async () => {
     if (resendCooldown > 0) return;
     setIsLoading(true);
+    setError('');
     const result = await requestCode(formData.email, mode, formData.name);
     if (result.success) {
       setIsCodeSent(true);
       setResendCooldown(30);
-      setTimeout(() => setIsCodeSent(false), 3000);
+      setTimeout(() => setIsCodeSent(false), 4000);
+    } else {
+      setError(result.error || 'Échec du renvoi');
     }
     setIsLoading(false);
   };
@@ -143,239 +179,341 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
+      {/* Backdrop with sophisticated blur */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-black/60 backdrop-blur-md"
+        className="absolute inset-0 bg-black/70 backdrop-blur-xl"
         onClick={onClose}
       />
 
-      {/* Code Sent Popup Notification */}
+      {/* Code Sent Toast Notification */}
       <AnimatePresence>
         {isCodeSent && (
           <motion.div
-            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            initial={{ opacity: 0, y: -40, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className="fixed top-8 left-1/2 -translate-x-1/2 z-[60] bg-white dark:bg-zinc-900 border border-emerald-500/20 shadow-2xl rounded-2xl px-6 py-3 flex items-center gap-3"
+            exit={{ opacity: 0, y: -40, scale: 0.9 }}
+            className="fixed top-8 left-1/2 -translate-x-1/2 z-[70] bg-zinc-900 border border-emerald-500/30 shadow-[0_0_40px_rgba(16,185,129,0.2)] rounded-2xl px-6 py-4 flex items-center gap-4"
           >
-            <div className="bg-emerald-500/20 p-1.5 rounded-full">
-              <CheckCircle className="w-4 h-4 text-emerald-500" />
+            <div className="bg-emerald-500/20 p-2 rounded-full">
+              <ShieldCheck className="w-5 h-5 text-emerald-500" />
             </div>
-            <span className="text-sm font-semibold dark:text-white">Code envoyé à votre email !</span>
+            <div>
+              <p className="text-sm font-bold text-white leading-none">Code de sécurité envoyé !</p>
+              <p className="text-xs text-zinc-400 mt-1">Consultez votre boîte mail {formData.email}</p>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Modal */}
+      {/* Modal Container */}
       <motion.div
         layout
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
         className={`
-          relative w-full max-w-md overflow-hidden rounded-3xl border shadow-2xl
-          ${isDark ? 'bg-[#0a0a0f]/95 border-white/10' : 'bg-white/95 border-zinc-200'}
-          backdrop-blur-2xl
+          relative w-full max-w-md overflow-hidden rounded-[2.5rem] border shadow-[0_32px_128px_rgba(0,0,0,0.5)]
+          ${isDark ? 'bg-[#0a0a0f]/90 border-white/10' : 'bg-white border-zinc-200'}
+          backdrop-blur-3xl
         `}
       >
+        {/* Animated Gradient Border Overlay */}
+        <div className="absolute inset-0 pointer-events-none opacity-20">
+          <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_120deg,(--accent)_180deg,transparent_240deg,transparent_360deg)] animate-[spin_8s_linear_infinite]" />
+        </div>
+
         {/* Progress Bar (at very top) */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-zinc-800/20">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-black/10">
           <motion.div 
-            className="h-full bg-(--accent)"
+            className="h-full bg-(--accent) shadow-[0_0_12px_var(--accent)]"
             initial={{ width: '0%' }}
             animate={{ width: step === 1 ? '50%' : '100%' }}
-            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           />
         </div>
 
         {/* Close & Back Buttons */}
-        <div className="flex items-center justify-between p-6 pb-0">
+        <div className="flex items-center justify-between p-8 pb-4">
           {step === 2 ? (
-            <button
-              onClick={() => setStep(1)}
-              className="group flex items-center gap-2 text-sm text-zinc-500 hover:text-zinc-300 transition-colors"
+            <motion.button
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              onClick={() => { setStep(1); setError(''); }}
+              className="group flex items-center gap-2 text-sm font-bold text-zinc-400 hover:text-white transition-colors"
             >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              <div className="p-1.5 rounded-lg bg-white/5 border border-white/5 group-hover:border-white/10 transition-all">
+                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              </div>
               Retour
-            </button>
+            </motion.button>
           ) : <div />}
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-white/5 transition-colors"
+            className="p-2.5 rounded-full bg-white/5 border border-white/5 hover:border-white/20 hover:scale-110 active:scale-95 transition-all"
           >
-            <X className="w-5 h-5 text-zinc-500" />
+            <X className="w-5 h-5 text-zinc-400" />
           </button>
         </div>
 
-        <div className="p-8 pt-6">
+        <div className="p-8 pt-2">
           <AnimatePresence mode="wait">
-            {step === 1 ? (
+            {success ? (
+              <motion.div
+                key="success"
+                initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                className="text-center py-12 space-y-6"
+              >
+                <div className="mx-auto w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center relative">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', damping: 10, delay: 0.2 }}
+                  >
+                    <CheckCircle className="w-16 h-16 text-emerald-500" />
+                  </motion.div>
+                  <motion.div 
+                    className="absolute inset-0 rounded-full border-2 border-emerald-500/50"
+                    animate={{ scale: [1, 1.4], opacity: [0.5, 0] }}
+                    transition={{ duration: 1, repeat: Infinity }}
+                  />
+                </div>
+                <h2 className="text-2xl font-bold text-white leading-tight px-4">{success}</h2>
+                <div className="flex items-center justify-center gap-2 text-emerald-500/80 font-medium">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Redirection...
+                </div>
+              </motion.div>
+            ) : step === 1 ? (
               <motion.div
                 key="step1"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className="space-y-6"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="space-y-8"
               >
-                <div>
-                  <h2 className="text-3xl font-bold dark:text-white">
-                    {mode === 'signin' ? 'Bon retour' : mode === 'newsletter' ? 'Newsletter' : 'Créer un compte'}
+                <motion.div variants={itemVariants}>
+                  <h2 className="text-4xl font-black dark:text-white tracking-tight">
+                    {mode === 'signin' ? 'Bon retour' : mode === 'newsletter' ? 'Rejoindre' : 'Créer un compte'}
                   </h2>
-                  <p className="mt-2 text-zinc-400">
+                  <p className="mt-3 text-zinc-400 text-lg">
                     {mode === 'signup' 
-                      ? 'Rejoignez-nous pour des saveurs exclusives' 
-                      : 'Nous vous enverrons un code de vérification'}
+                      ? 'Réservez votre place au sommet de la gastronomie.' 
+                      : 'L\'excellence indienne à portée de clic.'}
                   </p>
-                </div>
+                </motion.div>
 
-                <form onSubmit={handleRequestCode} className="space-y-4">
+                <motion.form variants={itemVariants} onSubmit={handleRequestCode} className="space-y-5">
                   {(mode === 'signup' || mode === 'newsletter') && (
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-zinc-400">Nom Complet</label>
+                    <div className="space-y-2.5">
+                      <label className="text-sm font-bold text-zinc-500 uppercase tracking-widest ml-1">Identité</label>
                       <div className="relative group">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 transition-colors group-focus-within:text-(--accent)" />
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-xl bg-white/5 border border-white/5 group-focus-within:border-(--accent)/30 transition-all">
+                          <User className="w-4 h-4 text-zinc-500 group-focus-within:text-(--accent)" />
+                        </div>
                         <input
                           required
                           type="text"
                           value={formData.name}
                           onChange={(e) => setFormData(p => ({ ...p, name: e.target.value }))}
-                          placeholder="Votre nom"
-                          className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-(--accent)/20 focus:border-(--accent) transition-all outline-none"
+                          placeholder="Votre nom complet"
+                          className="w-full pl-14 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-4 focus:ring-(--accent)/10 focus:border-(--accent) transition-all outline-none text-white placeholder:text-zinc-600"
                         />
                       </div>
                     </div>
                   )}
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-zinc-400">Adresse Email</label>
+                  <div className="space-y-2.5">
+                    <label className="text-sm font-bold text-zinc-500 uppercase tracking-widest ml-1">Email</label>
                     <div className="relative group">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500 transition-colors group-focus-within:text-(--accent)" />
+                      <div className="absolute left-4 top-1/2 -translate-y-1/2 p-1.5 rounded-xl bg-white/5 border border-white/5 group-focus-within:border-(--accent)/30 transition-all">
+                        <Mail className="w-4 h-4 text-zinc-500 group-focus-within:text-(--accent)" />
+                      </div>
                       <input
                         required
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData(p => ({ ...p, email: e.target.value }))}
-                        placeholder="nom@exemple.com"
-                        className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-(--accent)/20 focus:border-(--accent) transition-all outline-none"
+                        placeholder="chef@indian-swad.fr"
+                        className="w-full pl-14 pr-5 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-4 focus:ring-(--accent)/10 focus:border-(--accent) transition-all outline-none text-white placeholder:text-zinc-600"
                       />
                     </div>
                   </div>
 
-                  <button
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     disabled={isLoading}
-                    className="w-full py-4 bg-(--accent) hover:brightness-110 active:scale-[0.98] rounded-2xl text-white font-bold transition-all shadow-lg shadow-(--accent)/20 flex items-center justify-center gap-2"
+                    className="w-full py-5 bg-(--accent) hover:brightness-110 disabled:opacity-50 disabled:hover:brightness-100 rounded-[1.25rem] text-white font-black text-lg transition-all shadow-[0_20px_40px_rgba(239,68,68,0.25)] flex items-center justify-center gap-3"
                   >
                     {isLoading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <Loader2 className="w-6 h-6 animate-spin" />
                     ) : (
-                      <>Recevoir mon code <ArrowLeft className="w-4 h-4 rotate-180" /></>
+                      <>Recevoir le code <ArrowLeft className="w-5 h-5 rotate-180" /></>
                     )}
-                  </button>
-                </form>
+                  </motion.button>
+                </motion.form>
 
-                {error && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex gap-3"
-                  >
-                    <AlertCircle className="w-5 h-5 text-rose-500 shrink-0" />
-                    <p className="text-sm text-rose-400">{error}</p>
-                  </motion.div>
-                )}
+                <AnimatePresence>
+                  {error && (
+                    <motion.div 
+                      variants={shakeVariants}
+                      animate="shake"
+                      initial={{ opacity: 0, y: 10 }}
+                      className="p-5 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex gap-4 items-center"
+                    >
+                      <div className="bg-rose-500/20 p-2 rounded-xl">
+                        <AlertCircle className="w-5 h-5 text-rose-500 shrink-0" />
+                      </div>
+                      <p className="text-sm font-bold text-rose-400">{error}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             ) : (
               <motion.div
                 key="step2"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-8"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="space-y-10"
               >
-                <div className="text-center space-y-2">
-                  <div className="mx-auto w-16 h-16 bg-(--accent)/10 rounded-full flex items-center justify-center mb-4">
-                    <KeyRound className="w-8 h-8 text-(--accent)" />
-                  </div>
-                  <h2 className="text-2xl font-bold">Vérification</h2>
-                  <p className="text-zinc-400 text-sm">
-                    Entrez le code envoyé à <span className="text-white font-medium">{formData.email}</span>
+                <div className="text-center space-y-4">
+                  <motion.div 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="mx-auto w-20 h-20 bg-(--accent)/10 rounded-[2rem] flex items-center justify-center mb-2 rotate-12"
+                  >
+                    <KeyRound className="w-10 h-10 text-(--accent)" />
+                  </motion.div>
+                  <h2 className="text-3xl font-black">Vérification</h2>
+                  <p className="text-zinc-400 text-sm max-w-[280px] mx-auto leading-relaxed">
+                    Saisissez les 6 chiffres envoyés à <span className="text-white font-black break-all">{formData.email}</span>
                   </p>
                 </div>
 
-                <div className="flex justify-between gap-2">
+                <div className="flex justify-between gap-2.5">
                   {otp.map((digit, i) => (
-                    <input
+                    <motion.div
                       key={i}
-                      ref={el => { otpRefs.current[i] = el; }}
-                      type="text"
-                      inputMode="decimal"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleOtpChange(i, e.target.value)}
-                      onKeyDown={(e) => handleKeyDown(i, e)}
-                      className="w-12 h-14 text-center text-2xl font-bold bg-white/5 border border-white/10 rounded-xl focus:border-(--accent) focus:ring-2 focus:ring-(--accent)/20 outline-none transition-all"
-                    />
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 * i }}
+                      className="relative group flex-1"
+                    >
+                      <input
+                        ref={el => { otpRefs.current[i] = el; }}
+                        type="text"
+                        inputMode="decimal"
+                        maxLength={1}
+                        value={digit}
+                        onChange={(e) => handleOtpChange(i, e.target.value)}
+                        onKeyDown={(e) => handleKeyDown(i, e)}
+                        className={`
+                          w-full h-16 text-center text-3xl font-black bg-white/5 border border-white/10 rounded-2xl 
+                          focus:border-(--accent) focus:ring-4 focus:ring-(--accent)/10 outline-none transition-all
+                          ${digit ? 'text-(--accent) border-(--accent)/50 bg-(--accent)/5' : 'text-white'}
+                        `}
+                      />
+                      {digit === '' && (
+                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-white/20 group-focus-within:bg-(--accent) transition-colors" />
+                      )}
+                    </motion.div>
                   ))}
                 </div>
 
-                <div className="space-y-4">
-                  <button
+                <div className="space-y-6">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => handleVerifyCode()}
                     disabled={isLoading || otp.join('').length < 6}
-                    className="w-full py-4 bg-(--accent) hover:brightness-110 disabled:opacity-50 disabled:hover:brightness-100 rounded-2xl text-white font-bold transition-all shadow-lg"
+                    className="w-full py-5 bg-white text-black hover:bg-zinc-200 disabled:opacity-30 disabled:hover:bg-white rounded-[1.25rem] font-black text-lg transition-all shadow-xl shadow-black/20"
                   >
-                    {isLoading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : 'Vérifier et continuer'}
-                  </button>
+                    {isLoading ? <Loader2 className="w-7 h-7 animate-spin mx-auto text-black" /> : 'Finaliser la connexion'}
+                  </motion.button>
 
-                  <div className="text-center">
+                  <div className="flex flex-col items-center gap-4">
                     <button
                       disabled={resendCooldown > 0 || isLoading}
                       onClick={handleResend}
-                      className="text-sm text-zinc-500 hover:text-(--accent) disabled:text-zinc-700 transition-colors flex items-center gap-2 mx-auto"
+                      className="group text-sm font-bold text-zinc-500 hover:text-white disabled:text-zinc-700 transition-all flex items-center gap-2.5"
                     >
-                      {resendCooldown > 0 ? (
-                        <>Renvoyer le code dans {resendCooldown}s</>
-                      ) : (
-                        <><RefreshCw className="w-3 h-3" /> Renvoyer un code</>
-                      )}
+                      <div className={`p-1.5 rounded-lg border border-white/5 flex items-center justify-center ${resendCooldown > 0 ? '' : 'group-hover:border-white/20 group-hover:bg-white/5'}`}>
+                        {resendCooldown > 0 ? (
+                          <div className="relative w-4 h-4 flex items-center justify-center">
+                            <span className="text-[10px] font-black text-(--accent)">{resendCooldown}</span>
+                            <svg className="absolute inset-0 w-full h-full -rotate-90">
+                              <circle 
+                                cx="50%" cy="50%" r="7" 
+                                fill="none" stroke="currentColor" strokeWidth="2" 
+                                className="text-white/5"
+                              />
+                              <circle 
+                                cx="50%" cy="50%" r="7" 
+                                fill="none" stroke="currentColor" strokeWidth="2" 
+                                className="text-(--accent)"
+                                strokeDasharray="44"
+                                strokeDashoffset={44 * (1 - resendCooldown / 30)}
+                              />
+                            </svg>
+                          </div>
+                        ) : (
+                          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+                        )}
+                      </div>
+                      {resendCooldown > 0 ? 'Code renvoyé' : 'Renvoyer un nouveau code'}
                     </button>
+                    
+                    {resendCooldown > 0 && (
+                      <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">
+                        Sécurité active • Patientez {resendCooldown}s
+                      </p>
+                    )}
                   </div>
                 </div>
 
-                {error && (
-                  <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex gap-3 text-sm text-rose-400">
-                    <AlertCircle className="w-5 h-5 shrink-0" />
-                    {error}
-                  </div>
-                )}
-                {success && (
-                  <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex gap-3 text-sm text-emerald-400">
-                    <CheckCircle className="w-5 h-5 shrink-0" />
-                    {success}
-                  </div>
-                )}
+                <AnimatePresence>
+                  {error && (
+                    <motion.div 
+                      variants={shakeVariants}
+                      animate="shake"
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      className="p-5 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex gap-4 items-center"
+                    >
+                      <div className="bg-rose-500/20 p-2 rounded-xl">
+                        <AlertCircle className="w-5 h-5 text-rose-500 shrink-0" />
+                      </div>
+                      <p className="text-sm font-bold text-rose-400">{error}</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             )}
           </AnimatePresence>
 
           {/* Switch Link */}
-          {step === 1 && (
-            <div className={`mt-8 pt-6 border-t ${isDark ? 'border-white/5' : 'border-zinc-100'} text-center`}>
-              <p className="text-sm text-zinc-500">
-                {mode === 'signin' ? "Pas encore de compte ?" : "Déjà membre ?"}
+          {!success && step === 1 && (
+            <motion.div 
+              variants={itemVariants}
+              className={`mt-10 pt-6 border-t ${isDark ? 'border-white/5' : 'border-zinc-100'} text-center`}
+            >
+              <p className="text-sm font-bold text-zinc-500 tracking-wide uppercase">
+                {mode === 'signin' ? "Nouveau client ?" : "Déjà un compte ?"}
                 <button
-                  onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
-                  className="ml-2 font-bold hover:underline transition-all"
-                  style={{ color: accent }}
+                  onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setError(''); }}
+                  className="ml-2 text-white hover:underline transition-all font-black decoration-2 underline-offset-4 decoration-(--accent)"
                 >
                   {mode === 'signin' ? "S'inscrire" : "Se connecter"}
                 </button>
               </p>
-            </div>
+            </motion.div>
           )}
         </div>
       </motion.div>

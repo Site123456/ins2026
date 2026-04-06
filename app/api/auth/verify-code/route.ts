@@ -41,22 +41,28 @@ export async function POST(request: NextRequest) {
 
     if (type === 'signup') {
       if (subscriber) {
-        return NextResponse.json({ error: 'Account already exists. Please sign in.' }, { status: 409 });
+        // If they already exist (e.g. from newsletter), update their info instead of erroring
+        subscriber.name = verificationData.name || subscriber.name || 'Anonymous';
+        subscriber.isActive = true;
+        // Don't change newsletterSubscribed here unless they opt-in elsewhere
+        subscriber.loginCount += 1;
+        subscriber.lastLoginAt = new Date();
+        await subscriber.save();
+      } else {
+        // Create new subscriber from registration flow
+        subscriber = new Subscriber({
+          email: normalizedEmail,
+          name: verificationData.name || 'Anonymous',
+          newsletterSubscribed: false, 
+          isActive: true,
+          loginCount: 1,
+          lastLoginAt: new Date()
+        });
+        await subscriber.save();
       }
-
-      // Create new subscriber from registration flow (newsletter false)
-      subscriber = new Subscriber({
-        email: normalizedEmail,
-        name: verificationData.name || 'Anonymous',
-        newsletterSubscribed: false, // Per request: register sets newsletter false
-        isActive: true,
-        loginCount: 1,
-        lastLoginAt: new Date()
-      });
-      await subscriber.save();
     } else if (type === 'signin') {
       if (!subscriber) {
-        return NextResponse.json({ error: 'Account not found.' }, { status: 404 });
+        return NextResponse.json({ error: 'Compte introuvable.' }, { status: 404 });
       }
 
       // Update login stats
