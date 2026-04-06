@@ -19,27 +19,15 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
 
-  // Core actions
-  requestCode: (
-    email: string,
-    type: AuthMode,
-    name?: string
-  ) => Promise<{ success: boolean; error?: string }>;
-
-  verifyCode: (
-    email: string,
-    code: string,
-    type: AuthMode
-  ) => Promise<{ success: boolean; error?: string }>;
+  requestCode: (email: string, type: AuthMode, name?: string) => Promise<{ success: boolean; error?: string }>;
+  verifyCode: (email: string, code: string, type: AuthMode) => Promise<{ success: boolean; error?: string }>;
 
   signOut: () => void;
-
   updateNewsletterSubscription: (subscribed: boolean) => Promise<boolean>;
   updateProfile: (name: string) => Promise<boolean>;
 
   loading: boolean;
 
-  // Modal controls
   isModalOpen: boolean;
   modalMode: AuthMode;
   modalEmail: string;
@@ -53,17 +41,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Global theme
   const { isDark } = useTheme();
 
-  // Load user from localStorage
+  // ------------------------------------------------------------
+  // 1. Read cookie session (magic link)
+  // ------------------------------------------------------------
+  const readCookieSession = () => {
+    try {
+      const raw = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('ins_user='));
+
+      if (!raw) return null;
+
+      return JSON.parse(decodeURIComponent(raw.split('=')[1]));
+    } catch {
+      return null;
+    }
+  };
+
+  // ------------------------------------------------------------
+  // 2. Hydrate session on load
+  // ------------------------------------------------------------
   useEffect(() => {
-    const checkAuth = async () => {
+    const hydrate = async () => {
       try {
+        // A. Magic-link cookie session
+        const cookieUser = readCookieSession();
+        if (cookieUser) {
+          setUser(cookieUser);
+          localStorage.setItem('ins_user', JSON.stringify(cookieUser));
+          return setLoading(false);
+        }
+
+        // B. LocalStorage fallback
         const stored = localStorage.getItem('ins_user');
         if (!stored) return setLoading(false);
 
         const parsed = JSON.parse(stored);
+
+        // Verify user still exists
         const res = await fetch(`/api/verify?email=${encodeURIComponent(parsed.email)}`);
         const data = await res.json();
 
@@ -79,11 +96,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     };
 
-    checkAuth();
+    hydrate();
   }, []);
 
-  // --- AUTH ACTIONS ---------------------------------------------------------
-
+  // ------------------------------------------------------------
+  // 3. Auth Actions
+  // ------------------------------------------------------------
   const requestCode = async (email: string, type: AuthMode, name?: string) => {
     try {
       const res = await fetch('/api/auth/send-code', {
@@ -122,6 +140,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // ------------------------------------------------------------
+  // 4. Profile & Newsletter
+  // ------------------------------------------------------------
   const updateNewsletterSubscription = async (subscribed: boolean) => {
     if (!user) return false;
 
@@ -164,13 +185,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // ------------------------------------------------------------
+  // 5. Logout
+  // ------------------------------------------------------------
   const signOut = () => {
     setUser(null);
     localStorage.removeItem('ins_user');
+
+    // Clear cookie
+    document.cookie = "ins_user=; Max-Age=0; path=/; secure; sameSite=strict;";
   };
 
-  // --- MODAL STATE ----------------------------------------------------------
-
+  // ------------------------------------------------------------
+  // 6. Modal Controls
+  // ------------------------------------------------------------
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<AuthMode>('signin');
   const [modalEmail, setModalEmail] = useState('');
@@ -186,8 +214,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setModalEmail('');
   };
 
-  // --- CONTEXT VALUE --------------------------------------------------------
-
+  // ------------------------------------------------------------
+  // 7. Context Value
+  // ------------------------------------------------------------
   const value: AuthContextType = {
     user,
     isAuthenticated: !!user,
