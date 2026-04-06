@@ -453,8 +453,8 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
             </div>
             <div className="flex flex-col w-full max-w-sm space-y-3">
               {[
-                { label: "Réserver à Aubervilliers", href: "/reserver/aubervilliers" },
-                { label: "Réserver à Paris 15", href: "/reserver/paris15" },
+                { label: "Réserver à Aubervilliers", href: "https://reservation.indian-nepaliswad.fr/aubervilliers" },
+                { label: "Réserver à Paris 15", href: "https://reservation.indian-nepaliswad.fr/paris15" },
               ].map((btn) => (
                 <a
                   key={btn.label}
@@ -494,63 +494,6 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
                 </a>
               ))}
             </div>
-            
-            {/* Bot Activation Section */}
-            <div className="w-full max-w-sm mx-auto lg:mx-0">
-              <div
-                className={`text-[11px] font-semibold uppercase tracking-wider mb-3 ${
-                  isDark ? "text-white/30" : "text-black/30"
-                }`}
-              >
-                Assistant IA
-              </div>
-              <button
-                className="
-                  group w-full py-3.5 rounded-xl 
-                  text-[14px] font-semibold 
-                  flex items-center justify-center gap-2
-                  transition-all duration-300
-                  border-2
-                "
-                style={{
-                  backgroundColor: isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)",
-                  color: isDark ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)",
-                  borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
-                  boxShadow: `0 4px 14px -4px ${hexToRgba(accent, 0.1)}`,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = hexToRgba(accent, 0.1);
-                  e.currentTarget.style.borderColor = hexToRgba(accent, 0.3);
-                  e.currentTarget.style.color = accent;
-                  e.currentTarget.style.boxShadow = `0 6px 22px -4px ${hexToRgba(accent, 0.2)}`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)";
-                  e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
-                  e.currentTarget.style.color = isDark ? "rgba(255,255,255,0.8)" : "rgba(0,0,0,0.8)";
-                  e.currentTarget.style.boxShadow = `0 4px 14px -4px ${hexToRgba(accent, 0.1)}`;
-                }}
-              >
-                <svg
-                  className="h-4.5 w-4.5 opacity-90 group-hover:opacity-100 transition-all"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                Activer le Bot IA
-              </button>
-              <p
-                className={`text-[10px] leading-relaxed mt-2 text-center lg:text-left ${
-                  isDark ? "text-white/40" : "text-black/40"
-                }`}
-              >
-                Obtenez des recommandations personnalisées et un support instantané
-              </p>
-            </div>
-
             <div className="flex flex-wrap justify-center lg:justify-start items-center gap-2 pt-1">
               {socials.map(({ icon: Icon, href, label }) => (
                 <a
