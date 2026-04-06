@@ -454,15 +454,15 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
 
           <p>
             Pour annuler ou modifier votre réservation, veuillez suivre les instructions reçues par email
-            ou contacter directement l&apos;équipe Indian Nepali Swad. Les réservations sont garanties jusqu&apos;à
-            5 minutes après l&apos;heure prévue ; passé ce délai, elles peuvent être annulées ou réattribuées
+            ou contacter directement l’équipe Indian Nepali Swad. Les réservations sont garanties jusqu’à
+            5 minutes après l’heure prévue ; passé ce délai, elles peuvent être annulées ou réattribuées
             sans préavis.
           </p>
 
           <p>
-            Indian Nepali Swad applique des standards élevés de sécurité et de confidentialité. L&apos;ensemble
+            Indian Nepali Swad applique des standards élevés de sécurité et de confidentialité. L’ensemble
             des échanges est protégé par un chiffrement avancé (TLS 1.3) et nos systèmes sont supervisés
-            en continu afin de garantir l&apos;intégrité et la disponibilité des données.
+            en continu afin de garantir l’intégrité et la disponibilité des données.
           </p>
 
           <ul className="ps-4">
@@ -479,18 +479,39 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
           </p>
 
           <p>
-            Indian Nepali Swad met en œuvre des mesures avancées : contrôle d&apos;accès renforcé, surveillance
-            continue, détection d&apos;anomalies, journalisation sécurisée, tests d&apos;intrusion réguliers et
-            politique stricte de minimisation des données.
+            L’accès à votre compte peut s’effectuer sans mot de passe grâce à un système sécurisé
+            d’authentification par code OTP. Vous pouvez vous connecter soit via un code reçu par email,
+            soit en cliquant sur le bouton de connexion présent dans le message, soit via un code envoyé
+            sur WhatsApp lorsque cette option est activée. Aucun mot de passe n’est stocké, ce qui réduit
+            fortement les risques d’usurpation.
           </p>
 
           <p>
-            Pour plus d&apos;informations, veuillez consulter notre politique de confidentialité
-            disponible sur notre site web.
+            Indian Nepali Swad met en œuvre des mesures avancées : contrôle d’accès renforcé, surveillance
+            continue, détection d’anomalies, journalisation sécurisée, tests d’intrusion réguliers et
+            politique stricte de minimisation des données. Notre assistant IA est propulsé par
+            <a
+              href="https://corsprite.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline ml-1"
+            >
+              Corsprite
+            </a>,
+            développé en interne avec une approche éthique et responsable. Aucun renseignement personnel
+            n’est collecté ; seules des recherches contextuelles sur notre site peuvent être effectuées
+            afin d’améliorer l’expérience utilisateur.
+          </p>
+
+          <p>
+            Pour plus d’informations, veuillez consulter notre politique de confidentialité disponible sur
+            notre site web.
           </p>
 
         </div>
       </div>
+
+
       <div
         className="border-t"
         style={{
