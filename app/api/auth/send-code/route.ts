@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import dbConnect from '../../../../lib/mongodb';
-import VerificationCode from '../../../../models/VerificationCode';
-import Subscriber from '../../../../models/Subscriber';
+import dbConnect from '@/lib/mongodb';
+import VerificationCode from '@/models/VerificationCode';
+import Subscriber from '@/models/Subscriber';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
 
     // Check subscriber status (but don't block signin, just check for bans)
     const subscriber = await Subscriber.findOne({ email: normalizedEmail });
-    
+
     if (subscriber && !subscriber.isActive) {
       return NextResponse.json({ error: 'Votre compte est suspendu. Veuillez contacter le support.' }, { status: 403 });
     }
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     if (lastSent && (now.getTime() - lastSent.getTime() < cooldownPeriod)) {
       const waitTime = Math.ceil((cooldownPeriod - (now.getTime() - lastSent.getTime())) / 1000);
-      return NextResponse.json({ 
+      return NextResponse.json({
         error: `Action trop rapide. Veuillez patienter ${waitTime}s avant un nouvel envoi.`,
         nextAllowedAt: new Date(lastSent.getTime() + cooldownPeriod)
       }, { status: 429 });
@@ -44,8 +44,8 @@ export async function POST(request: NextRequest) {
     // Save code
     await VerificationCode.findOneAndUpdate(
       { email: normalizedEmail, type },
-      { 
-        code, 
+      {
+        code,
         name,
         expiresAt: new Date(now.getTime() + 10 * 60 * 1000), // 10 minutes
         used: false,
