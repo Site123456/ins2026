@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
-import { User, LogIn, UserPlus, LogOut, Settings, ChevronDown, Calendar, Bell } from 'lucide-react';
+import { LogIn, UserPlus, LogOut, Settings, ChevronDown, Bell } from 'lucide-react';
 import SettingsModal from './SettingsModal';
 import { useAuth } from '@/contexts/AuthContext';
 import Portal from "@/components/Portal";
@@ -15,32 +15,34 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
   const { user, isAuthenticated, signOut, openAuthModal } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const triggerRef = useRef<HTMLDivElement>(null);
+
+  // FIXED OUTSIDE CLICK HANDLER (Portal‑safe)
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowDropdown(false);
-      }
+    const handleClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+
+      // If click is inside trigger → ignore
+      if (triggerRef.current?.contains(target)) return;
+
+      // If click is inside dropdown (portal) → ignore
+      const dropdownEl = document.getElementById("auth-dropdown");
+      if (dropdownEl && dropdownEl.contains(target)) return;
+
+      // Otherwise close
+      setShowDropdown(false);
     };
 
     if (showDropdown) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClick);
     }
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClick);
   }, [showDropdown]);
 
-  const handleSignIn = () => {
-    openAuthModal('signin');
-  };
-
-  const handleSignUp = () => {
-    openAuthModal('signup');
-  };
-
+  const handleSignIn = () => openAuthModal('signin');
+  const handleSignUp = () => openAuthModal('signup');
   const handleSignOut = () => {
     signOut();
     setShowDropdown(false);
@@ -51,9 +53,11 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
     setShowSettingsModal(true);
   };
 
+  // AUTHENTICATED UI
   if (isAuthenticated && user) {
     return (
-      <div className="relative" ref={dropdownRef}>
+      <div className="relative" ref={triggerRef}>
+        {/* Trigger Button */}
         <button
           onClick={() => setShowDropdown(!showDropdown)}
           className={`
@@ -76,105 +80,111 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
           </div>
           <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`} />
         </button>
+
+        {/* DROPDOWN IN PORTAL */}
         <Portal>
-          <div className="relative z-50">
+          {/* Backdrop (mobile only) */}
+          {showDropdown && (
+            <div
+              className="fixed inset-0 z-[998] sm:hidden bg-black/40 backdrop-blur-sm"
+              onClick={() => setShowDropdown(false)}
+            />
+          )}
+
+          {/* Dropdown */}
+          <div
+            id="auth-dropdown"
+            className={`
+              fixed right-3 top-16 z-[999] w-64 sm:w-56
+              transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
+              ${showDropdown
+                ? 'opacity-100 translate-y-0 scale-100'
+                : 'opacity-0 -translate-y-2 scale-95 pointer-events-none'
+              }
+            `}
+          >
             <div
               className={`
-                fixed right-2 top-20 z-101 w-64 sm:w-56
-                transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]
-                ${showDropdown
-                  ? 'opacity-100 translate-y-0 scale-100'
-                  : 'opacity-0 -translate-y-2 scale-95'
+                rounded-2xl border shadow-2xl backdrop-blur-2xl overflow-hidden
+                ${isDark
+                  ? 'bg-[#0a0a0f]/90 border-white/10'
+                  : 'bg-white/90 border-zinc-200'
                 }
               `}
             >
-              <div
-                className={`
-                  rounded-2xl border shadow-2xl backdrop-blur-2xl overflow-hidden
-                  ${isDark
-                    ? 'bg-[#0a0a0f]/90 border-white/10'
-                    : 'bg-white/90 border-zinc-200'
-                  }
-                `}
-              >
-                {/* Header */}
-                <div className="p-4 border-b border-white/10">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-md">
-                      <span className="text-lg font-bold text-white">
-                        {user.name.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <p className={`text-sm font-semibold truncate ${isDark ? 'text-white' : 'text-zinc-900'}`}>
-                        {user.name}
-                      </p>
-                      <p className={`text-xs truncate ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
-                        {user.email}
-                      </p>
-                    </div>
+              {/* Header */}
+              <div className="p-4 border-b border-white/10">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-md">
+                    <span className="text-lg font-bold text-white">
+                      {user.name.charAt(0).toUpperCase()}
+                    </span>
                   </div>
 
-                  {/* Stats */}
-                  <div className="mt-4 grid grid-cols-2 gap-4 text-center">
-                    <div>
-                      <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>
-                        {user.loginCount}
-                      </p>
-                      <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Visites</p>
-                    </div>
-
-                    <div>
-                      <Bell
-                        className={`h-4 w-4 mx-auto ${
-                          user.newsletterSubscribed
-                            ? isDark ? 'text-emerald-400' : 'text-emerald-600'
-                            : isDark ? 'text-zinc-500' : 'text-zinc-400'
-                        }`}
-                      />
-                      <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Newsletter</p>
-                    </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-sm font-semibold truncate ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+                      {user.name}
+                    </p>
+                    <p className={`text-xs truncate ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                      {user.email}
+                    </p>
                   </div>
                 </div>
 
-                {/* Actions */}
-                <div className="p-2">
-                  <button
-                    onClick={handleSettingsClick}
-                    className={`
-                      flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm
-                      transition-all duration-200 hover:bg-white/5 hover:translate-x-1
-                      ${isDark ? 'text-zinc-300' : 'text-zinc-700'}
-                    `}
-                  >
-                    <Settings className="h-4 w-4" />
-                    Paramètres
-                  </button>
+                {/* Stats */}
+                <div className="mt-4 grid grid-cols-2 gap-4 text-center">
+                  <div>
+                    <p className={`text-lg font-bold ${isDark ? 'text-white' : 'text-zinc-900'}`}>
+                      {user.loginCount}
+                    </p>
+                    <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Visites</p>
+                  </div>
 
-                  <div className="border-t border-white/10 my-2" />
-
-                  <button
-                    onClick={handleSignOut}
-                    className="
-                      flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm
-                      transition-all duration-200 hover:bg-rose-500/10 hover:translate-x-1
-                      text-rose-500
-                    "
-                  >
-                    <LogOut className="h-4 w-4" />
-                    Déconnexion
-                  </button>
+                  <div>
+                    <Bell
+                      className={`h-4 w-4 mx-auto ${
+                        user.newsletterSubscribed
+                          ? isDark ? 'text-emerald-400' : 'text-emerald-600'
+                          : isDark ? 'text-zinc-500' : 'text-zinc-400'
+                      }`}
+                    />
+                    <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Newsletter</p>
+                  </div>
                 </div>
               </div>
+
+              {/* Actions */}
+              <div className="p-2">
+                <button
+                  onClick={handleSettingsClick}
+                  className={`
+                    flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm
+                    transition-all duration-200 hover:bg-white/5 hover:translate-x-1
+                    ${isDark ? 'text-zinc-300' : 'text-zinc-700'}
+                  `}
+                >
+                  <Settings className="h-4 w-4" />
+                  Paramètres
+                </button>
+
+                <div className="border-t border-white/10 my-2" />
+
+                <button
+                  onClick={handleSignOut}
+                  className="
+                    flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm
+                    transition-all duration-200 hover:bg-rose-500/10 hover:translate-x-1
+                    text-rose-500
+                  "
+                >
+                  <LogOut className="h-4 w-4" />
+                  Déconnexion
+                </button>
+              </div>
             </div>
-            {showDropdown && (
-              <div
-                className="fixed inset-0 z-48 sm:hidden bg-black/40 backdrop-blur-sm"
-                onClick={() => setShowDropdown(false)}
-              />
-            )}
           </div>
+
+          {/* Settings Modal */}
           <SettingsModal
             isOpen={showSettingsModal}
             onClose={() => setShowSettingsModal(false)}
@@ -186,6 +196,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
     );
   }
 
+  // NOT AUTHENTICATED UI
   return (
     <div className="flex items-center gap-2">
       <button
@@ -201,7 +212,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
         `}
       >
         <LogIn className="h-4 w-4" />
-        <span className="inline">Se connecter</span>
+        Se connecter
       </button>
 
       <button
@@ -219,7 +230,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
         }}
       >
         <UserPlus className="h-4 w-4" />
-        <span className="hidden sm:inline">S&apos;inscrire</span>
+        <span className="hidden sm:inline">S'inscrire</span>
       </button>
     </div>
   );
