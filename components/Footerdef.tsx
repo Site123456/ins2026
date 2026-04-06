@@ -451,24 +451,24 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
       </div>
 
 
-      <div className="px-6 pb-6 max-w-6xl mx-auto text-center">
+      <div className="px-6 pb-6 max-w-6xl mx-auto text-start">
         <div className="space-y-2 text-[10px] sm:text-[11px] leading-relaxed opacity-40">
           <p>
             Pour annuler ou modifier votre réservation, veuillez suivre les instructions reçues par email.
           </p>
 
           <p>
-            Les réservations sont garanties jusqu&apos;à 15 minutes après l&apos;heure prévue. Passé ce délai, elles
+            Les réservations sont garanties jusqu&apos;à 5 minutes après l&apos;heure prévue. Passé ce délai, elles
             peuvent être annulées sans préavis.
           </p>
 
           <p>
             Vos données sont entièrement sécurisées et stockées conformément aux normes européennes.
           </p>
-          <ul>
-            <li>Stockage: France.</li>
-            <li>Pays de traitement (sans IA) : France.</li>
-            <li>Pays de traitement (avec IA et traitement automatisé) : France, Irlande, Allemagne.</li>
+          <ul className="ps-4">
+            <li>- Stockage: France.</li>
+            <li>- Pays de traitement (sans IA) : France.</li>
+            <li>- Pays de traitement (avec IA et traitement automatisé) : France, Irlande, Allemagne.</li>
           </ul>
           <p>
             Pour plus d&apos;informations, veuillez consulter notre politique de confidentialité sur notre site web.
