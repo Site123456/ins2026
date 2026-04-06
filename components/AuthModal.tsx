@@ -263,7 +263,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
         `}
       >
         {/* Animated Gradient Border Overlay */}
-        <div className="absolute inset-0 pointer-events-none opacity-20">
+        <div className="absolute -z-1 inset-0 pointer-events-none opacity-20">
           <div className="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0deg,transparent_120deg,(--accent)_180deg,transparent_240deg,transparent_360deg)] animate-[spin_8s_linear_infinite]" />
         </div>
 
