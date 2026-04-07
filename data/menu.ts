@@ -38,6 +38,7 @@ export const MENU_DATA: MenuItem[] = [
     },
     category: "En ce moment",
     prices: p(0),
+    popularity: 100,
     image: "https://indian-nepaliswad.fr/etc/logo.png",
   },
 
@@ -89,6 +90,7 @@ export const MENU_DATA: MenuItem[] = [
     description: { fr: "Pain fourré au fromage", en: "Naan stuffed with cheese" },
     category: "Naan",
     prices: p(4.90),
+    popularity: 96,
     image: "https://indian-nepaliswad.fr/etc/logo.png"
   },
   {
@@ -156,6 +158,7 @@ export const MENU_DATA: MenuItem[] = [
     category: "Entrées",
     prices: p(4.25),
     originalPrice: 8.50,
+    popularity: 99,
     image: "https://indian-nepaliswad.fr/etc/logo.png",
   },
   {
