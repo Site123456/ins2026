@@ -561,7 +561,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                         onChange={(e) =>
                           setFormData((p) => ({ ...p, email: e.target.value }))
                         }
-                        placeholder="chef@indian-swad.fr"
+                        placeholder="chef@example.com"
                         className={`
                           w-full pl-12 sm:pl-14 pr-4 sm:pr-5 py-3 sm:py-4 rounded-xl sm:rounded-2xl outline-none transition-all border
                           focus:ring-4 focus:ring-[var(--accent)]/10 focus:border-[var(--accent)]
