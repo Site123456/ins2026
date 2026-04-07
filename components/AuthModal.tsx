@@ -467,7 +467,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                   >
                     {mode === "signup"
                       ? (language === 'en' ? "Reserve your place at the peak of gastronomy." : "Réservez votre place au sommet de la gastronomie.")
-                      : (language === 'en' ? "Indian excellence just a click away." : "L'excellence indienne à portée de clic.")}
+                      : (language === 'en' ? "Indian and Nepali excellence just a click away." : "L'excellence indienne et népalaise à portée de clic.")}
                   </p>
                 </motion.div>
 
