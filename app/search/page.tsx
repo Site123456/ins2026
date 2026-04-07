@@ -296,7 +296,7 @@ export default function SearchPage() {
               {/* Sort Dropdown */}
               <div className="relative flex-1 md:flex-none group/sort">
                 <button onClick={() => setShowSortMenu(!showSortMenu)}
-                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all duration-300 whitespace-nowrap text-sm ${isDark
+                  className={`w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl font-bold transition-all duration-300 whitespace-nowrap text-sm ${isDark
                     ? 'bg-white/[0.03] border border-white/10 text-zinc-300 hover:bg-white/[0.08] hover:border-white/20'
                     : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
                     }`}>
@@ -404,7 +404,7 @@ export default function SearchPage() {
                     <div className="absolute bottom-5 left-6">
                       <div className="flex items-baseline gap-2">
                         <span className="text-2xl font-black text-white drop-shadow-lg">
-                          {item.prices[0].toFixed(2)}€
+                          {item.prices[0] !== 0 ? item.prices[0].toFixed(2) + ' €' : ''}
                         </span>
                         {item.originalPrice && (
                           <span className="text-sm font-bold text-white/50 line-through">
