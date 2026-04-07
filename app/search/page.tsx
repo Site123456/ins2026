@@ -541,7 +541,7 @@ export default function SearchPage() {
                         {isFr ? 'Avis de la Communauté' : 'Community Reviews'}
                       </h3>
                       {stats && stats.totalReviews > 0 && (
-                        <span className={`text-xs px-4 py-1.5 rounded-full text-nowrap font-black ${isDark ? 'bg-white/5 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>
+                        <span className={`text-xs flex px-4 py-1.5 rounded-full text-nowrap font-black ${isDark ? 'bg-white/5 text-zinc-400' : 'bg-slate-100 text-slate-500'}`}>
                           {stats.totalReviews} {isFr ? 'TOTAL' : 'TOTAL'}
                         </span>
                       )}
