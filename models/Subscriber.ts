@@ -1,4 +1,4 @@
-import mongoose, { Document, Model, CallbackError } from 'mongoose';
+import mongoose, { Document, Model } from 'mongoose';
 import { encrypt, decrypt, blindIndex } from '@/lib/crypto';
 
 export interface IReservation {
@@ -33,7 +33,7 @@ export interface ISubscriber extends Document {
   updatedAt: Date;
 }
 
-const ReservationSchema = new mongoose.Schema<IReservation>({
+const ReservationSchema = new mongoose.Schema({
   date: { type: Date, required: true },
   timestart: { type: String, required: true },
   adults: { type: Number, required: true, default: 1 },
@@ -44,7 +44,8 @@ const ReservationSchema = new mongoose.Schema<IReservation>({
   createdAt: { type: Date, default: Date.now }
 });
 
-const SubscriberSchema = new mongoose.Schema<ISubscriber>(
+// Schema WITHOUT generic to avoid pre('save') overload issues in strict TS
+const SubscriberSchema = new mongoose.Schema(
   {
     email: { type: String, lowercase: true, trim: true },
     name: { type: String, trim: true },
@@ -65,7 +66,7 @@ const SubscriberSchema = new mongoose.Schema<ISubscriber>(
 );
 
 // Pre-save hook to handle encryption
-SubscriberSchema.pre('save', function (next: (err?: CallbackError) => void) {
+SubscriberSchema.pre('save', async function (this: any) {
   if (this.isModified('email') && this.email) {
     this.blindEmail = blindIndex(this.email.toLowerCase());
     this.encryptedEmail = encrypt(this.email.toLowerCase());
@@ -73,11 +74,10 @@ SubscriberSchema.pre('save', function (next: (err?: CallbackError) => void) {
   if (this.isModified('name') && this.name) {
     this.encryptedName = encrypt(this.name);
   }
-  next();
 });
 
 // Post-init hook to decrypt fields
-SubscriberSchema.post('init', function (doc: ISubscriber) {
+SubscriberSchema.post('init', function (doc) {
   if (doc.encryptedEmail) {
     const decEmail = decrypt(doc.encryptedEmail);
     if (decEmail) doc.email = decEmail;
