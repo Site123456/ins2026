@@ -6,7 +6,10 @@ import Subscriber from "@/models/Subscriber";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-function generateNewsletterEmail(name: string) {
+function generateNewsletterEmail(name: string, language: string) {
+  const isEn = language === "en";
+  const txt = (fr: string, en: string) => isEn ? `${en} / ${fr}` : `${fr} / ${en}`;
+
   return `
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f6f8;padding:20px 0">
       <tr><td align="center">
@@ -14,26 +17,30 @@ function generateNewsletterEmail(name: string) {
           <tr>
             <td style="background:#d32f2f;padding:40px;text-align:center;color:#fff">
               <img src="https://indian-nepaliswad.fr/etc/logo.png" style="height:70px;margin-bottom:14px" />
-              <h1 style="margin:0;font-size:28px;font-weight:800">Bienvenue / Welcome 🎉</h1>
+              <h1 style="margin:0;font-size:28px;font-weight:800">${txt("Bienvenue", "Welcome")} 🎉</h1>
             </td>
           </tr>
 
           <tr><td style="padding:32px">
             <p style="font-size:16px;color:#1f2937;line-height:1.7">
-              Bonjour <strong style="color:#d32f2f">${name}</strong>,<br><br>
-              Merci de rejoindre la communauté <strong>Indian Nepali Swad</strong> ! Vous recevrez bientôt nos nouveautés, offres exclusives et événements spéciaux.<br><br>
-              <span style="color:#6b7280; font-size:14px;">
-                Thank you for joining the <strong>Indian Nepali Swad</strong> community! You will soon receive our latest news, exclusive offers, and special events.
-              </span>
+              ${isEn ? 'Hello' : 'Bonjour'} <strong style="color:#d32f2f">${name}</strong>,<br><br>
+              ${isEn
+      ? `Thank you for joining the <strong>Indian Nepali Swad</strong> community! You will soon receive our latest news, exclusive offers, and special events.<br><br>
+                            <span style="color:#6b7280; font-size:14px;">Merci de rejoindre la communauté <strong>Indian Nepali Swad</strong> ! Vous recevrez bientôt nos nouveautés, offres exclusives et événements spéciaux.</span>`
+      : `Merci de rejoindre la communauté <strong>Indian Nepali Swad</strong> ! Vous recevrez bientôt nos nouveautés, offres exclusives et événements spéciaux.<br><br>
+                            <span style="color:#6b7280; font-size:14px;">Thank you for joining the <strong>Indian Nepali Swad</strong> community! You will soon receive our latest news, exclusive offers, and special events.</span>`
+    }
             </p>
             <p style="margin-top:20px;font-size:12px;color:#6b7280;text-align:center">
-              Nous ne vous demanderons jamais de mot de passe — connectez-vous simplement avec votre email ou WhatsApp pour une expérience fluide et sécurisée.<br>
-              <span style="font-size:11px;">We will never ask for a password — simply log in with your email or WhatsApp for a seamless experience.</span>
+              ${txt(
+      "Nous ne vous demanderons jamais de mot de passe — connectez-vous simplement avec votre email ou WhatsApp pour une expérience fluide et sécurisée.",
+      "We will never ask for a password — simply log in with your email or WhatsApp for a seamless experience."
+    )}
             </p>
           </td></tr>
 
           <tr><td style="padding:24px;text-align:center;font-size:12px;color:#6b7280">
-            © 2026 Indian Nepali Swad — Tous droits réservés / All rights reserved
+            ${txt("© 2026 Indian Nepali Swad — Tous droits réservés", "© 2026 Indian Nepali Swad — All rights reserved")}
           </td></tr>
         </table>
       </td></tr>
@@ -41,7 +48,10 @@ function generateNewsletterEmail(name: string) {
   `;
 }
 
-function generateAccountCreatedEmail(name: string, email: string) {
+function generateAccountCreatedEmail(name: string, email: string, language: string) {
+  const isEn = language === "en";
+  const txt = (fr: string, en: string) => isEn ? `${en} / ${fr}` : `${fr} / ${en}`;
+
   return `
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f6f8;padding:20px 0">
       <tr><td align="center">
@@ -50,27 +60,28 @@ function generateAccountCreatedEmail(name: string, email: string) {
           <tr>
             <td style="background:linear-gradient(135deg,#d32f2f,#b71c1c);padding:48px;text-align:center;color:#fff">
               <img src="https://indian-nepaliswad.fr/etc/logo.png" style="height:80px;margin-bottom:14px" />
-              <h1 style="margin:0;font-size:32px;font-weight:800">Compte créé avec succès 🎉</h1>
-              <p style="margin:12px 0 0;font-size:15px;opacity:0.95">Account successfully created</p>
+              <h1 style="margin:0;font-size:32px;font-weight:800">${txt("Compte créé avec succès", "Account successfully created")} 🎉</h1>
             </td>
           </tr>
 
           <tr><td style="padding:40px 32px">
             <p style="font-size:17px;color:#1f2937;line-height:1.7;margin-bottom:28px">
-              Bonjour / Hello <strong style="color:#d32f2f;font-size:18px">${name}</strong>,<br><br>
-              Votre compte est maintenant actif — bienvenue dans la famille INS !<br>
-              <span style="color:#6b7280; font-size:14px;">Your account is now active — welcome to the INS family!</span>
+              ${isEn ? 'Hello' : 'Bonjour'} <strong style="color:#d32f2f;font-size:18px">${name}</strong>,<br><br>
+              ${isEn
+      ? `Your account is now active — welcome to the INS family!<br><span style="color:#6b7280; font-size:14px;">Votre compte est maintenant actif — bienvenue dans la famille INS !</span>`
+      : `Votre compte est maintenant actif — bienvenue dans la famille INS !<br><span style="color:#6b7280; font-size:14px;">Your account is now active — welcome to the INS family!</span>`
+    }
             </p>
 
             <table width="100%" style="background:#fef2f2;border:2px solid #fee2e2;border-radius:12px;overflow:hidden">
               <tr>
                 <td style="background:#d32f2f;padding:18px;color:#fff;font-size:12px;font-weight:600;text-transform:uppercase">
-                  Informations du compte / Account Information
+                  ${txt("Informations du compte", "Account Information")}
                 </td>
               </tr>
               <tr>
                 <td style="padding:24px">
-                  <p style="margin:0;font-size:14px;color:#374151"><strong>Nom / Name :</strong> ${name}</p>
+                  <p style="margin:0;font-size:14px;color:#374151"><strong>${txt("Nom", "Name")} :</strong> ${name}</p>
                   <p style="margin:8px 0 0;font-size:14px;color:#374151"><strong>Email :</strong> ${email}</p>
                 </td>
               </tr>
@@ -79,16 +90,18 @@ function generateAccountCreatedEmail(name: string, email: string) {
             <div style="margin-top:32px;text-align:center">
               <a href="https://indian-nepaliswad.fr"
                 style="display:inline-block;background:#d32f2f;color:#fff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700">
-                Explorer le menu / Explore Menu
+                ${txt("Explorer le menu", "Explore Menu")}
               </a>
             </div>
 
             <p style="margin-top:24px;font-size:12px;color:#6b7280;text-align:center">
-              Nous ne vous demanderons jamais de mot de passe — connectez-vous simplement avec votre email ou WhatsApp.<br>
-              <span style="font-size:11px;">We will never ask for a password — simply log in with your email or WhatsApp.</span>
+              ${txt(
+      "Nous ne vous demanderons jamais de mot de passe — connectez-vous simplement avec votre email ou WhatsApp.",
+      "We will never ask for a password — simply log in with your email or WhatsApp."
+    )}
             </p>
             <p style="margin-top:32px;font-size:12px;color:#6b7280;text-align:center">
-              © 2026 Indian Nepali Swad — Tous droits réservés / All rights reserved
+              ${txt("© 2026 Indian Nepali Swad — Tous droits réservés", "© 2026 Indian Nepali Swad — All rights reserved")}
             </p>
           </td></tr>
 
@@ -123,7 +136,7 @@ export async function POST(request: NextRequest) {
     if (existingUser && type === "signup") {
       return NextResponse.json(
         {
-          error: "Un compte existe déjà avec cet email. / Account already exists.",
+          error: "Un compte INDIAN NEPALI SWAD existe déjà avec cet email.",
           forceMode: "signin",
         },
         { status: 400 }
@@ -134,7 +147,7 @@ export async function POST(request: NextRequest) {
     if (!existingUser && type === "signin") {
       return NextResponse.json(
         {
-          error: "Aucun compte trouvé. / No account found.",
+          error: "Aucun compte INDIAN NEPALI SWAD trouvé.",
           forceMode: "signup",
         },
         { status: 400 }
@@ -144,7 +157,7 @@ export async function POST(request: NextRequest) {
     // USER EXISTS BUT IS BANNED
     if (existingUser && !existingUser.isActive) {
       return NextResponse.json(
-        { error: "Votre compte est suspendu. / Your account is suspended." },
+        { error: "Votre compte INDIAN NEPALI SWAD est suspendu." },
         { status: 403 }
       );
     }
@@ -162,12 +175,19 @@ export async function POST(request: NextRequest) {
             existingUser.newsletterSubscribed = true;
             await existingUser.save();
 
-            const html = generateNewsletterEmail(existingUser.name || "Cher client");
+            const html = generateNewsletterEmail(
+              existingUser.name || (language === "en" ? "Subscriber" : "Abonné"),
+              language || "fr"
+            );
+
+            const subject = language === "en"
+              ? "Welcome to INS newsletter / Bienvenue dans la newsletter INS"
+              : "Bienvenue dans la newsletter INS / Welcome to INS newsletter";
 
             await resend.emails.send({
               from: "Indian Nepali Swad <noreply@bot.indian-nepaliswad.fr>",
               to: [normalizedEmail],
-              subject: "Bienvenue dans la newsletter INS / Welcome to INS newsletter",
+              subject,
               html,
             });
           }
@@ -194,12 +214,16 @@ export async function POST(request: NextRequest) {
 
       // SEND SINGLE WELCOME EMAIL (ACCOUNT OR NEWSLETTER)
       const html = isNewsletter
-        ? generateNewsletterEmail(newUser.name)
-        : generateAccountCreatedEmail(newUser.name, normalizedEmail);
+        ? generateNewsletterEmail(newUser.name, language || "fr")
+        : generateAccountCreatedEmail(newUser.name, normalizedEmail, language || "fr");
 
       const subject = isNewsletter
-        ? "Bienvenue dans la newsletter INS / Welcome to INS Newsletter"
-        : "Votre compte a été créé avec succès 🎉 / Account created successfully 🎉";
+        ? (language === "en"
+          ? "Welcome to INS Newsletter / Bienvenue dans la newsletter INS"
+          : "Bienvenue dans la newsletter INS / Welcome to INS Newsletter")
+        : (language === "en"
+          ? "Account created successfully 🎉 / Votre compte a été créé avec succès 🎉"
+          : "Votre compte a été créé avec succès 🎉 / Account created successfully 🎉");
 
       await resend.emails.send({
         from: "Indian Nepali Swad <noreply@bot.indian-nepaliswad.fr>",
@@ -248,7 +272,7 @@ export async function POST(request: NextRequest) {
     const isEn = language === "en";
 
     // Bilingual text helper: displays language preference first
-    const txt = (fr: string, en: string) => isEn ? `${en} / ${fr}` : `${fr} / ${en}`;
+    const txt = (fr: string, en: string) => isEn ? `${en}` : `${fr}`;
 
     const htmlContent = `
     <!DOCTYPE html>
@@ -357,8 +381,8 @@ export async function POST(request: NextRequest) {
     </html>
     `;
     const subject = isEn
-      ? `${code} is your login code / est votre code de connexion`
-      : `${code} est votre code de connexion / is your login code`;
+      ? `${code} is your login code - INDIAN NEPALI SWAD`
+      : `${code} est votre code de connexion - INDIAN NEPALI SWAD`;
 
     const { error: sendError } = await resend.emails.send({
       from: "Indian Nepali Swad <noreply@bot.indian-nepaliswad.fr>",

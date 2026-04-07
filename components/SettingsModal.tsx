@@ -118,7 +118,7 @@ export default function SettingsModal({ isOpen, onClose, isDark, accent }: Setti
         `}
         onClick={handleClose}
       />
-      
+
       <div
         className={`
           relative w-full max-w-md max-h-[90vh] overflow-y-auto overflow-x-hidden
@@ -265,8 +265,51 @@ export default function SettingsModal({ isOpen, onClose, isDark, accent }: Setti
               </div>
             </div>
           </div>
-
-          {/* Danger Zone */}
+          <div className="mt-8 flex gap-3 animate-in slide-in-from-bottom-2 duration-300 delay-300">
+            <button
+              onClick={handleClose}
+              disabled={loading}
+              className={`
+              flex-1 py-3 rounded-xl text-sm font-semibold transition-all duration-200
+              ${isDark
+                  ? 'text-zinc-300 bg-white/5 border border-white/10 hover:bg-white/10'
+                  : 'text-zinc-700 bg-white border border-zinc-200 hover:bg-zinc-50'
+                }
+              ${loading ? 'opacity-50 cursor-not-allowed' : ''}
+            `}
+            >
+              {t('cancel')}
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={loading || success !== ''}
+              className={`
+              flex-1 py-3 rounded-xl text-sm font-semibold text-white
+              transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
+              disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+              shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]
+              ${isDark ? 'focus:ring-offset-[#0a0a0f]' : 'focus:ring-offset-white'}
+              ${success ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
+            `}
+              style={success ? {} : {
+                background: `linear-gradient(to right, ${accent}, ${accent}dd)`,
+                boxShadow: `0 4px 16px ${accent}40`,
+              }}
+            >
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                </div>
+              ) : success ? (
+                <div className="flex items-center justify-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  {t('saved')}
+                </div>
+              ) : (
+                t('saveChanges')
+              )}
+            </button>
+          </div>
           <div className="mt-8 border-t border-rose-500/20 pt-6 animate-in slide-in-from-bottom-2 duration-300">
             <h3 className={`flex items-center gap-2 text-lg font-bold text-rose-500 mb-4`}>
               <AlertTriangle className="h-5 w-5" />
@@ -285,54 +328,6 @@ export default function SettingsModal({ isOpen, onClose, isDark, accent }: Setti
               </button>
             </div>
           </div>
-
-        </div>
-
-        {/* Action Buttons */}
-        <div className="mt-8 flex gap-3 animate-in slide-in-from-bottom-2 duration-300 delay-300">
-          <button
-            onClick={handleClose}
-            disabled={loading}
-            className={`
-              flex-1 py-3 rounded-xl text-sm font-semibold transition-all duration-200
-              ${isDark
-                ? 'text-zinc-300 bg-white/5 border border-white/10 hover:bg-white/10'
-                : 'text-zinc-700 bg-white border border-zinc-200 hover:bg-zinc-50'
-              }
-              ${loading ? 'opacity-50 cursor-not-allowed' : ''}
-            `}
-          >
-            {t('cancel')}
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={loading || success !== ''}
-            className={`
-              flex-1 py-3 rounded-xl text-sm font-semibold text-white
-              transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
-              disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
-              shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98]
-              ${isDark ? 'focus:ring-offset-[#0a0a0f]' : 'focus:ring-offset-white'}
-              ${success ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
-            `}
-            style={success ? {} : {
-              background: `linear-gradient(to right, ${accent}, ${accent}dd)`,
-              boxShadow: `0 4px 16px ${accent}40`,
-            }}
-          >
-            {loading ? (
-              <div className="flex items-center justify-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin" />
-              </div>
-            ) : success ? (
-              <div className="flex items-center justify-center gap-2">
-                <CheckCircle className="w-4 h-4" />
-                {t('saved')}
-              </div>
-            ) : (
-              t('saveChanges')
-            )}
-          </button>
         </div>
       </div>
     </div>
