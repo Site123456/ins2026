@@ -221,11 +221,11 @@ export async function POST(request: NextRequest) {
 
       const subject = isNewsletter
         ? (language === "en"
-          ? "Welcome to INS Newsletter / Bienvenue dans la newsletter INS"
-          : "Bienvenue dans la newsletter INS / Welcome to INS Newsletter")
+          ? "Welcome to INS Newsletter"
+          : "Bienvenue dans la newsletter INS")
         : (language === "en"
-          ? "Account created successfully 🎉 / Votre compte a été créé avec succès 🎉"
-          : "Votre compte a été créé avec succès 🎉 / Account created successfully 🎉");
+          ? "Account created successfully 🎉"
+          : "Votre compte a été créé avec succès 🎉");
 
       await resend.emails.send({
         from: "Indian Nepali Swad <noreply@bot.indian-nepaliswad.fr>",
@@ -238,8 +238,8 @@ export async function POST(request: NextRequest) {
         success: true,
         user: newUser, // Return new user to trigger auto-login
         message: isNewsletter
-          ? "Inscription réussie / Successfully subscribed."
-          : "Compte créé avec succès / Account created successfully.",
+          ? "Inscription réussie."
+          : "Compte créé avec succès.",
       });
     }
 

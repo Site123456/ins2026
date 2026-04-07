@@ -38,8 +38,13 @@ import {
   Search,
   BookOpen,
   ExternalLink,
-  Boxes
+  Boxes,
+  Globe,
+  Languages,
+  Maximize2,
+  Minimize2
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useCinematic } from "@/components/CinematicProvider";
 import { useTheme } from "@/components/hooks/useTheme";
 import MiniToggle from "@/components/MiniToggle";
@@ -1004,9 +1009,10 @@ function AppearancePanel({
   setSettings: (key: string, value: any) => void;
   push: (type: "success" | "error" | "info", message: string) => void;
 }) {
+  const { language, setLanguage, t: translate } = useLanguage();
   const [accent, setAccent] = useState(settings.accent || DEFAULTS.accent);
   const [resetting, setResetting] = useState(false);
-  const [showCustomHex, setShowCustomHex] = useState(true);
+  const [showCustomHex, setShowCustomHex] = useState(false);
   const [hexInput, setHexInput] = useState("");
   const [hoveredHex, setHoveredHex] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -1028,14 +1034,12 @@ function AppearancePanel({
 
   const applyCustomHex = () => {
     const cleaned = hexInput.trim().toLowerCase();
-
     if (!/^#?[0-9a-f]{6}$/.test(cleaned)) {
-      push("error", "Invalid HEX color");
+      push("error", language === "fr" ? "HEX invalide" : "Invalid HEX color");
       return;
     }
 
     const hex = cleaned.startsWith("#") ? cleaned : `#${cleaned}`;
-
     const hexToRgb = (h: string) => ({
       r: parseInt(h.slice(1, 3), 16),
       g: parseInt(h.slice(3, 5), 16),
@@ -1050,11 +1054,7 @@ function AppearancePanel({
     const colorDistance = (a: string, b: string) => {
       const c1 = hexToRgb(a);
       const c2 = hexToRgb(b);
-      return Math.sqrt(
-        (c1.r - c2.r) ** 2 +
-        (c1.g - c2.g) ** 2 +
-        (c1.b - c2.b) ** 2
-      );
+      return Math.sqrt((c1.r - c2.r) ** 2 + (c1.g - c2.g) ** 2 + (c1.b - c2.b) ** 2);
     };
 
     const MIN_BRIGHTNESS = 40;
@@ -1062,19 +1062,17 @@ function AppearancePanel({
     const MAX_DISTANCE = 180;
 
     if (brightness < MIN_BRIGHTNESS) {
-      push("error", "Color too dark");
+      push("error", language === "fr" ? "Couleur trop sombre" : "Color too dark");
       return;
     }
-
     if (brightness > MAX_BRIGHTNESS) {
-      push("error", "Color too light");
+      push("error", language === "fr" ? "Couleur trop claire" : "Color too light");
       return;
     }
 
-    // ❌ not matching theme
     const isClose = COLORS.some(c => colorDistance(hex, c) < MAX_DISTANCE);
     if (!isClose) {
-      push("error", "Color not matching theme");
+      push("error", language === "fr" ? "Couleur ne correspond pas au thème" : "Color not matching theme");
       return;
     }
 
@@ -1085,8 +1083,7 @@ function AppearancePanel({
     selectAccent(closest);
     setShowCustomHex(false);
     setHexInput("");
-
-    push("success", "Accent color applied ✨");
+    push("success", language === "fr" ? "Couleur accentuée appliquée ✨" : "Accent color applied ✨");
   };
 
   const handleReset = useCallback(() => {
@@ -1098,34 +1095,51 @@ function AppearancePanel({
       setSettings("compactMode", DEFAULTS.compactMode);
       setSettings("fullWidth", DEFAULTS.fullWidth);
       setResetting(false);
+      push("info", language === "fr" ? "Paramètres réinitialisés" : "Settings reset");
     }, 400);
-  }, [setSettings]);
+  }, [setSettings, language, push]);
 
   const themes = [
-    {
-      value: "light" as const,
-      icon: Sun,
-      label: "Light",
-    },
-    {
-      value: "dark" as const,
-      icon: Moon,
-      label: "Dark",
-    },
-    {
-      value: "system" as const,
-      icon: Monitor,
-      label: "Auto",
-    },
+    { value: "light" as const, icon: Sun, label: language === "fr" ? "Clair" : "Light" },
+    { value: "dark" as const, icon: Moon, label: language === "fr" ? "Sombre" : "Dark" },
+    { value: "system" as const, icon: Monitor, label: "Auto" },
   ];
 
-  const activeAccent = hoveredHex || accent;
+  const langs = [
+    { value: "fr" as const, label: "Français", icon: Globe },
+    { value: "en" as const, label: "English", icon: Languages },
+  ];
 
   return (
-    <div className="space-y-7">
-      <section className="space-y-2.5">
-        <SectionHeader label="Theme" icon={Palette} isDark={isDark} accent={accent} />
-        <div className="grid grid-cols-3 gap-2">
+    <div className="space-y-8 py-2">
+      {/* ── Language ── */}
+      <section className="space-y-3">
+        <SectionHeader label={language === "fr" ? "Langue" : "Language"} icon={Globe} isDark={isDark} accent={accent} />
+        <div className="grid grid-cols-2 gap-2.5">
+          {langs.map(({ value, label, icon: Icon }) => (
+            <ThemeCard
+              key={value}
+              value={value}
+              icon={Icon}
+              label={label}
+              isActive={language === value}
+              accent={accent}
+              isDark={isDark}
+              onClick={() => {
+                if (language !== value) {
+                  setLanguage(value);
+                  push("success", value === "fr" ? "Langue changée : Français" : "Language changed: English");
+                }
+              }}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* ── Theme ── */}
+      <section className="space-y-3">
+        <SectionHeader label={language === "fr" ? "Thème" : "Theme"} icon={Palette} isDark={isDark} accent={accent} />
+        <div className="grid grid-cols-3 gap-2.5">
           {themes.map(({ value, icon: Icon, label }) => (
             <ThemeCard
               key={value}
@@ -1146,121 +1160,143 @@ function AppearancePanel({
         </div>
       </section>
 
-      <section className="space-y-2">
+      {/* ── Accent ── */}
+      <section className="space-y-3">
         <div className="flex items-center justify-between px-0.5">
-          <SectionHeader label="Accent" icon={Paintbrush} isDark={isDark} accent={accent} />
+          <SectionHeader label={language === "fr" ? "Accent" : "Accent"} icon={Paintbrush} isDark={isDark} accent={accent} />
           <button
             onClick={() => setShowCustomHex(!showCustomHex)}
-            className="flex items-center gap-1 px-2 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider transition-all duration-200 touch-manipulation"
+            className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95"
             style={{
-              color: showCustomHex ? accent : isDark ? "rgba(255,255,255,0.18)" : "rgba(0,0,0,0.22)",
-              backgroundColor: showCustomHex ? hexToRgba(accent, 0.08) : "transparent",
+              color: showCustomHex ? accent : isDark ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.35)",
+              backgroundColor: showCustomHex ? hexToRgba(accent, 0.1) : isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)",
+              border: `1px solid ${showCustomHex ? hexToRgba(accent, 0.2) : "transparent"}`
             }}
           >
-            <Pipette className="h-2.5 w-2.5" />
+            <Pipette className="h-3 w-3" />
             HEX
           </button>
         </div>
 
-        <div
-          className="h-1.5 rounded-full mx-0.5 mb-1"
-          style={{
-            background: `linear-gradient(to right, ${PALETTE.map((c) => c.hex).join(", ")})`,
-            opacity: 0.7,
-          }}
-        />
-
-        <div
-          className="rounded-2xl p-3 border"
+        <div className="relative rounded-2xl border p-4 transition-all duration-300"
           style={{
             borderColor: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.05)",
             backgroundColor: isDark ? "rgba(255,255,255,0.015)" : "rgba(0,0,0,0.01)",
           }}
         >
-          <div className="grid grid-cols-9 gap-x-2 gap-y-3">
+          <div className="grid grid-cols-9 gap-x-2 gap-y-4">
             {PALETTE.map((color) => {
               const isSelected = accent === color.hex;
               return (
                 <div key={color.hex} ref={isSelected ? selectedRef : undefined} className="flex justify-center">
-                  <ColorDot color={color} isSelected={isSelected} onSelect={selectAccent} size={28} />
+                  <ColorDot color={color} isSelected={isSelected} onSelect={selectAccent} size={26} />
                 </div>
               );
             })}
           </div>
-        </div>
-        <div
-          className="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
-          style={{
-            maxHeight: showCustomHex ? 48 : 0,
-            opacity: showCustomHex ? 1 : 0,
-          }}
-        >
-          <div className="flex items-center gap-1.5 pt-1">
-            <div className="relative flex-1">
-              <div
-                className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-md pointer-events-none transition-all duration-200"
-                style={{
-                  backgroundColor: /^#?[0-9a-f]{6}$/i.test(hexInput.trim())
-                    ? (hexInput.trim().startsWith("#") ? hexInput.trim() : `#${hexInput.trim()}`)
-                    : "transparent",
-                  boxShadow: /^#?[0-9a-f]{6}$/i.test(hexInput.trim())
-                    ? `0 0 0 1px ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`
-                    : "none",
-                }}
-              />
-              <input
-                type="text"
-                value={hexInput}
-                onChange={(e) => setHexInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && applyCustomHex()}
-                placeholder="#8b5cf6"
-                className="w-full h-8 pl-8 pr-2 rounded-xl text-[11px] font-mono outline-none transition-all duration-200"
-                style={{
-                  backgroundColor: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)",
-                  color: isDark ? "white" : "black",
-                  borderWidth: 1,
-                  borderColor: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.borderColor = hexToRgba(accent, 0.35);
-                  e.currentTarget.style.boxShadow = `0 0 0 2px ${hexToRgba(accent, 0.08)}`;
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              />
-            </div>
-            <button
-              onClick={applyCustomHex}
-              disabled={!/^#?[0-9a-f]{6}$/i.test(hexInput.trim())}
-              className="h-8 px-3 rounded-xl text-[10px] font-bold transition-all duration-200 disabled:opacity-20 active:scale-95 touch-manipulation"
-              style={{
-                backgroundColor: accent,
-                color: "white",
-                boxShadow: `0 2px 8px -2px ${hexToRgba(accent, 0.4)}`,
-              }}
-            >
-              Apply
-            </button>
-          </div>
+
+          <AnimatePresence>
+            {showCustomHex && (
+              <motion.div
+                initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                animate={{ height: "auto", opacity: 1, marginTop: 16 }}
+                exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                className="overflow-hidden border-t pt-4"
+                style={{ borderColor: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)" }}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1 group">
+                    <div
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-md shadow-sm transition-all duration-300"
+                      style={{
+                        backgroundColor: /^#?[0-9a-f]{6}$/i.test(hexInput.trim())
+                          ? (hexInput.trim().startsWith("#") ? hexInput.trim() : `#${hexInput.trim()}`)
+                          : "transparent",
+                        boxShadow: `0 0 0 1px ${isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)"}`
+                      }}
+                    />
+                    <input
+                      type="text"
+                      value={hexInput}
+                      onChange={(e) => setHexInput(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && applyCustomHex()}
+                      placeholder="#8b5cf6"
+                      className="w-full h-9 pl-9 pr-3 rounded-xl text-[11px] font-mono outline-none transition-all duration-300 border"
+                      style={{
+                        backgroundColor: isDark ? "rgba(255,255,255,0.02)" : "white",
+                        color: isDark ? "white" : "black",
+                        borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.borderColor = accent;
+                        e.currentTarget.style.boxShadow = `0 0 0 3px ${hexToRgba(accent, 0.1)}`;
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
+                        e.currentTarget.style.boxShadow = "none";
+                      }}
+                    />
+                  </div>
+                  <button
+                    onClick={applyCustomHex}
+                    disabled={!/^#?[0-9a-f]{6}$/i.test(hexInput.trim())}
+                    className="h-9 px-4 rounded-xl text-[10px] font-bold text-white transition-all duration-300 disabled:opacity-20 hover:scale-105 active:scale-95"
+                    style={{
+                      backgroundColor: accent,
+                      boxShadow: `0 4px 12px -4px ${hexToRgba(accent, 0.5)}`,
+                    }}
+                  >
+                    Apply
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
 
-      <section className="space-y-2.5">
-        <SectionHeader label="Layout" icon={Layout} isDark={isDark} accent={accent} />
+      {/* ── Layout ── */}
+      <section className="space-y-3">
+        <SectionHeader label={language === "fr" ? "Interface" : "Interface"} icon={Layout} isDark={isDark} accent={accent} />
         <div
-          className="rounded-2xl border overflow-hidden"
+          className="rounded-2xl border overflow-hidden backdrop-blur-md"
           style={{
-            borderColor: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.06)",
+            borderColor: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.08)",
             backgroundColor: isDark ? "rgba(255,255,255,0.015)" : "white",
           }}
         >
-          <SetRow icon={PanelLeft} title="Sidebar Collapsed" desc="Start minimized" isDark={isDark} border accent={accent}>
+          <SetRow icon={PanelLeft} title={language === "fr" ? "Barre latérale réduite" : "Sidebar Collapsed"} desc={language === "fr" ? "Commencer en mode réduit" : "Start minimized"} isDark={isDark} border accent={accent}>
             <MiniToggle dark={isDark} initialOn={settings.sidebarCollapsed} onChange={(v: boolean) => setSettings("sidebarCollapsed", v)} accent={accent} />
+          </SetRow>
+          <SetRow icon={Minimize2} title={language === "fr" ? "Mode compact" : "Compact Mode"} desc={language === "fr" ? "Interface plus dense" : "Denser interface"} isDark={isDark} border accent={accent}>
+            <MiniToggle dark={isDark} initialOn={settings.compactMode} onChange={(v: boolean) => setSettings("compactMode", v)} accent={accent} />
+          </SetRow>
+          <SetRow icon={Maximize2} title={language === "fr" ? "Pleine largeur" : "Full Width"} desc={language === "fr" ? "Utiliser tout l'écran" : "Use entire screen"} isDark={isDark} accent={accent}>
+            <MiniToggle dark={isDark} initialOn={settings.fullWidth} onChange={(v: boolean) => setSettings("fullWidth", v)} accent={accent} />
           </SetRow>
         </div>
       </section>
+
+      {/* ── Reset ── */}
+      <div className="pt-2">
+        <button
+          onClick={handleReset}
+          disabled={resetting}
+          className="w-full py-3.5 rounded-2xl flex items-center justify-center gap-2.5 text-[11px] font-bold transition-all duration-300 active:scale-95 disabled:opacity-50"
+          style={{
+            backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)",
+            color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.5)",
+            border: `1px solid ${isDark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)"}`
+          }}
+        >
+          {resetting ? (
+            <div className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Shuffle className="w-3.5 h-3.5 opacity-50" />
+          )}
+          {language === "fr" ? "Réinitialiser l'apparence" : "Reset Appearance"}
+        </button>
+      </div>
     </div>
   );
 }
@@ -1688,7 +1724,9 @@ export default function SliderLayout({
                       <Link
                         key={l.href}
                         href={l.href}
-                        className={`group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[12.5px] font-medium transition-all duration-300 mb-1 ${
+                        className={`group relative flex items-center gap-3 rounded-xl transition-all duration-300 mb-1 ${
+                          settings.compactMode ? "px-2 py-1.5 text-[11.5px]" : "px-3 py-2.5 text-[12.5px]"
+                        } ${
                           isDark
                             ? "text-zinc-400 hover:text-white hover:bg-white/4"
                             : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50"
@@ -1738,7 +1776,9 @@ export default function SliderLayout({
                       <div key={g.key} className="mb-1">
                         <button
                           onClick={() => toggleGroup(g.key)}
-                          className={`group relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[12.5px] font-medium transition-all duration-300`}
+                          className={`group relative flex w-full items-center gap-3 rounded-xl transition-all duration-300 ${
+                            settings.compactMode ? "px-2 py-1.5 text-[11.5px]" : "px-3 py-2.5 text-[12.5px]"
+                          } font-medium`}
                           style={
                             isGroupActive
                               ? {
@@ -2101,8 +2141,10 @@ export default function SliderLayout({
             ? "md:ml-17"
             : "md:ml-66"
           }
+          ${settings.compactMode ? "pt-2 pb-2" : ""}
         `}
       >
+        <div className={`mx-auto transition-all duration-500 ${settings.fullWidth ? "max-w-none px-4 sm:px-6 lg:px-8" : "max-w-7xl px-4 sm:px-6 lg:px-8"}`}>
         <CookieConsent
           accent={accent}
           isDark={isDark}
@@ -2112,6 +2154,7 @@ export default function SliderLayout({
         />
         {children}
         <FooterDef isDark={isDark} />
+        </div>
       </main>
 
       {panelOpen && (

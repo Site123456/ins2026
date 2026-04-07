@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useToast } from "@/components/ToastHandle";
 
 type Language = 'fr' | 'en';
 
@@ -34,9 +35,9 @@ export const DICTIONARY: Translations = {
   saved: { fr: "Enregistré !", en: "Saved!" },
   deleteAccount: { fr: "Supprimer mon compte", en: "Delete my account" },
   deleteWarningTitle: { fr: "Zone de danger", en: "Danger Zone" },
-  deleteWarningContent: { 
-    fr: "Toutes les réservations seront annulées et tous les plats favoris et données liés à ce compte seront définitivement supprimés.", 
-    en: "All reservations will be canceled and all favorite dishes and data related to this account will be permanently deleted." 
+  deleteWarningContent: {
+    fr: "Toutes les réservations seront annulées et tous les plats favoris et données liés à ce compte seront définitivement supprimés.",
+    en: "All reservations will be canceled and all favorite dishes and data related to this account will be permanently deleted."
   },
   reqDeleteBtn: { fr: "Demander la suppression", en: "Request deletion" },
   deleteSuccess: { fr: "Un email de confirmation vous a été envoyé.", en: "A confirmation email has been sent to you." },
@@ -44,6 +45,7 @@ export const DICTIONARY: Translations = {
   signUpBtn: { fr: "S'inscrire / Newsletter", en: "Sign up / Newsletter" },
   settingsBtn: { fr: "Paramètres", en: "Settings" },
   logoutBtn: { fr: "Déconnexion", en: "Logout" },
+  languageFound: { fr: "Langue trouvé", en: "Language found" },
 };
 
 interface LanguageContextType {
@@ -56,7 +58,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export function LanguageProvider({ children, initialLang = 'fr' }: { children: ReactNode, initialLang?: Language }) {
   const [language, setLanguage] = useState<Language>(initialLang);
-
+  const { push } = useToast();
   useEffect(() => {
     // Attempt auto-detect on mount if no explicit language in local storage
     const stored = localStorage.getItem('ins_lang') as Language;
@@ -65,6 +67,8 @@ export function LanguageProvider({ children, initialLang = 'fr' }: { children: R
     } else {
       const browserLang = navigator.language.startsWith('fr') ? 'fr' : 'en';
       setLanguage(browserLang);
+      // Toast
+      push?.("info", t("languageFound") + browserLang);
       localStorage.setItem('ins_lang', browserLang);
     }
   }, []);
