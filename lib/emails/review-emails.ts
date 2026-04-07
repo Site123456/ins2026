@@ -38,8 +38,8 @@ export function reviewConfirmationEmail(
             </div>
             <p style="font-size:13px;color:#6b7280;line-height:1.6;margin:0">
               ${isFr
-      ? 'Votre avis aide les autres clients à découvrir nos meilleurs plats. Merci de faire partie de la communauté INS !'
-      : 'Your review helps other customers discover our best dishes. Thank you for being part of the INS community!'}
+      ? 'Votre avis aide les autres clients à découvrir nos meilleurs plats. Merci de faire partie de la communauté Indian Nepali Swad !'
+      : 'Your review helps other customers discover our best dishes. Thank you for being part of the Indian Nepali Swad community!'}
             </p>
           </td></tr>
           <tr><td style="padding:20px;text-align:center;font-size:11px;color:#9ca3af">

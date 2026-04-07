@@ -39,7 +39,7 @@ export const MENU_DATA: MenuItem[] = [
     category: "En ce moment",
     prices: p(0),
     popularity: 100,
-    image: "https://indian-nepaliswad.fr/etc/logo.png",
+    image: "https://indian-nepaliswad.fr/banner.png",
   },
 
   // ============================
