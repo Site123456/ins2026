@@ -262,20 +262,8 @@ export default function SearchPage() {
             {isFr ? 'L\'Art de la Cuisine' : 'The Art of Cuisine'}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-orange-500">.</span>
           </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className={`text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}
-          >
-            {isFr
-              ? 'Succombez aux saveurs authentiques de l\'Inde et du Népal, une expérience culinaire d\'exception.'
-              : 'Indulge in the authentic flavors of India and Nepal, a truly exceptional culinary journey.'}
-          </motion.p>
         </div>
-
-        {/* Search + Filters */}
-        <div className="relative mb-12 z-10 max-w-5xl mx-auto">
+        <div className="relative mb-8 z-10 max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row gap-3 items-stretch">
             {/* Search */}
             <div className={`relative flex-1 rounded-3xl border transition-all duration-500 focus-within:ring-4 focus-within:ring-rose-500/10 ${isDark
@@ -301,7 +289,7 @@ export default function SearchPage() {
                     ? 'bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10'
                     : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
               <Heart className={`w-5 h-5 ${showFavorites ? 'fill-current' : ''}`} />
-              <span className="hidden sm:inline">{isFr ? 'Favoris' : 'Favorites'}</span>
+              <span className="inline">{isFr ? 'Favoris' : 'Favorites'}</span>
             </button>
 
             {/* Sort Dropdown */}
@@ -339,21 +327,23 @@ export default function SearchPage() {
             </div>
           </div>
 
-          <div className="mt-6 overflow-x-auto pb-4 no-scrollbar">
-            <div className="flex gap-2 px-1 w-max mx-auto">
-              {categories.map((cat) => (
-                <button key={cat} onClick={() => setSelectedCategory(cat)}
-                  className={`px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-300 ${selectedCategory === cat
-                    ? isDark
-                      ? 'bg-white text-zinc-900 shadow-[0_4px_12px_rgba(255,255,255,0.2)] scale-105'
-                      : 'bg-slate-900 text-white shadow-lg scale-105'
-                    : isDark
-                      ? 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white'
-                      : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-900'
-                    }`}>
-                  {cat === 'All' ? (isFr ? 'Tout' : 'All') : cat}
-                </button>
-              ))}
+          <div className="relative mt-6">
+            <div className="overflow-x-auto pb-4 premium-scrollbar scroll-fade-edges">
+              <div className="flex gap-2 px-10 w-max mx-auto">
+                {categories.map((cat) => (
+                  <button key={cat} onClick={() => setSelectedCategory(cat)}
+                    className={`px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-300 ${selectedCategory === cat
+                      ? isDark
+                        ? 'bg-white text-zinc-900 shadow-[0_4px_12px_rgba(255,255,255,0.2)] scale-105'
+                        : 'bg-slate-900 text-white shadow-lg scale-105'
+                      : isDark
+                        ? 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white'
+                        : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-900'
+                      }`}>
+                    {cat === 'All' ? (isFr ? 'Tout' : 'All') : cat}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
