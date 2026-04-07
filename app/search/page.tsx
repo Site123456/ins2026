@@ -244,7 +244,7 @@ export default function SearchPage() {
   const stats = selectedDish ? (dishStats[selectedDish.id] || { avgRating: 0, totalReviews: 0, totalVoteScore: 0 }) : null;
 
   return (
-    <div className={`min-h-screen pt-28 pb-20 transition-colors duration-500 ${isDark ? 'bg-[#010104] text-white' : 'bg-slate-50 text-slate-900'}`}>
+    <div className={`min-h-screen pt-28 px-2 md:px-8 lg:px-16 pb-20 transition-colors duration-500 ${isDark ? 'bg-[#010104] text-white' : 'bg-slate-50 text-slate-900'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header Section */}
@@ -254,17 +254,17 @@ export default function SearchPage() {
             animate={{ opacity: 1, scale: 1 }}
             className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-12 w-64 h-64 bg-rose-500/10 blur-[100px] rounded-full -z-10"
           />
-          <motion.h1 
-            initial={{ opacity: 0, y: 30 }} 
-            animate={{ opacity: 1, y: 0 }} 
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
             className={`text-4xl md:text-6xl lg:text-7xl font-black tracking-tight mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}
           >
             {isFr ? 'L\'Art de la Cuisine' : 'The Art of Cuisine'}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-orange-500">.</span>
           </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className={`text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}
           >
@@ -279,8 +279,8 @@ export default function SearchPage() {
           <div className="flex flex-col md:flex-row gap-3 items-stretch">
             {/* Search */}
             <div className={`relative flex-1 rounded-3xl border transition-all duration-500 focus-within:ring-4 focus-within:ring-rose-500/10 ${isDark
-                ? 'bg-white/[0.03] border-white/10 focus-within:border-rose-500/50 focus-within:bg-white/[0.06]'
-                : 'bg-white border-slate-200 focus-within:border-rose-500/50 shadow-sm'
+              ? 'bg-white/[0.03] border-white/10 focus-within:border-rose-500/50 focus-within:bg-white/[0.06]'
+              : 'bg-white border-slate-200 focus-within:border-rose-500/50 shadow-sm'
               }`}>
               <Search className={`absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`} />
               <input
@@ -308,8 +308,8 @@ export default function SearchPage() {
             <div className="relative group/sort">
               <button onClick={() => setShowSortMenu(!showSortMenu)}
                 className={`flex items-center gap-3 px-6 py-5 rounded-3xl font-bold transition-all duration-300 whitespace-nowrap w-full md:w-auto justify-center ${isDark
-                    ? 'bg-white/[0.03] border border-white/10 text-zinc-300 hover:bg-white/[0.08] hover:border-white/20'
-                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                  ? 'bg-white/[0.03] border border-white/10 text-zinc-300 hover:bg-white/[0.08] hover:border-white/20'
+                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
                   }`}>
                 <SlidersHorizontal className="w-5 h-5 group-hover/sort:rotate-12 transition-transform" />
                 <span className="hidden sm:inline">{sortOptions.find(s => s.value === sortBy)?.label[language] || 'Sort'}</span>
@@ -344,12 +344,12 @@ export default function SearchPage() {
               {categories.map((cat) => (
                 <button key={cat} onClick={() => setSelectedCategory(cat)}
                   className={`px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-300 ${selectedCategory === cat
-                      ? isDark
-                        ? 'bg-white text-zinc-900 shadow-[0_4px_12px_rgba(255,255,255,0.2)] scale-105'
-                        : 'bg-slate-900 text-white shadow-lg scale-105'
-                      : isDark
-                        ? 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white'
-                        : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-900'
+                    ? isDark
+                      ? 'bg-white text-zinc-900 shadow-[0_4px_12px_rgba(255,255,255,0.2)] scale-105'
+                      : 'bg-slate-900 text-white shadow-lg scale-105'
+                    : isDark
+                      ? 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white'
+                      : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-900'
                     }`}>
                   {cat === 'All' ? (isFr ? 'Tout' : 'All') : cat}
                 </button>
@@ -359,7 +359,7 @@ export default function SearchPage() {
         </div>
 
         {/* Results Grid */}
-        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div layout className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           <AnimatePresence>
             {filteredItems.map((item) => {
               const isFavorite = getFavorites()?.includes(item.id);
@@ -371,16 +371,16 @@ export default function SearchPage() {
                   transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
                   onClick={() => openDish(item)}
                   className={`group relative rounded-[2.5rem] overflow-hidden cursor-pointer border transition-all duration-500 shadow-sm hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)] ${isDark
-                      ? 'bg-zinc-900/40 border-white/5 hover:border-white/15 hover:bg-zinc-900/60'
-                      : 'bg-white border-slate-100 hover:border-slate-200 hover:bg-slate-50'
+                    ? 'bg-zinc-900/40 border-white/5 hover:border-white/15 hover:bg-zinc-900/60'
+                    : 'bg-white border-slate-100 hover:border-slate-200 hover:bg-slate-50'
                     }`}>
 
                   {/* Image Container */}
                   <div className="relative h-64 overflow-hidden">
-                    <img 
-                      src={item.image} 
-                      alt={item.name[language]} 
-                      className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110" 
+                    <img
+                      src={item.image}
+                      alt={item.name[language]}
+                      className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
 
@@ -401,8 +401,8 @@ export default function SearchPage() {
 
                       <button onClick={(e) => { e.stopPropagation(); toggleFavorite(item.id); }}
                         className={`p-3 rounded-full backdrop-blur-md transition-all duration-500
-                          ${isFavorite 
-                            ? 'bg-rose-500 text-white shadow-[0_8px_16px_rgba(244,63,94,0.4)] scale-110' 
+                          ${isFavorite
+                            ? 'bg-rose-500 text-white shadow-[0_8px_16px_rgba(244,63,94,0.4)] scale-110'
                             : 'bg-black/20 hover:bg-white/20 text-white hover:scale-110'}`}>
                         <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
                       </button>
@@ -430,11 +430,11 @@ export default function SearchPage() {
                         {item.category}
                       </span>
                     </div>
-                    
+
                     <h3 className={`text-xl font-bold mb-2 transition-colors duration-300 leading-tight ${isDark ? 'text-white group-hover:text-rose-400' : 'text-slate-900 group-hover:text-rose-600'}`}>
                       {item.name[language]}
                     </h3>
-                    
+
                     <p className={`text-sm line-clamp-2 mb-6 leading-relaxed font-medium ${isDark ? 'text-zinc-400' : 'text-slate-500'}`}>
                       {item.description[language]}
                     </p>
@@ -459,9 +459,8 @@ export default function SearchPage() {
                         )}
                       </div>
 
-                      <div className={`p-2 rounded-xl transition-all duration-500 group-hover:bg-rose-500 group-hover:text-white ${
-                        isDark ? 'bg-white/5 text-zinc-500' : 'bg-slate-100 text-slate-400'
-                      }`}>
+                      <div className={`p-2 rounded-xl transition-all duration-500 group-hover:bg-rose-500 group-hover:text-white ${isDark ? 'bg-white/5 text-zinc-500' : 'bg-slate-100 text-slate-400'
+                        }`}>
                         <ChevronRight className="w-5 h-5 transition-transform duration-500 group-hover:translate-x-1" />
                       </div>
                     </div>
@@ -506,12 +505,7 @@ export default function SearchPage() {
               className={`fixed inset-x-0 bottom-0 z-50 max-h-[92vh] rounded-t-[2.5rem] border-t overflow-hidden flex flex-col shadow-2xl ${isDark ? 'bg-zinc-950 border-white/10' : 'bg-white border-slate-200'
                 }`}
             >
-              {/* Drag handle */}
-              <div className="flex justify-center pt-3 pb-2 shrink-0">
-                <div className="w-10 h-1 rounded-full bg-white/15" />
-              </div>
-
-              <div className="overflow-y-auto flex-1 pb-8" style={{ scrollbarWidth: 'thin' }}>
+              <div className="overflow-y-auto flex-1 p-0 pb-8" style={{ scrollbarWidth: 'thin' }}>
                 {/* Hero */}
                 <div className="relative h-64 sm:h-80 overflow-hidden">
                   <img src={selectedDish.image} alt={selectedDish.name[language]} className="w-full h-full object-cover" />
@@ -597,7 +591,7 @@ export default function SearchPage() {
                               </button>
                             ))}
                             {newRating > 0 && (
-                              <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} 
+                              <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
                                 className="text-sm font-black text-amber-500 ml-4 bg-amber-500/10 px-3 py-1 rounded-full">
                                 {newRating}/5
                               </motion.span>
@@ -610,8 +604,8 @@ export default function SearchPage() {
                               onChange={(e) => setNewComment(e.target.value)}
                               placeholder={isFr ? 'Racontez votre expérience culinaire...' : 'Tell us about your culinary experience...'}
                               className={`w-full border rounded-[2rem] px-6 py-5 text-base outline-none transition-all resize-none h-40 ${isDark
-                                  ? 'bg-white/5 border-white/10 text-white placeholder:text-zinc-600 focus:border-rose-500/30 focus:bg-white/8'
-                                  : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-rose-500/30 shadow-sm'
+                                ? 'bg-white/5 border-white/10 text-white placeholder:text-zinc-600 focus:border-rose-500/30 focus:bg-white/8'
+                                : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus:border-rose-500/30 shadow-sm'
                                 }`}
                               maxLength={1000}
                             />
@@ -689,7 +683,7 @@ export default function SearchPage() {
                               {/* Review content */}
                               <div className="relative mb-6">
                                 <p className={`text-base leading-relaxed font-medium italic ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
-                                  "{review.comment}"
+                                  {review.comment}
                                 </p>
                               </div>
 
@@ -698,19 +692,19 @@ export default function SearchPage() {
                                 <div className={`flex items-center p-1 rounded-2xl ${isDark ? 'bg-black/40 border border-white/5' : 'bg-slate-100 border border-slate-200'}`}>
                                   <button onClick={() => voteReview(review._id, 'up')}
                                     className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 font-bold text-xs ${myVote === 'up'
-                                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-105'
-                                        : isDark ? 'text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+                                      ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-105'
+                                      : isDark ? 'text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                                       }`}>
                                     <ThumbsUp className={`w-4 h-4 ${myVote === 'up' ? 'fill-current' : ''}`} />
                                     <span>{review.upvotes}</span>
                                   </button>
-                                  
+
                                   <div className={`w-px h-4 mx-1 ${isDark ? 'bg-white/10' : 'bg-slate-200'}`} />
-                                  
+
                                   <button onClick={() => voteReview(review._id, 'down')}
                                     className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 font-bold text-xs ${myVote === 'down'
-                                        ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20 scale-105'
-                                        : isDark ? 'text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+                                      ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20 scale-105'
+                                      : isDark ? 'text-zinc-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                                       }`}>
                                     <ThumbsDown className={`w-4 h-4 ${myVote === 'down' ? 'fill-current' : ''}`} />
                                     <span>{review.downvotes}</span>
@@ -721,11 +715,10 @@ export default function SearchPage() {
                                   if (!user) { openAuthModal('signin'); return; }
                                   setReplyingTo(replyingTo === review._id ? null : review._id);
                                 }}
-                                  className={`flex items-center gap-2 px-5 py-3 rounded-2xl transition-all duration-300 ml-auto font-black text-xs uppercase tracking-widest ${
-                                    replyingTo === review._id 
-                                      ? 'bg-rose-500 text-white shadow-lg' 
-                                      : isDark ? 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                                  }`}>
+                                  className={`flex items-center gap-2 px-5 py-3 rounded-2xl transition-all duration-300 ml-auto font-black text-xs uppercase tracking-widest ${replyingTo === review._id
+                                    ? 'bg-rose-500 text-white shadow-lg'
+                                    : isDark ? 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                                    }`}>
                                   <MessageCircle className="w-4 h-4" />
                                   <span>{isFr ? 'Répondre' : 'Reply'}</span>
                                 </button>
