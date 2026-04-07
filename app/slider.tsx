@@ -98,8 +98,8 @@ function getCookie(name: string): string | null {
   const match = document.cookie.match(
     new RegExp(
       "(?:^|; )" +
-        name.replace(/([.$?*|{}()\[\]\\\/+^])/g, "\\$1") +
-        "=([^;]*)"
+      name.replace(/([.$?*|{}()\[\]\\\/+^])/g, "\\$1") +
+      "=([^;]*)"
     )
   );
   return match ? decodeURIComponent(match[1]) : null;
@@ -423,7 +423,7 @@ export function CookieConsent({
                 >
                   {language === 'en' ? 'To offer you a better experience, ' : 'Pour vous offrir une meilleure expérience, '}
                   <span
-                  className="px-1"
+                    className="px-1"
                     style={{
                       fontWeight: 700,
                       color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)"
@@ -529,7 +529,7 @@ export function CookieConsent({
                 >
                   {language === 'en' ? 'To offer you a better experience, ' : 'Pour vous offrir une meilleure expérience, '}
                   <span
-                  className="px-1"
+                    className="px-1"
                     style={{
                       fontWeight: 700,
                       color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)"
@@ -635,7 +635,7 @@ type NavSection = {
 };
 
 const sections: NavSection[] = [
-  
+
   {
     label: "Acceuil",
     links: [
@@ -645,7 +645,7 @@ const sections: NavSection[] = [
   {
     label: "Liens utiles",
     links: [{ href: "/search", label: "Rechercher", icon: Search }],
-    
+
     groups: [
       {
         key: "sites",
@@ -739,19 +739,17 @@ function TabCarousel({
       {canScrollLeft && (
         <>
           <div
-            className={`absolute left-6 top-0 bottom-0 w-12 z-10 pointer-events-none ${
-              isDark
-                ? "bg-linear-to-r from-[#08080c] to-transparent"
-                : "bg-linear-to-r from-[#fefefe] to-transparent"
-            }`}
+            className={`absolute left-6 top-0 bottom-0 w-12 z-10 pointer-events-none ${isDark
+              ? "bg-linear-to-r from-[#08080c] to-transparent"
+              : "bg-linear-to-r from-[#fefefe] to-transparent"
+              }`}
           />
           <button
             onClick={() => scrollBy(-1)}
-            className={`absolute left-1 top-1/2 -translate-y-1/2 z-20 h-7 w-7 flex items-center justify-center rounded-lg transition-all duration-200 hover:scale-110 ${
-              isDark
-                ? "bg-white/8 hover:bg-white/12 text-white/40"
-                : "bg-black/8 hover:bg-black/12 text-black/40"
-            }`}
+            className={`absolute left-1 top-1/2 -translate-y-1/2 z-20 h-7 w-7 flex items-center justify-center rounded-lg transition-all duration-200 hover:scale-110 ${isDark
+              ? "bg-white/8 hover:bg-white/12 text-white/40"
+              : "bg-black/8 hover:bg-black/12 text-black/40"
+              }`}
           >
             <ChevronLeft className="h-3.5 w-3.5" />
           </button>
@@ -761,19 +759,17 @@ function TabCarousel({
       {canScrollRight && (
         <>
           <div
-            className={`absolute right-16 top-0 bottom-0 w-12 z-10 pointer-events-none ${
-              isDark
-                ? "bg-linear-to-l from-[#08080c] to-transparent"
-                : "bg-linear-to-l from-[#fefefe] to-transparent"
-            }`}
+            className={`absolute right-16 top-0 bottom-0 w-12 z-10 pointer-events-none ${isDark
+              ? "bg-linear-to-l from-[#08080c] to-transparent"
+              : "bg-linear-to-l from-[#fefefe] to-transparent"
+              }`}
           />
           <button
             onClick={() => scrollBy(1)}
-            className={`absolute right-12 top-1/2 -translate-y-1/2 z-20 h-7 w-7 flex items-center justify-center rounded-lg transition-all duration-200 hover:scale-110 ${
-              isDark
-                ? "bg-white/8 hover:bg-white/12 text-white/40"
-                : "bg-black/8 hover:bg-black/12 text-black/40"
-            }`}
+            className={`absolute right-12 top-1/2 -translate-y-1/2 z-20 h-7 w-7 flex items-center justify-center rounded-lg transition-all duration-200 hover:scale-110 ${isDark
+              ? "bg-white/8 hover:bg-white/12 text-white/40"
+              : "bg-black/8 hover:bg-black/12 text-black/40"
+              }`}
           >
             <ChevronRight className="h-3.5 w-3.5" />
           </button>
@@ -782,11 +778,10 @@ function TabCarousel({
 
       <button
         onClick={onClose}
-        className={`absolute right-1 top-1/2 -translate-y-1/2 z-20 h-7 w-7 flex items-center justify-center rounded-lg transition-all duration-200 hover:scale-110 ${
-          isDark
-            ? "hover:bg-white/8 text-white/20 hover:text-white/50"
-            : "hover:bg-black/8 text-black/20 hover:text-black/50"
-        }`}
+        className={`absolute right-1 top-1/2 -translate-y-1/2 z-20 h-7 w-7 flex items-center justify-center rounded-lg transition-all duration-200 hover:scale-110 ${isDark
+          ? "hover:bg-white/8 text-white/20 hover:text-white/50"
+          : "hover:bg-black/8 text-black/20 hover:text-black/50"
+          }`}
       >
         <X className="h-3.5 w-3.5" />
       </button>
@@ -803,20 +798,19 @@ function TabCarousel({
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`group relative flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[11px] font-medium whitespace-nowrap transition-all duration-300 shrink-0 ${
-                active
-                  ? "text-white border shadow-lg"
-                  : isDark
+              className={`group relative flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[11px] font-medium whitespace-nowrap transition-all duration-300 shrink-0 ${active
+                ? "text-white border shadow-lg"
+                : isDark
                   ? "text-white/30 hover:text-white/60 hover:bg-white/4 border border-transparent"
                   : "text-black/30 hover:text-black/60 hover:bg-black/4 border border-transparent"
-              }`}
+                }`}
               style={
                 active
                   ? {
-                      background: `linear-gradient(to right, ${accent}30, ${accent}15)`,
-                      borderColor: `${accent}40`,
-                      boxShadow: `0 4px 16px -4px ${accent}30`,
-                    }
+                    background: `linear-gradient(to right, ${accent}30, ${accent}15)`,
+                    borderColor: `${accent}40`,
+                    boxShadow: `0 4px 16px -4px ${accent}30`,
+                  }
                   : {}
               }
             >
@@ -875,9 +869,8 @@ function ColorDot({
       title={color.name}
     >
       <div
-        className={`relative rounded-full transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
-          isSelected ? "scale-110" : "hover:scale-105 active:scale-90"
-        }`}
+        className={`relative rounded-full transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${isSelected ? "scale-110" : "hover:scale-105 active:scale-90"
+          }`}
         style={{
           width: size,
           height: size,
@@ -906,9 +899,8 @@ function ColorDot({
         />
       </div>
       <span
-        className={`text-[7px] font-semibold tracking-wide transition-all duration-200 whitespace-nowrap ${
-          isSelected ? "opacity-70" : "opacity-0 group-hover:opacity-40 group-active:opacity-50"
-        }`}
+        className={`text-[7px] font-semibold tracking-wide transition-all duration-200 whitespace-nowrap ${isSelected ? "opacity-70" : "opacity-0 group-hover:opacity-40 group-active:opacity-50"
+          }`}
         style={{ color: color.hex }}
       >
         {color.name}
@@ -950,13 +942,13 @@ function ThemeCard({
         borderColor: isActive
           ? hexToRgba(accent, 0.35)
           : isDark
-          ? "rgba(255,255,255,0.06)"
-          : "rgba(0,0,0,0.06)",
+            ? "rgba(255,255,255,0.06)"
+            : "rgba(0,0,0,0.06)",
         backgroundColor: isActive
           ? hexToRgba(accent, 0.06)
           : isDark
-          ? "rgba(255,255,255,0.02)"
-          : "rgba(0,0,0,0.015)",
+            ? "rgba(255,255,255,0.02)"
+            : "rgba(0,0,0,0.015)",
         boxShadow: isActive ? `0 4px 24px -8px ${hexToRgba(accent, 0.25)}` : "none",
       }}
     >
@@ -1498,9 +1490,8 @@ export default function SliderLayout({
 
   return (
     <div
-      className={`min-h-screen  ${consentOpen ? "h-screen overflow-hidden pointer-events-none" : ""} transition-colors duration-500 ${
-        isDark ? "bg-[#060609]" : "bg-[#faf9f7]"
-      }`}
+      className={`min-h-screen  ${consentOpen ? "h-screen overflow-hidden pointer-events-none" : ""} transition-colors duration-500 ${isDark ? "bg-[#060609]" : "bg-[#faf9f7]"
+        }`}
     >
       {mobileOpen && (
         <div
@@ -1510,9 +1501,8 @@ export default function SliderLayout({
       )}
 
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-full flex-col border-r ${sw} backdrop-blur-2xl transition-all duration-300 md:translate-x-0 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed left-0 top-0 z-50 flex h-full flex-col border-r ${sw} backdrop-blur-2xl transition-all duration-300 md:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
         style={{
           backgroundColor: isDark
             ? "rgba(10,10,15,0.98)"
@@ -1530,11 +1520,10 @@ export default function SliderLayout({
         />
 
         <div
-          className={`flex h-14 items-center px-4 ${
-            settings.sidebarCollapsed
-              ? "justify-center"
-              : "justify-between"
-          }`}
+          className={`flex h-14 items-center px-4 ${settings.sidebarCollapsed
+            ? "justify-center"
+            : "justify-between"
+            }`}
         >
           {!settings.sidebarCollapsed ? (
             <Link href="/" className="flex items-center gap-3 group">
@@ -1554,16 +1543,14 @@ export default function SliderLayout({
               </div>
               <div className="animate-fadeIn flex flex-col pt-2">
                 <span
-                  className={`text-[14px] font-bold ${
-                    isDark ? "text-white" : "text-zinc-900"
-                  }`}
+                  className={`text-[14px] font-bold ${isDark ? "text-white" : "text-zinc-900"
+                    }`}
                 >
                   INDIAN NEPALI SWAD
                 </span>
                 <span
-                  className={`text-[9px] font-medium ${
-                    isDark ? "text-white/60" : "text-zinc-500"
-                  }`}
+                  className={`text-[9px] font-medium ${isDark ? "text-white/60" : "text-zinc-500"
+                    }`}
                 >
                   Gastronomie Indienne et Nepalaise
                 </span>
@@ -1589,11 +1576,10 @@ export default function SliderLayout({
           {!settings.sidebarCollapsed && (
             <button
               onClick={() => setSetting("sidebarCollapsed", true)}
-              className={`hidden md:flex h-8 w-8 items-center justify-center rounded-xl transition-all duration-200 ${
-                isDark
-                  ? "bg-white/4 hover:bg-white/6 text-white/40"
-                  : "bg-zinc-100 hover:bg-zinc-200 text-zinc-400"
-              }`}
+              className={`hidden md:flex h-8 w-8 items-center justify-center rounded-xl transition-all duration-200 ${isDark
+                ? "bg-white/4 hover:bg-white/6 text-white/40"
+                : "bg-zinc-100 hover:bg-zinc-200 text-zinc-400"
+                }`}
             >
               <ChevronRight className="h-4 w-4 rotate-180" />
             </button>
@@ -1604,11 +1590,10 @@ export default function SliderLayout({
           <div className="hidden md:flex justify-center pb-2">
             <button
               onClick={() => setSetting("sidebarCollapsed", false)}
-              className={`flex h-8 w-8 items-center justify-center rounded-xl transition-all duration-200 ${
-                isDark
-                  ? "bg-white/4 hover:bg-white/6 text-white/40"
-                  : "bg-zinc-100 hover:bg-zinc-200 text-zinc-400"
-              }`}
+              className={`flex h-8 w-8 items-center justify-center rounded-xl transition-all duration-200 ${isDark
+                ? "bg-white/4 hover:bg-white/6 text-white/40"
+                : "bg-zinc-100 hover:bg-zinc-200 text-zinc-400"
+                }`}
             >
               <ChevronRight className="h-4 w-4" />
             </button>
@@ -1626,28 +1611,26 @@ export default function SliderLayout({
                       key={l.href}
                       href={l.href}
                       title={l.label}
-                      className={`group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300 ${
-                        isDark
-                          ? "text-white/40 hover:bg-white/6"
-                          : "text-zinc-400 hover:bg-zinc-100"
-                      }`}
+                      className={`group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300 ${isDark
+                        ? "text-white/40 hover:bg-white/6"
+                        : "text-zinc-400 hover:bg-zinc-100"
+                        }`}
                       style={
                         isActive
                           ? {
-                              backgroundColor: accent,
-                              color: "white",
-                              boxShadow: `0 4px 16px ${accent}40`,
-                            }
+                            backgroundColor: accent,
+                            color: "white",
+                            boxShadow: `0 4px 16px ${accent}40`,
+                          }
                           : {}
                       }
                     >
                       {l.icon && (
                         <l.icon
-                          className={`relative z-10 h-4.5 w-4.5 transition-transform duration-300 ${
-                            isActive
-                              ? "scale-110"
-                              : "group-hover:scale-105"
-                          }`}
+                          className={`relative z-10 h-4.5 w-4.5 transition-transform duration-300 ${isActive
+                            ? "scale-110"
+                            : "group-hover:scale-105"
+                            }`}
                           style={
                             !isActive
                               ? { color: `${accent}80` }
@@ -1665,18 +1648,17 @@ export default function SliderLayout({
                   return (
                     <div
                       key={g.key}
-                      className={`group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300 cursor-pointer ${
-                        isDark
-                          ? "text-white/40 hover:bg-white/6"
-                          : "text-zinc-400 hover:bg-zinc-100"
-                      }`}
+                      className={`group relative flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300 cursor-pointer ${isDark
+                        ? "text-white/40 hover:bg-white/6"
+                        : "text-zinc-400 hover:bg-zinc-100"
+                        }`}
                       style={
                         isGroupActive
                           ? {
-                              backgroundColor: `${accent}20`,
-                              color: accent,
-                              boxShadow: `0 2px 8px ${accent}20`,
-                            }
+                            backgroundColor: `${accent}20`,
+                            color: accent,
+                            boxShadow: `0 2px 8px ${accent}20`,
+                          }
                           : {}
                       }
                       onClick={() => {
@@ -1687,11 +1669,10 @@ export default function SliderLayout({
                     >
                       {g.icon && (
                         <g.icon
-                          className={`relative z-10 h-4.5 w-4.5 transition-transform duration-300 ${
-                            isGroupActive
-                              ? "scale-105"
-                              : "group-hover:scale-105"
-                          }`}
+                          className={`relative z-10 h-4.5 w-4.5 transition-transform duration-300 ${isGroupActive
+                            ? "scale-105"
+                            : "group-hover:scale-105"
+                            }`}
                           style={
                             !isGroupActive
                               ? { color: `${accent}80` }
@@ -1710,9 +1691,8 @@ export default function SliderLayout({
                 <React.Fragment key={section.label}>
                   <div className="mb-1 mt-2 first:mt-0 px-2.5">
                     <span
-                      className={`text-[9px] font-semibold uppercase tracking-[0.15em] ${
-                        isDark ? "text-zinc-500" : "text-zinc-400"
-                      }`}
+                      className={`text-[9px] font-semibold uppercase tracking-[0.15em] ${isDark ? "text-zinc-500" : "text-zinc-400"
+                        }`}
                     >
                       {section.label}
                     </span>
@@ -1724,20 +1704,18 @@ export default function SliderLayout({
                       <Link
                         key={l.href}
                         href={l.href}
-                        className={`group relative flex items-center gap-3 rounded-xl transition-all duration-300 mb-1 ${
-                          settings.compactMode ? "px-2 py-1.5 text-[11.5px]" : "px-3 py-2.5 text-[12.5px]"
-                        } ${
-                          isDark
+                        className={`group relative flex items-center gap-3 rounded-xl transition-all duration-300 mb-1 ${settings.compactMode ? "px-2 py-1.5 text-[11.5px]" : "px-3 py-2.5 text-[12.5px]"
+                          } ${isDark
                             ? "text-zinc-400 hover:text-white hover:bg-white/4"
                             : "text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50"
-                        }`}
+                          }`}
                         style={
                           isActive
                             ? {
-                                background: `linear-gradient(to right, ${accent}dd, ${accent}bb)`,
-                                color: "white",
-                                boxShadow: `0 4px 16px ${accent}30`,
-                              }
+                              background: `linear-gradient(to right, ${accent}dd, ${accent}bb)`,
+                              color: "white",
+                              boxShadow: `0 4px 16px ${accent}30`,
+                            }
                             : {}
                         }
                       >
@@ -1748,11 +1726,10 @@ export default function SliderLayout({
                         )}
                         {l.icon && (
                           <l.icon
-                            className={`h-4.5 w-4.5 shrink-0 transition-all duration-300 ${
-                              isActive
-                                ? "text-white scale-105"
-                                : ""
-                            }`}
+                            className={`h-4.5 w-4.5 shrink-0 transition-all duration-300 ${isActive
+                              ? "text-white scale-105"
+                              : ""
+                              }`}
                             style={
                               !isActive
                                 ? { color: `${accent}80` }
@@ -1776,22 +1753,21 @@ export default function SliderLayout({
                       <div key={g.key} className="mb-1">
                         <button
                           onClick={() => toggleGroup(g.key)}
-                          className={`group relative flex w-full items-center gap-3 rounded-xl transition-all duration-300 ${
-                            settings.compactMode ? "px-2 py-1.5 text-[11.5px]" : "px-3 py-2.5 text-[12.5px]"
-                          } font-medium`}
+                          className={`group relative flex w-full items-center gap-3 rounded-xl transition-all duration-300 ${settings.compactMode ? "px-2 py-1.5 text-[11.5px]" : "px-3 py-2.5 text-[12.5px]"
+                            } font-medium`}
                           style={
                             isGroupActive
                               ? {
-                                  backgroundColor: `${accent}12`,
-                                  color: accent,
-                                  borderColor: `${accent}25`,
-                                  borderWidth: 1,
-                                }
+                                backgroundColor: `${accent}12`,
+                                color: accent,
+                                borderColor: `${accent}25`,
+                                borderWidth: 1,
+                              }
                               : {
-                                  color: isDark
-                                    ? "#a1a1aa"
-                                    : "#52525b",
-                                }
+                                color: isDark
+                                  ? "#a1a1aa"
+                                  : "#52525b",
+                              }
                           }
                         >
                           {isGroupActive && (
@@ -1811,31 +1787,28 @@ export default function SliderLayout({
                             />
                           )}
                           <span
-                            className={`flex-1 text-left truncate ${
-                              isGroupActive ? "font-semibold" : ""
-                            }`}
+                            className={`flex-1 text-left truncate ${isGroupActive ? "font-semibold" : ""
+                              }`}
                           >
                             {g.label}
                           </span>
                           <ChevronRight
-                            className={`h-4 w-4 shrink-0 transition-all duration-300 ${
-                              isExpanded ? "rotate-90" : ""
-                            }`}
+                            className={`h-4 w-4 shrink-0 transition-all duration-300 ${isExpanded ? "rotate-90" : ""
+                              }`}
                             style={{
                               color: isGroupActive
                                 ? accent
                                 : isDark
-                                ? "#71717a"
-                                : "#a1a1aa",
+                                  ? "#71717a"
+                                  : "#a1a1aa",
                             }}
                           />
                         </button>
                         <div
-                          className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                            isExpanded
-                              ? "max-h-125 opacity-100"
-                              : "max-h-0 opacity-0"
-                          }`}
+                          className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isExpanded
+                            ? "max-h-125 opacity-100"
+                            : "max-h-0 opacity-0"
+                            }`}
                         >
                           <div
                             className={`ml-3.5 space-y-0.5 border-l pl-3 mt-1 mb-1`}
@@ -1856,15 +1829,15 @@ export default function SliderLayout({
                                   style={
                                     isSubActive
                                       ? {
-                                          backgroundColor: `${accent}15`,
-                                          color: accent,
-                                          fontWeight: 500,
-                                        }
+                                        backgroundColor: `${accent}15`,
+                                        color: accent,
+                                        fontWeight: 500,
+                                      }
                                       : {
-                                          color: isDark
-                                            ? "#71717a"
-                                            : "#71717a",
-                                        }
+                                        color: isDark
+                                          ? "#71717a"
+                                          : "#71717a",
+                                      }
                                   }
                                 >
                                   {i.icon && (
@@ -1874,8 +1847,8 @@ export default function SliderLayout({
                                         color: isSubActive
                                           ? accent
                                           : isDark
-                                          ? "#52525b"
-                                          : "#a1a1aa",
+                                            ? "#52525b"
+                                            : "#a1a1aa",
                                       }}
                                     />
                                   )}
@@ -1896,9 +1869,8 @@ export default function SliderLayout({
           )}
         </nav>
         <div
-          className={`border-t px-2 py-3 ${
-            isDark ? "border-white/5" : "border-zinc-200"
-          }`}
+          className={`border-t px-2 py-3 ${isDark ? "border-white/5" : "border-zinc-200"
+            }`}
         >
           {settings.sidebarCollapsed ? (
             <div className="flex flex-col items-center gap-2">
@@ -2060,12 +2032,11 @@ export default function SliderLayout({
           className={`
             fixed inset-x-0 top-0 z-30 flex items-center justify-between
             h-14 px-3 sm:px-4 backdrop-blur-2xl transition-all duration-300 md:hidden
-            ${
-              isDark
-                ? scrolled
-                  ? "bg-[#0a0a0f]/60 border-b border-white/10 shadow-lg shadow-black/20"
-                  : "bg-transparent border-b border-transparent"
-                : scrolled
+            ${isDark
+              ? scrolled
+                ? "bg-[#0a0a0f]/60 border-b border-white/10 shadow-lg shadow-black/20"
+                : "bg-transparent border-b border-transparent"
+              : scrolled
                 ? "bg-white/70 border-b border-zinc-200 shadow-lg shadow-black/5"
                 : "bg-white border-b border-transparent"
             }
@@ -2080,10 +2051,9 @@ export default function SliderLayout({
             className={`
               flex items-center justify-center rounded-xl
               transition-all duration-200 h-9 w-9 sm:h-10 sm:w-10
-              ${
-                isDark
-                  ? "text-white bg-black/60 hover:bg-black border border-white/10"
-                  : "text-zinc-900 bg-white/70 hover:bg-white border border-zinc-200"
+              ${isDark
+                ? "text-white bg-black/60 hover:bg-black border border-white/10"
+                : "text-zinc-900 bg-white/70 hover:bg-white border border-zinc-200"
               }
             `}
           >
@@ -2109,10 +2079,9 @@ export default function SliderLayout({
               className={`
                 flex items-center justify-center rounded-xl
                 transition-all duration-200 h-9 w-9 sm:h-10 sm:w-10
-                ${
-                  isDark
-                    ? "text-white bg-black/60 hover:bg-black border border-white/10"
-                    : "text-zinc-900 bg-white/70 hover:bg-white border border-zinc-200"
+                ${isDark
+                  ? "text-white bg-black/60 hover:bg-black border border-white/10"
+                  : "text-zinc-900 bg-white/70 hover:bg-white border border-zinc-200"
                 }
               `}
             >
@@ -2144,16 +2113,16 @@ export default function SliderLayout({
           ${settings.compactMode ? "pt-2 pb-2" : ""}
         `}
       >
-        <div className={`mx-auto transition-all duration-500 ${settings.fullWidth ? "max-w-none px-4 sm:px-6 lg:px-8" : "max-w-7xl px-4 sm:px-6 lg:px-8"}`}>
-        <CookieConsent
-          accent={accent}
-          isDark={isDark}
-          onAccentChange={(hex) => setSetting("accent", hex)}
-          onVisibilityChange={setConsentOpen}
-          push={push}
-        />
-        {children}
-        <FooterDef isDark={isDark} />
+        <div className={`transition-all duration-500`}>
+          <CookieConsent
+            accent={accent}
+            isDark={isDark}
+            onAccentChange={(hex) => setSetting("accent", hex)}
+            onVisibilityChange={setConsentOpen}
+            push={push}
+          />
+          {children}
+          <FooterDef isDark={isDark} />
         </div>
       </main>
 
@@ -2170,9 +2139,8 @@ export default function SliderLayout({
               backgroundColor: isDark
                 ? "rgba(8,8,12,0.98)"
                 : "rgba(254,254,254,0.98)",
-              borderLeft: `1px solid ${
-                isDark ? "rgba(255,255,255,0.04)" : "#e4e4e7"
-              }`,
+              borderLeft: `1px solid ${isDark ? "rgba(255,255,255,0.04)" : "#e4e4e7"
+                }`,
             }}
           >
             <div
@@ -2215,25 +2183,22 @@ export default function SliderLayout({
             </div>
 
             <div
-              className={`border-t px-5 py-3 flex items-center justify-between ${
-                isDark ? "border-white/4" : "border-zinc-200"
-              }`}
+              className={`border-t px-5 py-3 flex items-center justify-between ${isDark ? "border-white/4" : "border-zinc-200"
+                }`}
             >
               <Link
                 href="https://www.indian-nepaliswad.fr"
-                className={`flex items-center gap-1.5 text-[10px] font-medium transition-all duration-200 ${
-                  isDark
-                    ? "text-white/40 hover:text-white/60"
-                    : "text-zinc-400 hover:text-zinc-600"
-                }`}
+                className={`flex items-center gap-1.5 text-[10px] font-medium transition-all duration-200 ${isDark
+                  ? "text-white/40 hover:text-white/60"
+                  : "text-zinc-400 hover:text-zinc-600"
+                  }`}
               >
                 <Copyright className="h-3 w-3" />
                 2017-{year} indian-nepaliswad.fr
               </Link>
               <span
-                className={`text-[9px] ${
-                  isDark ? "text-white/25" : "text-zinc-300"
-                }`}
+                className={`text-[9px] ${isDark ? "text-white/25" : "text-zinc-300"
+                  }`}
               >
                 <Link href="https://docs.corsprite.com/">Alpha search, AI can make mistakes!</Link>
               </span>
