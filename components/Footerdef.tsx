@@ -140,7 +140,10 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
               <Image src="/etc/logo.png" alt="Indian Nepali Swad" width={156} height={156} className={`relative rounded-xl ${isDark? "brightness-0 invert-100": ""}`} />
             </div>
             <p className={`text-[13px] leading-relaxed max-w-xs ${isDark ? "text-white/40" : "text-black/40"}`}>
-              {t("hero.subtitle")}
+              {language === 'en'
+                ? "Experience the authentic flavors of India and Nepal, crafted with passion and delivered with care. Join us on a culinary journey that celebrates tradition and innovation in every bite."
+                : "Découvrez les saveurs authentiques de l'Inde et du Népal, élaborées avec passion et livrées avec soin. Rejoignez-nous pour un voyage culinaire qui célèbre la tradition et l'innovation à chaque bouchée."}
+              <br />
               <Link href="https://www.indian-nepaliswad.fr/" className="transition-colors duration-300 ps-1" style={{ color: accent }}>
                 {language === 'en' ? "Learn more" : "En savoir plus"}
               </Link>
