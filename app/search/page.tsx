@@ -263,79 +263,81 @@ export default function SearchPage() {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-orange-500">.</span>
           </motion.h1>
         </div>
-        <div className="relative mb-8 z-10 max-w-5xl mx-auto">
-          <div className="flex flex-col md:flex-row gap-3 items-stretch">
+        <div className="relative mb-6 z-10 max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row gap-2 items-stretch">
             {/* Search */}
-            <div className={`relative flex-1 rounded-3xl border transition-all duration-500 focus-within:ring-4 focus-within:ring-rose-500/10 ${isDark
+            <div className={`relative flex-1 rounded-2xl border transition-all duration-500 focus-within:ring-4 focus-within:ring-rose-500/10 ${isDark
               ? 'bg-white/[0.03] border-white/10 focus-within:border-rose-500/50 focus-within:bg-white/[0.06]'
               : 'bg-white border-slate-200 focus-within:border-rose-500/50 shadow-sm'
               }`}>
-              <Search className={`absolute left-6 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors duration-300 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`} />
+              <Search className={`absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors duration-300 ${isDark ? 'text-zinc-500' : 'text-slate-400'}`} />
               <input
                 type="text"
-                placeholder={isFr ? 'Rechercher un plat, une saveur...' : 'Search for a dish, a flavor...'}
+                placeholder={isFr ? 'Rechercher un plat...' : 'Search for a dish...'}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-full py-5 pl-16 pr-8 bg-transparent outline-none text-base font-medium placeholder:text-zinc-500 ${isDark ? 'text-white' : 'text-slate-900'}`}
+                className={`w-full py-3.5 pl-12 pr-6 bg-transparent outline-none text-sm font-medium placeholder:text-zinc-500 ${isDark ? 'text-white' : 'text-slate-900'}`}
               />
             </div>
 
-            {/* Favorites */}
-            <button onClick={() => setShowFavorites(!showFavorites)}
-              className={`flex items-center gap-2 px-5 py-4 rounded-2xl font-bold transition-all duration-300 whitespace-nowrap
-                ${showFavorites
-                  ? 'bg-rose-500 text-white shadow-[0_0_20px_rgba(244,63,94,0.3)]'
-                  : isDark
-                    ? 'bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10'
-                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
-              <Heart className={`w-5 h-5 ${showFavorites ? 'fill-current' : ''}`} />
-              <span className="inline">{isFr ? 'Favoris' : 'Favorites'}</span>
-            </button>
-
-            {/* Sort Dropdown */}
-            <div className="relative group/sort">
-              <button onClick={() => setShowSortMenu(!showSortMenu)}
-                className={`flex items-center gap-3 px-6 py-5 rounded-3xl font-bold transition-all duration-300 whitespace-nowrap w-full md:w-auto justify-center ${isDark
-                  ? 'bg-white/[0.03] border border-white/10 text-zinc-300 hover:bg-white/[0.08] hover:border-white/20'
-                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-                  }`}>
-                <SlidersHorizontal className="w-5 h-5 group-hover/sort:rotate-12 transition-transform" />
-                <span className="hidden sm:inline">{sortOptions.find(s => s.value === sortBy)?.label[language] || 'Sort'}</span>
-                <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showSortMenu ? 'rotate-180' : ''}`} />
+            <div className="flex gap-2 shrink-0">
+              {/* Favorites */}
+              <button onClick={() => setShowFavorites(!showFavorites)}
+                className={`flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all duration-300 whitespace-nowrap text-sm
+                  ${showFavorites
+                    ? 'bg-rose-500 text-white shadow-lg'
+                    : isDark
+                      ? 'bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10'
+                      : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>
+                <Heart className={`w-4 h-4 ${showFavorites ? 'fill-current' : ''}`} />
+                <span className="inline">{isFr ? 'Favoris' : 'Favorites'}</span>
               </button>
-              <AnimatePresence>
-                {showSortMenu && (
-                  <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-                    className={`absolute right-0 top-full mt-2 w-56 rounded-2xl border backdrop-blur-xl shadow-2xl z-50 overflow-hidden ${isDark ? 'bg-zinc-900/95 border-white/10' : 'bg-white border-slate-200'
-                      }`}>
-                    {sortOptions.map(opt => {
-                      const Icon = opt.icon;
-                      return (
-                        <button key={opt.value} onClick={() => { setSortBy(opt.value); setShowSortMenu(false); }}
-                          className={`w-full flex items-center gap-3 px-4 py-3 text-sm text-left transition-all
-                            ${sortBy === opt.value
-                              ? 'bg-rose-500/20 text-rose-400'
-                              : isDark ? 'text-zinc-300 hover:bg-white/5' : 'text-slate-600 hover:bg-slate-50'}`}>
-                          <Icon className="w-4 h-4" />
-                          {opt.label[language]}
-                        </button>
-                      );
-                    })}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+
+              {/* Sort Dropdown */}
+              <div className="relative flex-1 md:flex-none group/sort">
+                <button onClick={() => setShowSortMenu(!showSortMenu)}
+                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold transition-all duration-300 whitespace-nowrap text-sm ${isDark
+                    ? 'bg-white/[0.03] border border-white/10 text-zinc-300 hover:bg-white/[0.08] hover:border-white/20'
+                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                    }`}>
+                  <SlidersHorizontal className="w-4 h-4 group-hover/sort:rotate-12 transition-transform" />
+                  <span className="hidden sm:inline">{sortOptions.find(s => s.value === sortBy)?.label[language] || 'Sort'}</span>
+                  <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${showSortMenu ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {showSortMenu && (
+                    <motion.div initial={{ opacity: 0, scale: 0.95, y: -4 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                      className={`absolute right-0 top-full mt-2 w-48 rounded-xl border backdrop-blur-xl shadow-2xl z-50 overflow-hidden ${isDark ? 'bg-zinc-900/95 border-white/10' : 'bg-white border-slate-200'
+                        }`}>
+                      {sortOptions.map(opt => {
+                        const Icon = opt.icon;
+                        return (
+                          <button key={opt.value} onClick={() => { setSortBy(opt.value); setShowSortMenu(false); }}
+                            className={`w-full flex items-center gap-2 px-3 py-2.5 text-xs text-left transition-all
+                              ${sortBy === opt.value
+                                ? 'bg-rose-500/20 text-rose-400 font-bold'
+                                : isDark ? 'text-zinc-300 hover:bg-white/5' : 'text-slate-600 hover:bg-slate-50'}`}>
+                            <Icon className="w-3.5 h-3.5" />
+                            {opt.label[language]}
+                          </button>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
 
-          <div className="relative mt-6">
-            <div className="overflow-x-auto pb-4 premium-scrollbar scroll-fade-edges">
-              <div className="flex gap-2 px-10 w-max mx-auto">
+          <div className="relative mt-4">
+            <div className="overflow-x-auto pb-3 premium-scrollbar scroll-fade-edges">
+              <div className="flex gap-1.5 px-4 w-max mx-auto">
                 {categories.map((cat) => (
                   <button key={cat} onClick={() => setSelectedCategory(cat)}
-                    className={`px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-300 ${selectedCategory === cat
+                    className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-300 ${selectedCategory === cat
                       ? isDark
-                        ? 'bg-white text-zinc-900 shadow-[0_4px_12px_rgba(255,255,255,0.2)] scale-105'
-                        : 'bg-slate-900 text-white shadow-lg scale-105'
+                        ? 'bg-white text-zinc-900 shadow-md scale-105'
+                        : 'bg-slate-900 text-white shadow-md scale-105'
                       : isDark
                         ? 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white'
                         : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-900'
