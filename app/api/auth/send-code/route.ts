@@ -5,6 +5,7 @@ import VerificationCode from "@/models/VerificationCode";
 import Subscriber from "@/models/Subscriber";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
 function generateNewsletterEmail(name: string) {
   return `
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f6f8;padding:20px 0">
@@ -13,29 +14,33 @@ function generateNewsletterEmail(name: string) {
           <tr>
             <td style="background:#d32f2f;padding:40px;text-align:center;color:#fff">
               <img src="https://indian-nepaliswad.fr/etc/logo.png" style="height:70px;margin-bottom:14px" />
-              <h1 style="margin:0;font-size:28px;font-weight:800">Bienvenue dans notre newsletter 🎉</h1>
+              <h1 style="margin:0;font-size:28px;font-weight:800">Bienvenue / Welcome 🎉</h1>
             </td>
           </tr>
 
           <tr><td style="padding:32px">
             <p style="font-size:16px;color:#1f2937;line-height:1.7">
               Bonjour <strong style="color:#d32f2f">${name}</strong>,<br><br>
-              Merci de rejoindre la communauté <strong>Indian Nepali Swad</strong> !
-              Vous recevrez bientôt nos nouveautés, offres exclusives et événements spéciaux.
+              Merci de rejoindre la communauté <strong>Indian Nepali Swad</strong> ! Vous recevrez bientôt nos nouveautés, offres exclusives et événements spéciaux.<br><br>
+              <span style="color:#6b7280; font-size:14px;">
+                Thank you for joining the <strong>Indian Nepali Swad</strong> community! You will soon receive our latest news, exclusive offers, and special events.
+              </span>
             </p>
-            <p style="margin-top:12px;font-size:12px;color:#6b7280;text-align:center">
-              Nous ne vous demenderons jamais de mot de passe — connectez-vous simplement avec votre email ou whatsapp pour une expérience fluide et sécurisée.
+            <p style="margin-top:20px;font-size:12px;color:#6b7280;text-align:center">
+              Nous ne vous demanderons jamais de mot de passe — connectez-vous simplement avec votre email ou WhatsApp pour une expérience fluide et sécurisée.<br>
+              <span style="font-size:11px;">We will never ask for a password — simply log in with your email or WhatsApp for a seamless experience.</span>
             </p>
           </td></tr>
 
           <tr><td style="padding:24px;text-align:center;font-size:12px;color:#6b7280">
-            © 2026 Indian Nepali Swad — Tous droits réservés
+            © 2026 Indian Nepali Swad — Tous droits réservés / All rights reserved
           </td></tr>
         </table>
       </td></tr>
     </table>
   `;
 }
+
 function generateAccountCreatedEmail(name: string, email: string) {
   return `
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f6f8;padding:20px 0">
@@ -46,25 +51,26 @@ function generateAccountCreatedEmail(name: string, email: string) {
             <td style="background:linear-gradient(135deg,#d32f2f,#b71c1c);padding:48px;text-align:center;color:#fff">
               <img src="https://indian-nepaliswad.fr/etc/logo.png" style="height:80px;margin-bottom:14px" />
               <h1 style="margin:0;font-size:32px;font-weight:800">Compte créé avec succès 🎉</h1>
-              <p style="margin:12px 0 0;font-size:15px;opacity:0.95">Bienvenue chez Indian Nepali Swad</p>
+              <p style="margin:12px 0 0;font-size:15px;opacity:0.95">Account successfully created</p>
             </td>
           </tr>
 
           <tr><td style="padding:40px 32px">
             <p style="font-size:17px;color:#1f2937;line-height:1.7;margin-bottom:28px">
-              Bonjour <strong style="color:#d32f2f;font-size:18px">${name}</strong>,<br><br>
-              Votre compte est maintenant actif — bienvenue dans la famille INS !
+              Bonjour / Hello <strong style="color:#d32f2f;font-size:18px">${name}</strong>,<br><br>
+              Votre compte est maintenant actif — bienvenue dans la famille INS !<br>
+              <span style="color:#6b7280; font-size:14px;">Your account is now active — welcome to the INS family!</span>
             </p>
 
             <table width="100%" style="background:#fef2f2;border:2px solid #fee2e2;border-radius:12px;overflow:hidden">
               <tr>
                 <td style="background:#d32f2f;padding:18px;color:#fff;font-size:12px;font-weight:600;text-transform:uppercase">
-                  Informations du compte
+                  Informations du compte / Account Information
                 </td>
               </tr>
               <tr>
                 <td style="padding:24px">
-                  <p style="margin:0;font-size:14px;color:#374151"><strong>Nom :</strong> ${name}</p>
+                  <p style="margin:0;font-size:14px;color:#374151"><strong>Nom / Name :</strong> ${name}</p>
                   <p style="margin:8px 0 0;font-size:14px;color:#374151"><strong>Email :</strong> ${email}</p>
                 </td>
               </tr>
@@ -73,15 +79,16 @@ function generateAccountCreatedEmail(name: string, email: string) {
             <div style="margin-top:32px;text-align:center">
               <a href="https://indian-nepaliswad.fr"
                 style="display:inline-block;background:#d32f2f;color:#fff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700">
-                Explorer le menu
+                Explorer le menu / Explore Menu
               </a>
             </div>
 
-            <p style="margin-top:12px;font-size:12px;color:#6b7280;text-align:center">
-              Nous ne vous demenderons jamais de mot de passe — connectez-vous simplement avec votre email ou whatsapp pour une expérience fluide et sécurisée.
+            <p style="margin-top:24px;font-size:12px;color:#6b7280;text-align:center">
+              Nous ne vous demanderons jamais de mot de passe — connectez-vous simplement avec votre email ou WhatsApp.<br>
+              <span style="font-size:11px;">We will never ask for a password — simply log in with your email or WhatsApp.</span>
             </p>
             <p style="margin-top:32px;font-size:12px;color:#6b7280;text-align:center">
-              © 2026 Indian Nepali Swad — Tous droits réservés
+              © 2026 Indian Nepali Swad — Tous droits réservés / All rights reserved
             </p>
           </td></tr>
 
@@ -97,7 +104,7 @@ export async function POST(request: NextRequest) {
 
     if (!email || !type) {
       return NextResponse.json(
-        { error: "Email et type requis." },
+        { error: "Email et type requis. / Email and type required." },
         { status: 400 }
       );
     }
@@ -110,13 +117,13 @@ export async function POST(request: NextRequest) {
     // ---------------------------------------------------------------------
     // 1. CHECK IF USER EXISTS
     // ---------------------------------------------------------------------
-    const existingUser = await Subscriber.findOne({ email: normalizedEmail });
+    let existingUser = await Subscriber.findOne({ email: normalizedEmail });
 
     // USER EXISTS → SIGNUP SHOULD SWITCH TO SIGN-IN
     if (existingUser && type === "signup") {
       return NextResponse.json(
         {
-          error: "Un compte existe déjà avec cet email.",
+          error: "Un compte existe déjà avec cet email. / Account already exists.",
           forceMode: "signin",
         },
         { status: 400 }
@@ -127,7 +134,7 @@ export async function POST(request: NextRequest) {
     if (!existingUser && type === "signin") {
       return NextResponse.json(
         {
-          error: "Aucun compte trouvé. Veuillez créer un compte.",
+          error: "Aucun compte trouvé. / No account found.",
           forceMode: "signup",
         },
         { status: 400 }
@@ -137,84 +144,82 @@ export async function POST(request: NextRequest) {
     // USER EXISTS BUT IS BANNED
     if (existingUser && !existingUser.isActive) {
       return NextResponse.json(
-        { error: "Votre compte est suspendu. Contactez le support." },
+        { error: "Votre compte est suspendu. / Your account is suspended." },
         { status: 403 }
       );
     }
-      if (type === "signup" || type === "newsletter") {
-        const isNewsletter = type === "newsletter";
-        let user = existingUser;
 
-        if (user) {
-          // NEWSLETTER → activate + send confirmation email ONCE
-          if (isNewsletter) {
-            if (!user.newsletterSubscribed) {
-              user.newsletterSubscribed = true;
-              await user.save();
+    // ---------------------------------------------------------------------
+    // 2. SIGNUP & NEWSLETTER FLOW (NO OTP)
+    // ---------------------------------------------------------------------
+    if (type === "signup" || type === "newsletter") {
+      const isNewsletter = type === "newsletter";
 
-              const html = generateNewsletterEmail(user.name || "Cher client");
+      if (existingUser) {
+        // NEWSLETTER → activate + send confirmation email ONCE
+        if (isNewsletter) {
+          if (!existingUser.newsletterSubscribed) {
+            existingUser.newsletterSubscribed = true;
+            await existingUser.save();
 
-              await resend.emails.send({
-                from: "Indian Nepali Swad <noreply@bot.indian-nepaliswad.fr>",
-                to: [normalizedEmail],
-                subject: "Bienvenue dans la newsletter Indian Nepali Swad",
-                html,
-              });
-            }
+            const html = generateNewsletterEmail(existingUser.name || "Cher client");
 
-            return NextResponse.json({
-              success: true,
-              message: "Newsletter activée.",
+            await resend.emails.send({
+              from: "Indian Nepali Swad <noreply@bot.indian-nepaliswad.fr>",
+              to: [normalizedEmail],
+              subject: "Bienvenue dans la newsletter INS / Welcome to INS newsletter",
+              html,
             });
           }
 
-          // SIGNUP → user exists → frontend must switch to signin
           return NextResponse.json({
-            success: false,
-            forceMode: "signin",
-            message: "Un compte existe déjà avec cet email.",
+            success: true,
+            user: existingUser,
+            message: "Newsletter activée. / Newsletter activated.",
           });
         }
-
-        // ------------------------------------------------------------
-        // B. USER DOES NOT EXIST → CREATE ACCOUNT
-        // ------------------------------------------------------------
-        const newUser = await Subscriber.create({
-          email: normalizedEmail,
-          name: name?.trim() || "Utilisateur",
-          subscribedAt: new Date(),
-          isActive: true,
-          newsletterSubscribed: isNewsletter,
-          loginCount: 0,
-        });
-
-        // ------------------------------------------------------------
-        // C. SEND SINGLE WELCOME EMAIL (ACCOUNT OR NEWSLETTER)
-        // ------------------------------------------------------------
-        const html = isNewsletter
-          ? generateNewsletterEmail(newUser.name)
-          : generateAccountCreatedEmail(newUser.name, normalizedEmail);
-
-        const subject = isNewsletter
-          ? "Bienvenue dans la newsletter Indian Nepali Swad"
-          : "Votre compte a été créé avec succès 🎉";
-
-        await resend.emails.send({
-          from: "Indian Nepali Swad <noreply@bot.indian-nepaliswad.fr>",
-          to: [normalizedEmail],
-          subject,
-          html,
-        });
-
-        return NextResponse.json({
-          success: true,
-          message: isNewsletter
-            ? "Inscription à la newsletter réussie."
-            : "Compte créé avec succès.",
-        });
       }
 
+      // USER DOES NOT EXIST → CREATE ACCOUNT
+      const newUser = await Subscriber.create({
+        email: normalizedEmail,
+        name: name?.trim() || "Utilisateur",
+        subscribedAt: new Date(),
+        isActive: true,
+        newsletterSubscribed: isNewsletter,
+        loginCount: 1, // Automatically logged in, so count is 1
+        lastLoginAt: new Date()
+      });
 
+      // SEND SINGLE WELCOME EMAIL (ACCOUNT OR NEWSLETTER)
+      const html = isNewsletter
+        ? generateNewsletterEmail(newUser.name)
+        : generateAccountCreatedEmail(newUser.name, normalizedEmail);
+
+      const subject = isNewsletter
+        ? "Bienvenue dans la newsletter INS / Welcome to INS Newsletter"
+        : "Votre compte a été créé avec succès 🎉 / Account created successfully 🎉";
+
+      await resend.emails.send({
+        from: "Indian Nepali Swad <noreply@bot.indian-nepaliswad.fr>",
+        to: [normalizedEmail],
+        subject,
+        html,
+      });
+
+      return NextResponse.json({
+        success: true,
+        user: newUser, // Return new user to trigger auto-login
+        message: isNewsletter
+          ? "Inscription réussie / Successfully subscribed."
+          : "Compte créé avec succès / Account created successfully.",
+      });
+    }
+
+
+    // ---------------------------------------------------------------------
+    // 3. SIGN-IN FLOW (OTP)
+    // ---------------------------------------------------------------------
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
     await VerificationCode.findOneAndUpdate(
@@ -236,9 +241,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Build login URL + QR
-    const loginUrl = `https://indian-nepaliswad.fr/auth/code?email=${encodeURIComponent(
-      normalizedEmail
-    )}&code=${code}`;
+    const loginUrl = `https://indian-nepaliswad.fr/auth/code?email=${encodeURIComponent(normalizedEmail)}&code=${code}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(loginUrl)}`;
 
     const htmlContent = `
@@ -275,11 +278,12 @@ export async function POST(request: NextRequest) {
                   </div>
 
                   <h1 style="margin:0; font-size:28px; font-weight:800; color:#111827; letter-spacing:-0.5px; line-height:1.2;">
-                    Code de Connexion
+                    Code de Connexion<br>
+                    <span style="color:#6b7280; font-size:20px;">Login Code</span>
                   </h1>
 
                   <p style="margin:12px 0 0; font-size:16px; color:#6b7280; font-weight:500;">
-                    Authentification sécurisée
+                    Authentification sécurisée / Secure Auth
                   </p>
                 </td>
               </tr>
@@ -288,33 +292,34 @@ export async function POST(request: NextRequest) {
                   <div style="height:1px; background-color:#f1f5f9; margin-bottom:40px;"></div>
 
                   <p style="font-size:16px; color:#374151; margin-bottom:32px; line-height:1.6; text-align:center;">
-                    Bonjour${existingUser?.name ? ' <strong>' + existingUser.name + '</strong>' : ''},<br>
-                    Voici votre code de connexion. Il expirera dans <strong>10 minutes</strong>.
+                    Bonjour / Hello\${existingUser?.name ? ' <strong>' + existingUser.name + '</strong>' : ''},<br>
+                    Voici votre code de connexion. Il expirera dans <strong>10 minutes</strong>.<br>
+                    <span style="color:#6b7280; font-size:14px;">Here is your login code. It will expire in <strong>10 minutes</strong>.</span>
                   </p>
 
                   <!-- Code Box -->
                   <div class="code-box" style="background-color:#f8fafc; border:2px solid #f1f5f9; border-radius:24px; padding:40px; text-align:center; margin-bottom:32px;">
                     <div class="code" style="font-size:48px; font-weight:900; color:#ef4444; letter-spacing:12px; font-family:ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;">
-                      ${code}
+                      \${code}
                     </div>
                     <div style="margin-top:16px; font-size:11px; color:#94a3b8; text-transform:uppercase; font-weight:700; letter-spacing:2px;">
-                      Code de vérification Indian Nepali Swad
+                      Code de vérification INS / INS Verification Code
                     </div>
                   </div>
 
                   <!-- QR Code -->
                   <div style="text-align:center; margin-bottom:32px;">
                     <div style="padding:16px; background-color:#e0e7ff; display:inline-block; border-radius:16px; margin-bottom:14px; ">
-                      <img src="${qrUrl}" alt="QR Code" class="qr" style="width:220px; height:220px;" />
+                      <img src="\${qrUrl}" alt="QR Code" class="qr" style="width:220px; height:220px;" />
                     </div>
                     <p style="font-size:13px; color:#6b7280; margin-top:12px;">
-                      Scannez pour vous connecter automatiquement
+                      Scannez pour vous connecter / Scan to log in
                     </p>
                   </div>
 
                   <!-- Sign In Button -->
                   <div style="text-align:center; margin-bottom:32px;">
-                    <a href="${loginUrl}"
+                    <a href="\${loginUrl}"
                       class="btn"
                       style="
                         display:inline-block;
@@ -328,13 +333,13 @@ export async function POST(request: NextRequest) {
                         letter-spacing:0.5px;
                         box-shadow:0 10px 20px rgba(239,68,68,0.25);
                       ">
-                      Connexion automatique
+                      Connexion automatique / Auto Login
                     </a>
                   </div>
 
                   <p style="font-size:14px; color:#94a3b8; text-align:center; line-height:1.6; margin:0;">
-                    Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.
-                    Ne partagez jamais ce code.
+                    Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email. Ne partagez jamais ce code.<br>
+                    <span style="font-size:12px;">If you did not request this, simply ignore this email. Never share this code.</span>
                   </p>
                 </td>
               </tr>
@@ -342,12 +347,8 @@ export async function POST(request: NextRequest) {
               <!-- Footer -->
               <tr>
                 <td style="padding:40px 32px; background-color:#111827; text-align:center;">
-                
-                  <p style="margin-bottom:12px;font-size:12px;color:#6b7280;text-align:center">
-                    Nous ne vous demenderons jamais de mot de passe — connectez-vous simplement avec votre email ou whatsapp pour une expérience fluide et sécurisée.
-                  </p>
                   <p style="margin:0; font-size:13px; color:#94a3b8; font-weight:500;">
-                    &copy; 2026 Indian Nepali Swad. Tous droits réservés.
+                    &copy; 2026 Indian Nepali Swad. Tous droits réservés / All rights reserved.
                   </p>
                   <p style="margin:8px 0 0; font-size:11px; color:#4b5563;">
                     4 Rue Bargue, 75015 Paris • 79 Rue du Landy, 93300 Aubervilliers
@@ -371,7 +372,7 @@ export async function POST(request: NextRequest) {
       minute: "2-digit",
     });
 
-    const subject = `${code} est votre code de connexion (valable une fois jusqu'à ${expirationTime})`;
+    const subject = `${code} est votre code de connexion / is your login code`;
 
     const { error: sendError } = await resend.emails.send({
       from: "Indian Nepali Swad <noreply@bot.indian-nepaliswad.fr>",

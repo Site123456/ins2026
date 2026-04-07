@@ -117,6 +117,26 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
       return;
     }
 
+    // DIRECT LOGIN INTERCEPT
+    if ((result as any).isDirectLogin) {
+      setSuccess(
+        mode === "signup"
+          ? "Bienvenue ! Votre compte a été créé avec succès ✨"
+          : "Merci ! Inscription à la newsletter réussie 📧"
+      );
+
+      setTimeout(() => {
+        onClose();
+        setFormData({ email: "", name: "" });
+        setOtp(["", "", "", "", "", ""]);
+        setStep(1);
+        setSuccess("");
+      }, 2500);
+
+      setIsLoading(false);
+      return;
+    }
+
     // SIGN-IN → OTP REQUIRED
     if (requiresOtp) {
       setStep(2);
@@ -127,7 +147,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
       return;
     }
 
-    // SIGNUP / NEWSLETTER → DIRECT SUCCESS (NO OTP)
+    // FALLBACK SUCCESS
     setSuccess(
       mode === "signup"
         ? "Bienvenue ! Votre compte a été créé avec succès ✨"
@@ -333,9 +353,9 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
         </div>
 
         {/* Progress Bar (at very top) */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-black/10">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-black/10 z-10">
           <motion.div 
-            className="h-full bg-(--accent) shadow-[0_0_12px_var(--accent)]"
+            className="h-full bg-[var(--accent)] shadow-[0_0_12px_var(--accent)]"
             initial={{ width: '0%' }}
             animate={{ width: step === 1 ? '50%' : '100%' }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -473,11 +493,11 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                           }
                           placeholder="Prénom & Nom"
                           className={`
-                            w-full pl-14 pr-5 py-4 rounded-2xl outline-none transition-all border
-                            focus:ring-4 focus:ring-(--accent)/10 focus:border-(--accent)
+                            w-full pl-12 sm:pl-14 pr-4 sm:pr-5 py-3 sm:py-4 rounded-xl sm:rounded-2xl outline-none transition-all border
+                            focus:ring-4 focus:ring-[var(--accent)]/10 focus:border-[var(--accent)]
                             ${isDark
                               ? "bg-white/5 border-white/10 text-white placeholder:text-zinc-600"
-                              : "bg-white border-black/10 text-zinc-900 placeholder:text-zinc-400"}
+                              : "bg-white border-zinc-200 text-zinc-900 placeholder:text-zinc-400"}
                           `}
                         />
                       </div>
@@ -522,11 +542,11 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                         }
                         placeholder="chef@indian-swad.fr"
                         className={`
-                          w-full pl-14 pr-5 py-4 rounded-2xl outline-none transition-all border
-                          focus:ring-4 focus:ring-(--accent)/10 focus:border-(--accent)
+                          w-full pl-12 sm:pl-14 pr-4 sm:pr-5 py-3 sm:py-4 rounded-xl sm:rounded-2xl outline-none transition-all border
+                          focus:ring-4 focus:ring-[var(--accent)]/10 focus:border-[var(--accent)]
                           ${isDark
                             ? "bg-white/5 border-white/10 text-white placeholder:text-zinc-600"
-                            : "bg-white border-black/10 text-zinc-900 placeholder:text-zinc-400"}
+                            : "bg-white border-zinc-200 text-zinc-900 placeholder:text-zinc-400"}
                         `}
                       />
                     </div>
@@ -538,11 +558,11 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                     whileTap={{ scale: 0.98 }}
                     disabled={isLoading}
                     className={`
-                      w-full py-5 rounded-[1.25rem] font-black text-lg transition-all
+                      w-full py-4 sm:py-5 rounded-[1rem] sm:rounded-[1.25rem] font-black text-base sm:text-lg transition-all
                       flex items-center justify-center gap-3
-                      bg-(--accent) text-white
+                      bg-[var(--accent)] text-white
                       hover:brightness-110 disabled:opacity-50 disabled:hover:brightness-100
-                      shadow-[0_20px_40px_rgba(139,92,246,0.25)]
+                      shadow-[0_15px_30px_rgba(var(--accent-rgb),0.25)]
                     `}
                   >
                     {isLoading ? (
@@ -659,7 +679,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                 </div>
 
                 {/* OTP INPUTS */}
-                <div className="flex justify-between gap-3 max-w-sm mx-auto">
+                <div className="flex justify-between gap-2 sm:gap-3 max-w-sm mx-auto">
                   {otp.map((digit, i) => (
                     <motion.div
                       key={i}
@@ -681,13 +701,13 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                         onKeyDown={(e) => handleKeyDown(i, e)}
                         onPaste={handlePaste}
                         className={`
-                          w-full h-16 text-center text-3xl font-black rounded-2xl outline-none transition-all
-                          border focus:border-(--accent) focus:ring-4 focus:ring-(--accent)/10
+                          w-full h-12 sm:h-16 text-center text-xl sm:text-3xl font-black rounded-[1rem] sm:rounded-2xl outline-none transition-all
+                          border focus:border-[var(--accent)] focus:ring-4 focus:ring-[var(--accent)]/10
                           ${isDark
                             ? "bg-white/5 border-white/10 text-white placeholder:text-zinc-600"
                             : "bg-white border-black/10 text-zinc-900 placeholder:text-zinc-400"
                           }
-                          ${digit ? "text-(--accent) border-(--accent)/50 bg-(--accent)/5" : ""}
+                          ${digit ? "text-[var(--accent)] border-[var(--accent)]/50 bg-[var(--accent)]/5 shadow-[0_0_15px_rgba(var(--accent-rgb),0.1)]" : "shadow-sm"}
                         `}
                       />
 
@@ -695,8 +715,8 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                       {!digit && (
                         <div
                           className={`
-                            absolute bottom-3 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full transition-colors
-                            ${isDark ? "bg-white/20 group-focus-within:bg-(--accent)" : "bg-black/20 group-focus-within:bg-(--accent)"}
+                            absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full transition-colors
+                            ${isDark ? "bg-white/20 group-focus-within:bg-[var(--accent)]" : "bg-black/20 group-focus-within:bg-[var(--accent)]"}
                           `}
                         />
                       )}

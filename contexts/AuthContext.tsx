@@ -111,8 +111,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       const data = await res.json();
-      if (res.ok) return { success: true };
-      return { success: false, error: data.error || 'Failed to send code' };
+      if (res.ok) {
+        if (data.user) {
+          setUser(data.user);
+          localStorage.setItem('ins_user', JSON.stringify(data.user));
+          return { success: true, isDirectLogin: true };
+        }
+        return { success: true };
+      }
+      return { success: false, error: data.error || data.message || 'Failed to request' };
     } catch {
       return { success: false, error: 'Unexpected error' };
     }
