@@ -25,6 +25,7 @@ import {
   Search
 } from "lucide-react";
 import Image from "next/image";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 import { useTheme } from "@/components/hooks/useTheme";
 import { useAccentFromCookies } from "@/components/hooks/useAccentFromCookies";
@@ -249,6 +250,7 @@ const Page: React.FC = () => {
   const router = useRouter();
   const viewportHeight = useViewportHeight();
   const isSmallScreen = useIsSmallScreen();
+  const { language } = useLanguage();
 
   const { isDark, hydrated } = useTheme();
   const accent = useAccentFromCookies();
@@ -292,7 +294,24 @@ const Page: React.FC = () => {
     [zonesWithStatus, selectedZoneId]
   );
 
-  const rotatingTexts = [
+  const rotatingTexts = language === 'en' ? [
+    "our dishes",
+    "Indian Nepali Swad",
+    "our specialties",
+    "India & Nepal",
+    "the authenticity of our flavors",
+    "our homemade recipes",
+    "our signature dishes",
+    "our culinary traditions",
+    "our spices and aromas",
+    "our chef's inspirations",
+    "our Indian specialties",
+    "our Nepalese specialties",
+    "the richness of our cuisines",
+    "the finesse of our spices",
+    "the warmth of our dishes",
+    "the diversity of our flavors",
+  ] : [
     "nos plats",
     "Indian Nepali Swad",
     "nos spécialités",
@@ -534,7 +553,7 @@ const Page: React.FC = () => {
                 <Search size={14} />
               </div>
               <div className="flex items-center gap-1 w-full overflow-hidden">
-                <span className="shrink-0 leading-none">Découvrir</span>
+                <span className="shrink-0 leading-none">{language === 'en' ? 'Discover' : 'Découvrir'}</span>
 
                 {/* Animated text with ellipsis */}
                 <div className="relative flex-1 overflow-hidden h-5 flex items-center">
@@ -589,11 +608,11 @@ const Page: React.FC = () => {
                 <div className="flex items-center flex-col md:flex-row gap-3">
                   <div className="flex items-center gap-1.5">
                     <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                    <span>Site ouverte</span>
+                    <span>{language === 'en' ? 'Open site' : 'Site ouverte'}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="h-2.5 w-2.5 rounded-full bg-rose-500" />
-                    <span>Site fermée</span>
+                    <span>{language === 'en' ? 'Closed site' : 'Site fermée'}</span>
                   </div>
                 </div>
               </div>
@@ -641,7 +660,7 @@ const Page: React.FC = () => {
                       INDIAN NEPALI SWAD
                     </h2>
                     <p className="text-[11px] opacity-60">
-                      Gastronomie indienne & népalaise
+                      {language === 'en' ? 'Indian & Nepalese Gastronomy' : 'Gastronomie indienne & népalaise'}
                     </p>
                   </div>
 
@@ -659,7 +678,7 @@ const Page: React.FC = () => {
                         isOpen ? "bg-emerald-400" : "bg-rose-400"
                       }`}
                     />
-                    {isOpen ? "Ouvert" : "Fermé"}
+                    {isOpen ? (language === 'en' ? 'Open' : 'Ouvert') : (language === 'en' ? 'Closed' : 'Fermé')}
                   </div>
                 </motion.div>
                 <motion.div variants={itemFade} className="relative">
@@ -750,8 +769,10 @@ const Page: React.FC = () => {
                 </motion.div>
 
                 <motion.p variants={itemFade} className="text-[10px] opacity-70 leading-relaxed">
-                  Des plats inspirée des traditions indiennes et népalaises, préparée avec des ingrédients frais et un savoir‑faire artisanal.  
-                  Retrouvez nos plats en livraison sur toutes nos sites via Deliveroo, ou à l&apos;emporter et sur place <Link href="https://www.google.com/maps/dir//4+Rue+Bargue,+75015+Paris" className="underline">(4 rue Bargue, 75015 Paris)</Link> ou <Link href="https://www.google.com/maps/dir//79+Rue+du+Landy,+93300+Aubervilliers" className="underline">(79 Rue du Landy, 93300 Aubervilliers)</Link>.
+                  {language === 'en' 
+                    ? "Dishes inspired by Indian and Nepalese traditions, prepared with fresh ingredients and artisanal know-how. Find our dishes for delivery on all our sites via Deliveroo, or for takeout and dine-in "
+                    : "Des plats inspirée des traditions indiennes et népalaises, préparée avec des ingrédients frais et un savoir‑faire artisanal. Retrouvez nos plats en livraison sur toutes nos sites via Deliveroo, ou à l'emporter et sur place "}
+                  <Link href="https://www.google.com/maps/dir//4+Rue+Bargue,+75015+Paris" className="underline">(4 rue Bargue, 75015 Paris)</Link> {language === 'en' ? "or" : "ou"} <Link href="https://www.google.com/maps/dir//79+Rue+du+Landy,+93300+Aubervilliers" className="underline">(79 Rue du Landy, 93300 Aubervilliers)</Link>.
                 </motion.p>
 
                 {/* CTA ROW */}

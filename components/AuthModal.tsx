@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Mail, User, CheckCircle, AlertCircle, Loader2, ArrowLeft, RefreshCw, KeyRound, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 
 interface AuthModalProps {
@@ -42,8 +43,9 @@ const itemVariants: Variants = {
   visible: { opacity: 1, y: 0 }
 };
 
-export default function AuthModal({ isOpen, onClose, mode: initialMode, email: initialEmail = '', isDark }: AuthModalProps) {
+export default function AuthModal({ isOpen, onClose, mode: initialMode, email: initialEmail = '', isDark, accent }: AuthModalProps) {
   const { requestCode, verifyCode } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
 
   // MODE RULES
   const [mode, setMode] = useState<'signin' | 'signup' | 'newsletter'>(initialMode);
@@ -109,7 +111,8 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
 
     const nameToSend = requiresName ? formData.name.trim() : undefined;
 
-    const result = await requestCode(formData.email.trim(), mode, nameToSend);
+    // Use active language from context
+    const result = await requestCode(formData.email.trim(), mode, nameToSend, language);
 
     if (!result.success) {
       setError(result.error || "Échec de l'envoi du code");
@@ -246,7 +249,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
 
     const nameToSend = requiresName ? formData.name.trim() : undefined;
 
-    const result = await requestCode(formData.email.trim(), mode, nameToSend);
+    const result = await requestCode(formData.email.trim(), mode, nameToSend, language);
 
     if (result.success) {
       setIsCodeSent(true);
@@ -385,6 +388,24 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
           </button>
         </div>
 
+        {/* Language Selection */}
+        {step === 1 && (
+          <div className="absolute top-4 left-4 z-50 flex bg-white/10 p-1 rounded-full border border-white/5 shadow-sm backdrop-blur-md">
+            <button
+              onClick={() => setLanguage('fr')}
+              className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${language === 'fr' ? 'bg-(--accent) text-white shadow-md' : 'text-zinc-500 hover:text-zinc-300'}`}
+            >
+              FR
+            </button>
+            <button
+              onClick={() => setLanguage('en')}
+              className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${language === 'en' ? 'bg-(--accent) text-white shadow-md' : 'text-zinc-500 hover:text-zinc-300'}`}
+            >
+              EN
+            </button>
+          </div>
+        )}
+
         <div className="p-8 pt-2">
           <AnimatePresence mode="wait">
             {success ? (
@@ -427,15 +448,15 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                 <motion.div variants={itemVariants}>
                   <h2
                     className={`
-                      text-4xl font-black tracking-tight
+                      text-4xl font-black tracking-tight mt-6
                       ${isDark ? "text-white" : "text-zinc-900"}
                     `}
                   >
                     {mode === "signin"
-                      ? "Bon retour"
+                      ? t('welcomeBack')
                       : mode === "newsletter"
-                      ? "Rejoindre"
-                      : "Créer un compte"}
+                      ? t('joinMenu')
+                      : t('createAccount')}
                   </h2>
 
                   <p
@@ -445,8 +466,8 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                     `}
                   >
                     {mode === "signup"
-                      ? "Réservez votre place au sommet de la gastronomie."
-                      : "L'excellence indienne à portée de clic."}
+                      ? (language === 'en' ? "Reserve your place at the peak of gastronomy." : "Réservez votre place au sommet de la gastronomie.")
+                      : (language === 'en' ? "Indian excellence just a click away." : "L'excellence indienne à portée de clic.")}
                   </p>
                 </motion.div>
 
@@ -463,7 +484,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                           ${isDark ? "text-zinc-500" : "text-zinc-700"}
                         `}
                       >
-                        Identité Complète
+                        {t('fullName')}
                       </label>
 
                       <div className="relative group">
@@ -512,7 +533,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                         ${isDark ? "text-zinc-500" : "text-zinc-700"}
                       `}
                     >
-                      Email
+                      {t('emailLabel')}
                     </label>
 
                     <div className="relative group">
@@ -569,7 +590,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                       <Loader2 className="w-6 h-6 animate-spin" />
                     ) : (
                       <>
-                        Recevoir le code <ArrowLeft className="w-5 h-5 rotate-180" />
+                        {t('receiveCode')} <ArrowLeft className="w-5 h-5 rotate-180" />
                       </>
                     )}
                   </motion.button>
@@ -662,7 +683,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                       ${isDark ? "text-white" : "text-zinc-900"}
                     `}
                   >
-                    Vérification
+                    {t('verification')}
                   </h2>
 
                   <p
@@ -671,7 +692,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                       ${isDark ? "text-zinc-400" : "text-zinc-600"}
                     `}
                   >
-                    Entrez les 6 chiffres envoyés à{" "}
+                    {t('enterCode')}{" "}
                     <span className={isDark ? "text-white font-semibold" : "text-zinc-900 font-semibold"}>
                       {formData.email}
                     </span>

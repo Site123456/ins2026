@@ -12,11 +12,11 @@ export async function POST(request: NextRequest) {
 
     await dbConnect();
 
-    const subscriber = await Subscriber.findOneAndUpdate(
-      { email: email.toLowerCase() },
-      { $set: { newsletterSubscribed: subscribed } },
-      { new: true }
-    );
+    const subscriber = await Subscriber.findByEmail(email);
+    if (subscriber) {
+      subscriber.newsletterSubscribed = subscribed;
+      await (subscriber as any).save();
+    }
 
     if (!subscriber) {
       return NextResponse.json({ error: 'Subscriber not found' }, { status: 404 });

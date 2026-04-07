@@ -9,8 +9,9 @@ interface User {
   name: string;
   subscribedAt: string;
   newsletterSubscribed: boolean;
+  favorites?: number[];
   lastLoginAt?: string;
-  loginCount: number;
+  loginCount?: number;
 }
 
 type AuthMode = 'signin' | 'signup' | 'newsletter';
@@ -19,8 +20,10 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
 
-  requestCode: (email: string, type: AuthMode, name?: string) => Promise<{ success: boolean; error?: string }>;
+  requestCode: (email: string, type: AuthMode, name?: string, language?: string) => Promise<{ success: boolean; error?: string; isDirectLogin?: boolean }>;
   verifyCode: (email: string, code: string, type: AuthMode) => Promise<{ success: boolean; error?: string }>;
+  toggleFavorite: (itemId: number) => Promise<boolean>;
+  getFavorites: () => number[]; // Helper to get merged favorites
 
   signOut: () => void;
   updateNewsletterSubscription: (subscribed: boolean) => Promise<boolean>;
@@ -39,82 +42,135 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [guestFavorites, setGuestFavorites] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
 
   const { isDark } = useTheme();
 
   // ------------------------------------------------------------
-  // 1. Read cookie session (magic link)
+  // Helper: Persist Encrypted Session
   // ------------------------------------------------------------
-  const readCookieSession = () => {
+  const persistSession = async (payload: NonNullable<User>) => {
     try {
-      const raw = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('ins_user='));
-
-      if (!raw) return null;
-
-      return JSON.parse(decodeURIComponent(raw.split('=')[1]));
-    } catch {
-      return null;
+      const res = await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'encrypt', payload })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.token) localStorage.setItem('ins_session_token', data.token);
+      }
+    } catch (e) {
+      console.error('Session persistence failed', e);
     }
   };
 
   // ------------------------------------------------------------
-  // 2. Hydrate session on load
+  // Helper: Sync Guest Favorites
+  // ------------------------------------------------------------
+  const syncGuestFavoritesOnLogin = async (loggedUser: User) => {
+    const rawGuestFavs = localStorage.getItem('ins_guest_favorites');
+    if (!rawGuestFavs) return;
+    try {
+      const gFavs: number[] = JSON.parse(rawGuestFavs);
+      if (gFavs.length > 0) {
+        // We do a loop, or better: build a multi-favorite endpoint.
+        // For simplicity, we just send all guest favorites continuously.
+        // Or send one array in a modified /api/user/favorite endpoint.
+        // I will just use a fetch loop for now since it's a small array.
+        let currentFavs = [...(loggedUser.favorites || [])];
+        for (const id of gFavs) {
+          if (!currentFavs.includes(id)) {
+            const res = await fetch('/api/user/favorite', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: loggedUser.email, itemId: id })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              currentFavs = data.favorites;
+            }
+          }
+        }
+        const updatedUser = { ...loggedUser, favorites: currentFavs };
+        setUser(updatedUser);
+        await persistSession(updatedUser);
+        localStorage.removeItem('ins_guest_favorites');
+        setGuestFavorites([]);
+      }
+    } catch {}
+  };
+
+  // ------------------------------------------------------------
+  // 1. Hydrate session on load
   // ------------------------------------------------------------
   useEffect(() => {
     const hydrate = async () => {
+      // Load guest favorites
+      const gFavs = localStorage.getItem('ins_guest_favorites');
+      if (gFavs) {
+        try { setGuestFavorites(JSON.parse(gFavs)); } catch {}
+      }
+
+      // Check for token
+      const token = localStorage.getItem('ins_session_token');
+      if (!token) {
+        return setLoading(false);
+      }
+
       try {
-        // A. Magic-link cookie session
-        const cookieUser = readCookieSession();
-        if (cookieUser) {
-          setUser(cookieUser);
-          localStorage.setItem('ins_user', JSON.stringify(cookieUser));
-          return setLoading(false);
-        }
-
-        // B. LocalStorage fallback
-        const stored = localStorage.getItem('ins_user');
-        if (!stored) return setLoading(false);
-
-        const parsed = JSON.parse(stored);
-
-        // Verify user still exists
-        const res = await fetch(`/api/verify?email=${encodeURIComponent(parsed.email)}`);
+        const res = await fetch('/api/auth/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'decrypt', token })
+        });
         const data = await res.json();
 
-        if (data.isSubscribed) {
-          setUser(parsed);
+        if (data.success && data.payload) {
+          const u = data.payload as User;
+          
+          // Verify user still exists
+          const verifyRes = await fetch(`/api/verify?email=${encodeURIComponent(u.email)}`);
+          const verifyData = await verifyRes.json();
+
+          if (verifyData.isSubscribed) {
+            setUser(u);
+            await syncGuestFavoritesOnLogin(u);
+          } else {
+            localStorage.removeItem('ins_session_token');
+          }
         } else {
-          localStorage.removeItem('ins_user');
+          localStorage.removeItem('ins_session_token');
         }
       } catch {
-        localStorage.removeItem('ins_user');
+        localStorage.removeItem('ins_session_token');
       } finally {
         setLoading(false);
       }
     };
 
     hydrate();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ------------------------------------------------------------
-  // 3. Auth Actions
+  // 2. Auth Actions
   // ------------------------------------------------------------
-  const requestCode = async (email: string, type: AuthMode, name?: string) => {
+  const requestCode = async (email: string, type: AuthMode, name?: string, language?: string) => {
     try {
       const res = await fetch('/api/auth/send-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, type, name }),
+        body: JSON.stringify({ email, type, name, language }),
       });
 
       const data = await res.json();
       if (res.ok) {
         if (data.user) {
           setUser(data.user);
-          localStorage.setItem('ins_user', JSON.stringify(data.user));
+          await persistSession(data.user);
+          await syncGuestFavoritesOnLogin(data.user);
           return { success: true, isDirectLogin: true };
         }
         return { success: true };
@@ -137,7 +193,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (res.ok && data.user) {
         setUser(data.user);
-        localStorage.setItem('ins_user', JSON.stringify(data.user));
+        await persistSession(data.user);
+        await syncGuestFavoritesOnLogin(data.user);
         return { success: true };
       }
 
@@ -148,7 +205,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   // ------------------------------------------------------------
-  // 4. Profile & Newsletter
+  // 3. Profile & Newsletter
   // ------------------------------------------------------------
   const updateNewsletterSubscription = async (subscribed: boolean) => {
     if (!user) return false;
@@ -164,7 +221,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const updated = { ...user, newsletterSubscribed: subscribed };
       setUser(updated);
-      localStorage.setItem('ins_user', JSON.stringify(updated));
+      await persistSession(updated);
       return true;
     } catch {
       return false;
@@ -185,7 +242,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const updated = { ...user, name };
       setUser(updated);
-      localStorage.setItem('ins_user', JSON.stringify(updated));
+      await persistSession(updated);
       return true;
     } catch {
       return false;
@@ -193,13 +250,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   // ------------------------------------------------------------
+  // 4. Favorites (Guest + Logged in)
+  // ------------------------------------------------------------
+  const toggleFavorite = async (itemId: number): Promise<boolean> => {
+    if (!user) {
+      // Toggle in guest array
+      const current = [...guestFavorites];
+      const index = current.indexOf(itemId);
+      if (index > -1) {
+        current.splice(index, 1);
+      } else {
+        current.push(itemId);
+      }
+      setGuestFavorites(current);
+      localStorage.setItem('ins_guest_favorites', JSON.stringify(current));
+      return true;
+    }
+    
+    // Logged in user toggle
+    try {
+      const res = await fetch('/api/user/favorite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email, itemId })
+      });
+      if (res.ok) {
+        const { favorites } = await res.json();
+        const updated = { ...user, favorites };
+        setUser(updated);
+        await persistSession(updated);
+        return true;
+      }
+    } catch(e) { console.error(e); }
+    return false;
+  };
+
+  const getFavorites = () => {
+    if (user) return user.favorites || [];
+    return guestFavorites;
+  };
+
+  // ------------------------------------------------------------
   // 5. Logout
   // ------------------------------------------------------------
   const signOut = () => {
     setUser(null);
+    localStorage.removeItem('ins_session_token');
+    
+    // Clear old format just in case
     localStorage.removeItem('ins_user');
-
-    // Clear cookie
     document.cookie = "ins_user=; Max-Age=0; path=/; secure; sameSite=strict;";
   };
 
@@ -229,6 +328,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: !!user,
     requestCode,
     verifyCode,
+    toggleFavorite,
+    getFavorites,
     signOut,
     updateNewsletterSubscription,
     updateProfile,

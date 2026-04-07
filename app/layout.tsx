@@ -5,6 +5,7 @@ import Slidercomponent from "./slider";
 import { CinematicProvider } from "@/components/CinematicProvider";
 import { ToastProvider } from "@/components/ToastHandle";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import "leaflet/dist/leaflet.css";
 
 export const metadata: Metadata = {
@@ -194,7 +195,7 @@ function StructuredData() {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="fr" className="auto" suppressHydrationWarning>
+    <html lang="fr" className="auto" suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -227,13 +228,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
         <CinematicProvider>
           <ToastProvider>
-            <AuthProvider>
-              <Slidercomponent>
-                <div id="main-content" role="main">
-                  {children}
-                </div>
-              </Slidercomponent>
-            </AuthProvider>
+            <LanguageProvider>
+              <AuthProvider>
+                <Slidercomponent>
+                  <div id="main-content" role="main">
+                    {children}
+                  </div>
+                </Slidercomponent>
+              </AuthProvider>
+            </LanguageProvider>
           </ToastProvider>
         </CinematicProvider>
       </body>

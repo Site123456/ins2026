@@ -15,9 +15,7 @@ export async function GET(request: NextRequest) {
     await dbConnect();
 
     // Check if subscriber exists and is active
-    const subscriber = await Subscriber.findOne({
-      email: email.toLowerCase()
-    });
+    const subscriber = await Subscriber.findByEmail(email);
 
     if (!subscriber) {
       return NextResponse.json({
@@ -63,9 +61,7 @@ export async function POST(request: NextRequest) {
     await dbConnect();
 
     // Check if subscriber exists and is active
-    const subscriber = await Subscriber.findOne({
-      email: email.toLowerCase()
-    });
+    const subscriber = await Subscriber.findByEmail(email);
 
     if (!subscriber) {
       return NextResponse.json({

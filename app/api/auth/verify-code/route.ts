@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     // ------------------------------------------------------------
     // FIND OR CREATE USER
     // ------------------------------------------------------------
-    let user = await Subscriber.findOne({ email: normalizedEmail });
+    let user = await Subscriber.findByEmail(normalizedEmail);
 
     if (!user) {
       user = await Subscriber.create({

@@ -16,11 +16,11 @@ export async function POST(request: NextRequest) {
 
     await dbConnect();
 
-    const subscriber = await (Subscriber as any).findOneAndUpdate(
-      { email: email.toLowerCase() },
-      { $set: { name: name.trim() } },
-      { new: true }
-    );
+    const subscriber = await Subscriber.findByEmail(email);
+    if (subscriber) {
+      subscriber.name = name.trim();
+      await (subscriber as any).save();
+    }
 
     if (!subscriber) {
       return NextResponse.json({ error: 'Subscriber not found' }, { status: 404 });

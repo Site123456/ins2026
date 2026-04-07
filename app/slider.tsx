@@ -43,8 +43,9 @@ import {
 import { useCinematic } from "@/components/CinematicProvider";
 import { useTheme } from "@/components/hooks/useTheme";
 import MiniToggle from "@/components/MiniToggle";
-import FooterDef from "@/components/Footerdef";
 import AuthButtons from "@/components/AuthButtons";
+import FooterDef from "@/components/Footerdef";
+import { useLanguage } from "@/contexts/LanguageContext";
 const PALETTE = [
   { hex: "#FF6B00", name: "Orange Safran" },
   { hex: "#FF4500", name: "Rouge Tandoori" },
@@ -138,6 +139,7 @@ export function CookieConsent({
   push,
 }: Props) {
   const { introComplete } = useCinematic();
+  const { language, t } = useLanguage();
   const [phase, setPhase] = useState<Phase>("idle");
   const [color, setColor] = useState(accent);
   const [spinning, setSpinning] = useState(false);
@@ -414,7 +416,7 @@ export function CookieConsent({
                   className="text-[12px] leading-[1.7] m-0"
                   style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)" }}
                 >
-                  Pour vous offrir une meilleure expérience, 
+                  {language === 'en' ? 'To offer you a better experience, ' : 'Pour vous offrir une meilleure expérience, '}
                   <span
                   className="px-1"
                     style={{
@@ -423,13 +425,13 @@ export function CookieConsent({
                     }}
                   >
                     INS
-                  </span>et ses services utilisent des cookies.{" "}
+                  </span> {language === 'en' ? 'and its services use cookies.' : 'et ses services utilisent des cookies.'}{" "}
                   <Link
                     href="/terms"
                     className="relative inline-block"
                     style={{ color }}
                   >
-                    <span className="relative z-10">En savoir plus</span>
+                    <span className="relative z-10">{language === 'en' ? 'Learn more' : 'En savoir plus'}</span>
                   </Link>
 
                 </p>
@@ -446,13 +448,13 @@ export function CookieConsent({
                 }}
               >
                 <span className="flex items-center justify-center gap-2">
-                  Accepter
+                  {language === 'en' ? 'Accept' : 'Accepter'}
                   <ArrowRight size={15} />
                 </span>
               </button>
 
               <p className="text-center text-[9px] mt-3 m-0" style={{ color: isDark ? "rgba(255,255,255,0.62)" : "rgba(0,0,0,0.62)" }}>
-                Cliquez sur “Accepter” ou n&apos;importe où en dehors pour continuer
+                {language === 'en' ? 'Click "Accept" or anywhere outside to continue' : 'Cliquez sur “Accepter” ou n\'importe où en dehors pour continuer'}
               </p>
             </div>
           </div>
@@ -520,7 +522,7 @@ export function CookieConsent({
                   className="text-[12px] leading-[1.7] m-0"
                   style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)" }}
                 >
-                  Pour vous offrir une meilleure expérience, 
+                  {language === 'en' ? 'To offer you a better experience, ' : 'Pour vous offrir une meilleure expérience, '}
                   <span
                   className="px-1"
                     style={{
@@ -529,13 +531,13 @@ export function CookieConsent({
                     }}
                   >
                     INS
-                  </span>et ses services utilisent des cookies.{" "}
+                  </span> {language === 'en' ? 'and its services use cookies.' : 'et ses services utilisent des cookies.'}{" "}
                   <Link
                     href="/mentions-legales"
                     className="relative inline-block"
                     style={{ color }}
                   >
-                    <span className="relative z-10">En savoir plus</span>
+                    <span className="relative z-10">{language === 'en' ? 'Learn more' : 'En savoir plus'}</span>
                   </Link>
 
                 </p>
@@ -553,7 +555,7 @@ export function CookieConsent({
                 }}
               >
                 <span className="flex items-center justify-center gap-2">
-                  Accepter
+                  {language === 'en' ? 'Accept' : 'Accepter'}
                   <ArrowRight size={13} />
                 </span>
               </button>

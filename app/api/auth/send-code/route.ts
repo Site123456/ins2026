@@ -100,7 +100,7 @@ function generateAccountCreatedEmail(name: string, email: string) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, type, name } = await request.json();
+    const { email, type, name, language } = await request.json();
 
     if (!email || !type) {
       return NextResponse.json(
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
     // ---------------------------------------------------------------------
     // 1. CHECK IF USER EXISTS
     // ---------------------------------------------------------------------
-    let existingUser = await Subscriber.findOne({ email: normalizedEmail });
+    let existingUser = await Subscriber.findByEmail(normalizedEmail);
 
     // USER EXISTS → SIGNUP SHOULD SWITCH TO SIGN-IN
     if (existingUser && type === "signup") {
@@ -184,6 +184,7 @@ export async function POST(request: NextRequest) {
       const newUser = await Subscriber.create({
         email: normalizedEmail,
         name: name?.trim() || "Utilisateur",
+        language: language || "fr",
         subscribedAt: new Date(),
         isActive: true,
         newsletterSubscribed: isNewsletter,

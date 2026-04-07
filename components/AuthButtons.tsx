@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from 'react';
 import { LogIn, UserPlus, LogOut, Settings, ChevronDown, Bell } from 'lucide-react';
 import SettingsModal from './SettingsModal';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Portal from "@/components/Portal";
 
 interface AuthButtonsProps {
@@ -13,6 +14,7 @@ interface AuthButtonsProps {
 
 export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
   const { user, isAuthenticated, signOut, openAuthModal } = useAuth();
+  const { t } = useLanguage();
   const [showDropdown, setShowDropdown] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
@@ -164,7 +166,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
                   `}
                 >
                   <Settings className="h-4 w-4" />
-                  Paramètres
+                  {t('settingsBtn')}
                 </button>
 
                 <div className="border-t border-white/10 my-2" />
@@ -178,7 +180,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
                   "
                 >
                   <LogOut className="h-4 w-4" />
-                  Déconnexion
+                  {t('logoutBtn')}
                 </button>
               </div>
             </div>
@@ -212,7 +214,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
         `}
       >
         <LogIn className="h-4 w-4" />
-        Se connecter
+        {t('signInBtn')}
       </button>
 
       <button
@@ -230,7 +232,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
         }}
       >
         <UserPlus className="h-4 w-4" />
-        <span className="hidden sm:inline">S'inscrire</span>
+        <span className="hidden sm:inline">{t('signUpBtn')}</span>
       </button>
     </div>
   );
