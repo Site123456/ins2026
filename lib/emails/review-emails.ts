@@ -18,7 +18,9 @@ export function reviewConfirmationEmail(
         <table width="600" style="background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)">
           <tr>
             <td style="background:linear-gradient(135deg,#d32f2f,#b71c1c);padding:40px;text-align:center;color:#fff">
-              <img src="https://indian-nepaliswad.fr/etc/logo.png" style="height:60px;margin-bottom:12px" />
+              <div style="display:inline-block; background-color:#ffffff; padding:12px; border-radius:24px; margin-bottom:24px;">
+                <img src="https://indian-nepaliswad.fr/etc/logo.png" style="height:60px;" />
+              </div>
               <h1 style="margin:0;font-size:24px;font-weight:800">${isFr ? 'Merci pour votre avis !' : 'Thank you for your review!'}</h1>
             </td>
           </tr>
@@ -28,16 +30,16 @@ export function reviewConfirmationEmail(
             </p>
             <p style="font-size:15px;color:#374151;line-height:1.7;margin:0 0 20px">
               ${isFr
-                ? `Votre avis sur <strong>${dishName}</strong> a bien été publié.`
-                : `Your review for <strong>${dishName}</strong> has been published.`}
+      ? `Votre avis sur <strong>${dishName}</strong> a bien été publié.`
+      : `Your review for <strong>${dishName}</strong> has been published.`}
             </p>
             <div style="text-align:center;padding:20px;background:#fef2f2;border-radius:12px;margin:0 0 20px">
               <span style="font-size:28px;letter-spacing:4px;color:#d32f2f">${stars}</span>
             </div>
             <p style="font-size:13px;color:#6b7280;line-height:1.6;margin:0">
               ${isFr
-                ? 'Votre avis aide les autres clients à découvrir nos meilleurs plats. Merci de faire partie de la communauté INS !'
-                : 'Your review helps other customers discover our best dishes. Thank you for being part of the INS community!'}
+      ? 'Votre avis aide les autres clients à découvrir nos meilleurs plats. Merci de faire partie de la communauté INS !'
+      : 'Your review helps other customers discover our best dishes. Thank you for being part of the INS community!'}
             </p>
           </td></tr>
           <tr><td style="padding:20px;text-align:center;font-size:11px;color:#9ca3af">
@@ -65,7 +67,9 @@ export function reviewReplyNotificationEmail(
         <table width="600" style="background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)">
           <tr>
             <td style="background:linear-gradient(135deg,#d32f2f,#b71c1c);padding:40px;text-align:center;color:#fff">
-              <img src="https://indian-nepaliswad.fr/etc/logo.png" style="height:60px;margin-bottom:12px" />
+              <div style="display:inline-block; background-color:#ffffff; padding:12px; border-radius:24px; margin-bottom:24px;">
+                <img src="https://indian-nepaliswad.fr/etc/logo.png" style="height:60px;" />
+              </div>
               <h1 style="margin:0;font-size:22px;font-weight:800">${isFr ? 'Nouvelle réponse à votre avis' : 'New reply to your review'}</h1>
             </td>
           </tr>
@@ -75,8 +79,8 @@ export function reviewReplyNotificationEmail(
             </p>
             <p style="font-size:15px;color:#374151;line-height:1.7;margin:0 0 20px">
               <strong>${replierName}</strong> ${isFr
-                ? `a répondu à votre avis sur <strong>${dishName}</strong> :`
-                : `replied to your review on <strong>${dishName}</strong>:`}
+      ? `a répondu à votre avis sur <strong>${dishName}</strong> :`
+      : `replied to your review on <strong>${dishName}</strong>:`}
             </p>
             <div style="padding:16px 20px;background:#f3f4f6;border-left:4px solid #d32f2f;border-radius:0 12px 12px 0;margin:0 0 20px">
               <p style="font-size:14px;color:#374151;line-height:1.6;margin:0;font-style:italic">"${snippet}"</p>

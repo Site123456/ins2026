@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import MenuItemReview from '@/models/MenuItemReview';
-import { blindIndex } from '@/lib/crypto';
 
 // POST /api/reviews/vote — Toggle upvote/downvote
 // Guests can vote using a fingerprint (stored client-side), auth users use blindEmail

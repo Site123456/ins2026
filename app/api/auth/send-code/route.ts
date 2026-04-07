@@ -59,7 +59,9 @@ function generateAccountCreatedEmail(name: string, email: string, language: stri
 
           <tr>
             <td style="background:linear-gradient(135deg,#d32f2f,#b71c1c);padding:48px;text-align:center;color:#fff">
-              <img src="https://indian-nepaliswad.fr/etc/logo.png" style="height:80px;margin-bottom:14px" />
+              <div style="d isplay:inline-block; background-color:#ffffff; padding:12px; border-radius:24px; margin-bottom:24px;">
+                <img src="https://indian-nepaliswad.fr/etc/logo.png" alt="INS" style="height:64px; display:block;" />
+              </div>
               <h1 style="margin:0;font-size:32px;font-weight:800">${txt("Compte créé avec succès", "Account successfully created")} 🎉</h1>
             </td>
           </tr>
@@ -299,7 +301,7 @@ export async function POST(request: NextRequest) {
               <!-- Header -->
               <tr>
                 <td style="padding:48px 32px 32px; text-align:center;">
-                  <div style="display:inline-block; background-color:#fff1f2; padding:12px; border-radius:24px; margin-bottom:24px;">
+                  <div style="display:inline-block; background-color:#ffffff; padding:12px; border-radius:24px; margin-bottom:24px;">
                     <img src="https://indian-nepaliswad.fr/etc/logo.png" alt="INS" style="height:64px; display:block;" />
                   </div>
                   <h1 style="margin:0; font-size:28px; font-weight:800; color:#111827; letter-spacing:-0.5px; line-height:1.2;">
