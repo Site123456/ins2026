@@ -495,10 +495,12 @@ export default function SearchPage() {
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
               onClick={() => setSelectedDish(null)}
             />
+
+            {/* Modal */}
             <motion.div
-              initial={{ y: "200%" }}
+              initial={{ y: "100%" }}
               animate={{ y: 0 }}
-              exit={{ y: "200%" }}
+              exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
               className={`
                 fixed z-50 overflow-hidden flex flex-col shadow-2xl border
@@ -509,16 +511,67 @@ export default function SearchPage() {
               `}
             >
 
-              <div className="overflow-y-auto flex-1 p-0 pb-8" style={{ scrollbarWidth: 'thin' }}>
+              {/* FIXED CLOSE BUTTON */}
+              <button
+                onClick={() => setSelectedDish(null)}
+                className={`
+                  absolute top-4 right-4 z-50 p-2.5 rounded-full backdrop-blur-md transition-all
+                  ${isDark ? "bg-white/10 text-white hover:bg-white/20" : "bg-black/10 text-black hover:bg-black/20"}
+                `}
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <div
+                className="overflow-y-auto flex-1 p-0 pb-8 overscroll-y-contain"
+                style={{ scrollbarWidth: "thin" }}
+                onScroll={(e) => {
+                  const el = e.currentTarget as HTMLElement;
+                  if (el.scrollTop <= 0) {
+                    // At top → allow stretch-to-close
+                  }
+                }}
+                onWheel={(e) => {
+                  const el = e.currentTarget as HTMLElement;
+                  if (el.scrollTop <= 0 && e.deltaY < -20) {
+                    // User scrolls upward while already at top → close
+                    setSelectedDish(null);
+                  }
+                }}
+                onTouchMove={(e) => {
+                  const el = e.currentTarget as HTMLElement;
+                  if (el.scrollTop <= 0 && e.touches[0].clientY > 40) {
+                    // Pull-down gesture → close
+                    setSelectedDish(null);
+                  }
+                }}
+              >
                 {/* Hero */}
                 <div className="relative h-54 sm:h-70 overflow-hidden">
-                  <img src={selectedDish.image} alt={selectedDish.name[language]} className="w-full h-full object-cover" />
-                  <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-zinc-950 via-zinc-950/40' : 'from-white via-white/20'} to-transparent`} />
-                  <button onClick={() => setSelectedDish(null)}
-                    className="fixed mt-4 me-4 p-2.5 rounded-full bg-black/50 backdrop-blur-md text-white hover:bg-black/70 transition-all">
-                    <X className="w-5 h-5" />
-                  </button>
+                  <img
+                    src={selectedDish.image}
+                    alt={selectedDish.name[language]}
+                    className="w-full h-full object-cover"
+                  />
 
+                  <div
+                    className={`
+                      absolute inset-0 bg-gradient-to-t
+                      ${isDark ? "from-zinc-950 via-zinc-950/40" : "from-white via-white/20"}
+                      to-transparent
+                    `}
+                  />
+                </div>
+                <div className="relative h-54 sm:h-70 overflow-hidden">
+
+                  <img src={selectedDish.image} alt={selectedDish.name[language]} className="w-full h-full object-cover" />
+                  
+                  <div
+                    className={`
+                      absolute inset-0 bg-gradient-to-t
+                      ${isDark ? "from-zinc-950 via-zinc-950/40" : "from-white via-white/20"}
+                      to-transparent
+                    `}
+                  />
                   <div className="absolute bottom-8 left-8 right-8">
                     <div className="flex justify-start items-start text-start">
                       <div
