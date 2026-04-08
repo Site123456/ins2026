@@ -496,9 +496,9 @@ export default function SearchPage() {
               onClick={() => setSelectedDish(null)}
             />
             <motion.div
-              initial={{ y: "100%" }}
+              initial={{ y: "200%" }}
               animate={{ y: 0 }}
-              exit={{ y: "100%" }}
+              exit={{ y: "200%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
               className={`
                 fixed z-50 overflow-hidden flex flex-col shadow-2xl border
@@ -515,7 +515,7 @@ export default function SearchPage() {
                   <img src={selectedDish.image} alt={selectedDish.name[language]} className="w-full h-full object-cover" />
                   <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-zinc-950 via-zinc-950/40' : 'from-white via-white/20'} to-transparent`} />
                   <button onClick={() => setSelectedDish(null)}
-                    className="absolute top-4 right-4 p-2.5 rounded-full bg-black/50 backdrop-blur-md text-white hover:bg-black/70 transition-all">
+                    className="fixed mt-4 me-4 p-2.5 rounded-full bg-black/50 backdrop-blur-md text-white hover:bg-black/70 transition-all">
                     <X className="w-5 h-5" />
                   </button>
 
