@@ -498,9 +498,9 @@ export default function SearchPage() {
 
             {/* Modal */}
             <motion.div
-              initial={{ y: "100%" }}
+              initial={{ y: "200%" }}
               animate={{ y: 0 }}
-              exit={{ y: "100%" }}
+              exit={{ y: "200%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
               className={`
                 fixed z-50 overflow-hidden flex flex-col shadow-2xl border
