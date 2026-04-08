@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Heart, Star, Flame, Leaf, X, Send,
@@ -77,7 +77,8 @@ export default function SearchPage() {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
   const [submittingReply, setSubmittingReply] = useState(false);
-
+  const touchStartY = useRef(0);
+  const touchDeltaY = useRef(0);
   // Expanded replies
   const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());
 
@@ -524,27 +525,31 @@ export default function SearchPage() {
               <div
                 className="overflow-y-auto flex-1 p-0 pb-8 overscroll-y-contain"
                 style={{ scrollbarWidth: "thin" }}
-                onScroll={(e) => {
+                onTouchStart={(e) => {
+                  touchStartY.current = e.touches[0].clientY;
+                  touchDeltaY.current = 0;
+                }}
+                onTouchMove={(e) => {
                   const el = e.currentTarget as HTMLElement;
-                  if (el.scrollTop <= 0) {
-                    // At top → allow stretch-to-close
+                  if (el.scrollTop > 0) return;
+
+                  const currentY = e.touches[0].clientY;
+                  touchDeltaY.current = currentY - touchStartY.current;
+                  if (touchDeltaY.current > 60) {
+                    setSelectedDish(null);
                   }
+                }}
+                onTouchEnd={() => {
+                  touchDeltaY.current = 0;
                 }}
                 onWheel={(e) => {
                   const el = e.currentTarget as HTMLElement;
                   if (el.scrollTop <= 0 && e.deltaY < -20) {
-                    // User scrolls upward while already at top → close
-                    setSelectedDish(null);
-                  }
-                }}
-                onTouchMove={(e) => {
-                  const el = e.currentTarget as HTMLElement;
-                  if (el.scrollTop <= 0 && e.touches[0].clientY > 40) {
-                    // Pull-down gesture → close
                     setSelectedDish(null);
                   }
                 }}
               >
+
                 <div className="relative h-54 sm:h-70 overflow-hidden">
 
                   <img src={selectedDish.image} alt={selectedDish.name[language]} className="w-full h-full object-cover" />
