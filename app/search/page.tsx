@@ -488,15 +488,27 @@ export default function SearchPage() {
       <AnimatePresence>
         {selectedDish && (
           <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50" onClick={() => setSelectedDish(null)} />
-
             <motion.div
-              initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className={`fixed inset-x-0 bottom-0 z-50 max-h-[92vh] rounded-t-[2.5rem] border-t overflow-hidden flex flex-col shadow-2xl ${isDark ? 'bg-zinc-950 border-white/10' : 'bg-white border-slate-200'
-                }`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+              onClick={() => setSelectedDish(null)}
+            />
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              className={`
+                fixed z-50 overflow-hidden flex flex-col shadow-2xl border
+                inset-x-0 bottom-0 max-h-[92vh] rounded-t-[2.5rem]
+                md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2
+                md:max-w-xl md:w-full md:rounded-3xl md:max-h-[85vh]
+                ${isDark ? "bg-zinc-950 border-white/10" : "bg-white border-slate-200"}
+              `}
             >
+
               <div className="overflow-y-auto flex-1 p-0 pb-8" style={{ scrollbarWidth: 'thin' }}>
                 {/* Hero */}
                 <div className="relative h-64 sm:h-80 overflow-hidden">
