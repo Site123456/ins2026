@@ -26,15 +26,12 @@ export interface MenuItem {
 const p = (price: number) => Array(7).fill(price);
 
 export const MENU_DATA: MenuItem[] = [
-  // ============================
-  // 🔥 PROMO -50%
-  // ============================
   {
     id: 1,
-    name: { fr: "Sélection -50 %", en: "Selection -50%" },
+    name: { fr: "Site Log", en: "Site Log" },
     description: {
-      fr: "Profitez de -50 % sur une sélection de produits (voir conditions)",
-      en: "Enjoy 50% off on selected items (see conditions)"
+      fr: "D'autres mis à jour à venir avec des nouveaux plats et des fonctionnalités supplémentaires. Restez à l'écoute !",
+      en: "More updates coming soon with new dishes and additional features. Stay tuned!"
     },
     category: "En ce moment",
     prices: p(0),
