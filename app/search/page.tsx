@@ -511,7 +511,7 @@ export default function SearchPage() {
 
               <div className="overflow-y-auto flex-1 p-0 pb-8" style={{ scrollbarWidth: 'thin' }}>
                 {/* Hero */}
-                <div className="relative h-64 sm:h-80 overflow-hidden">
+                <div className="relative h-54 sm:h-70 overflow-hidden">
                   <img src={selectedDish.image} alt={selectedDish.name[language]} className="w-full h-full object-cover" />
                   <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-zinc-950 via-zinc-950/40' : 'from-white via-white/20'} to-transparent`} />
                   <button onClick={() => setSelectedDish(null)}
@@ -520,7 +520,7 @@ export default function SearchPage() {
                   </button>
 
                   <div className="absolute bottom-8 left-8 right-8">
-                    <div className="relative text-start">
+                    <div className="flex justify-start items-start text-start">
                       <div
                         className={`
                           text-xs font-black uppercase tracking-[0.3em] rounded-2xl px-3 py-2 mb-2 drop-shadow-md whitespace-nowrap
