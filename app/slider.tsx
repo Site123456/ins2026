@@ -175,7 +175,6 @@ export function CookieConsent({
   useEffect(() => {
     const termsShown = get("cs_terms_notice_shown") === "true";
     if (!termsShown) {
-      push?.("info", "Nous utilisons des cookies!", 10000);
       set("cs_terms_notice_shown", "true");
     }
   }, [push]);

@@ -46,6 +46,7 @@ export const DICTIONARY: Translations = {
   settingsBtn: { fr: "Paramètres", en: "Settings" },
   logoutBtn: { fr: "Déconnexion", en: "Logout" },
   languageFound: { fr: "Langue trouvé", en: "Language found" },
+  cookiesusage: { fr: "Nous utilisons des cookies pour améliorer votre expérience. En continuant, vous acceptez notre politique de confidentialité.", en: "We use cookies to improve your experience. By continuing, you agree to our privacy policy." }
 };
 
 interface LanguageContextType {
@@ -68,7 +69,7 @@ export function LanguageProvider({ children, initialLang = 'fr' }: { children: R
       const browserLang = navigator.language.startsWith('fr') ? 'fr' : 'en';
       setLanguage(browserLang);
       // Toast
-      push?.("info", t("languageFound") + browserLang);
+      push?.("info", t("languageFound") + " " + browserLang === 'fr' ? "Français" : "English" + "\n" + t("cookiesusage"), 5000);
       localStorage.setItem('ins_lang', browserLang);
     }
   }, []);
