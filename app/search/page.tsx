@@ -508,8 +508,8 @@ export default function SearchPage() {
                   </button>
 
                   <div className="absolute bottom-8 left-8 right-8">
-                    <div className="relative">
-                      <p
+                    <div className="relative text-start">
+                      <div
                         className={`
                           text-xs font-black uppercase tracking-[0.3em] rounded-2xl px-3 py-2 mb-2 drop-shadow-md whitespace-nowrap
                           ${isDark 
@@ -519,7 +519,7 @@ export default function SearchPage() {
                         `}
                       >
                         {selectedDish.category}
-                      </p>
+                      </div>
                     </div>
 
                     <h2 className={`text-4xl sm:text-5xl font-black mb-4 leading-tight drop-shadow-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedDish.name[language]}</h2>
