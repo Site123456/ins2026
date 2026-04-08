@@ -508,7 +508,18 @@ export default function SearchPage() {
                   </button>
 
                   <div className="absolute bottom-8 left-8 right-8">
-                    <p className="text-xs font-black uppercase tracking-[0.3em] text-rose-500 bg-rose-100/60 rounded-2xl px-3 py-2 mb-2 drop-shadow-md">{selectedDish.category}</p>
+                    <p
+                      className={`
+                        text-xs font-black uppercase tracking-[0.3em] rounded-2xl px-3 py-2 mb-2 drop-shadow-md whitespace-nowrap
+                        ${isDark 
+                          ? "text-rose-400 bg-rose-400/10 border border-rose-400/20" 
+                          : "text-rose-600 bg-rose-100 border border-rose-300/40"
+                        }
+                      `}
+                    >
+                      {selectedDish.category}
+                    </p>
+
                     <h2 className={`text-4xl sm:text-5xl font-black mb-4 leading-tight drop-shadow-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>{selectedDish.name[language]}</h2>
                     <div className="flex items-center gap-4 flex-wrap">
                       <span className={`px-6 py-2.5 rounded-2xl font-black text-xl shadow-2xl ${isDark ? 'bg-white text-zinc-900' : 'bg-slate-900 text-white'} ${selectedDish.prices[0] === 0 ? 'hidden' : ''}`}>
