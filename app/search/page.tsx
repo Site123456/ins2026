@@ -734,17 +734,54 @@ export default function SearchPage() {
                                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
                                         className="mt-6 pl-6 space-y-5 border-l-2 border-rose-500/20 overflow-hidden">
                                         {review.replies.map((reply: any, idx: number) => (
-                                          <div key={reply._id || idx} className="relative group/reply">
+                                          <div
+                                            key={reply._id || idx}
+                                            className="relative group/reply"
+                                          >
+                                            {/* Header */}
                                             <div className="flex items-center gap-3 mb-2">
-                                              <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-zinc-400">
+                                              {/* Avatar */}
+                                              <div
+                                                className={`
+                                                  w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-black
+                                                  border
+                                                  ${isDark ? "bg-white/5 border-white/10 text-zinc-400" : "bg-black/5 border-black/10 text-zinc-600"}
+                                                `}
+                                              >
                                                 {reply.userName.charAt(0).toUpperCase()}
                                               </div>
-                                              <span className="text-xs font-black text-white">{reply.userName}</span>
-                                              <span className="text-[9px] font-bold text-zinc-600 uppercase tracking-widest">
-                                                {new Date(reply.createdAt).toLocaleDateString(language === 'fr' ? 'fr-FR' : 'en-US', { day: 'numeric', month: 'short' })}
+
+                                              {/* Username */}
+                                              <span
+                                                className={`
+                                                  text-xs font-black
+                                                  ${isDark ? "text-white" : "text-zinc-900"}
+                                                `}
+                                              >
+                                                {reply.userName}
+                                              </span>
+
+                                              {/* Date */}
+                                              <span
+                                                className={`
+                                                  text-[9px] font-bold uppercase tracking-widest
+                                                  ${isDark ? "text-zinc-600" : "text-zinc-500"}
+                                                `}
+                                              >
+                                                {new Date(reply.createdAt).toLocaleDateString(
+                                                  language === "fr" ? "fr-FR" : "en-US",
+                                                  { day: "numeric", month: "short" }
+                                                )}
                                               </span>
                                             </div>
-                                            <p className="text-sm font-medium text-zinc-400 leading-relaxed px-1">
+
+                                            {/* Comment */}
+                                            <p
+                                              className={`
+                                                text-sm font-medium leading-relaxed px-1
+                                                ${isDark ? "text-zinc-400" : "text-zinc-700"}
+                                              `}
+                                            >
                                               {reply.comment}
                                             </p>
                                           </div>
