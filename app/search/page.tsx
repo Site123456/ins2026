@@ -545,29 +545,13 @@ export default function SearchPage() {
                   }
                 }}
               >
-                {/* Hero */}
-                <div className="relative h-54 sm:h-70 overflow-hidden">
-                  <img
-                    src={selectedDish.image}
-                    alt={selectedDish.name[language]}
-                    className="w-full h-full object-cover"
-                  />
-
-                  <div
-                    className={`
-                      absolute inset-0 bg-gradient-to-t
-                      ${isDark ? "from-zinc-950 via-zinc-950/40" : "from-white via-white/20"}
-                      to-transparent
-                    `}
-                  />
-                </div>
                 <div className="relative h-54 sm:h-70 overflow-hidden">
 
                   <img src={selectedDish.image} alt={selectedDish.name[language]} className="w-full h-full object-cover" />
                   
                   <div
                     className={`
-                      absolute inset-0 bg-gradient-to-t
+                      absolute inset-0 bg-linear-to-t
                       ${isDark ? "from-zinc-950 via-zinc-950/40" : "from-white via-white/20"}
                       to-transparent
                     `}
