@@ -211,9 +211,9 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
   // NOT AUTHENTICATED UI
   return (
     <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
+      initial={{ opacity: 0, y: 100 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, ease: 'easeOut' }}
       className="flex items-center gap-2"
     >
       <motion.button
