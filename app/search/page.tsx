@@ -199,19 +199,69 @@ export default function SearchPage() {
   // Vote on review
   const voteReview = async (reviewId: string, vote: 'up' | 'down') => {
     const odine = user ? `u_${user.email}` : guestOdine;
+    
+    // Save previous state to rollback on error
+    const previousReviews = [...reviews];
+    
+    // Optimistic Update
+    setReviews(prev => prev.map(r => {
+      if (r._id !== reviewId) return r;
+      
+      const existingVote = r.votedBy?.find(v => v.odine === odine)?.vote;
+      let newUpvotes = r.upvotes;
+      let newDownvotes = r.downvotes;
+      let newVotedBy = [...(r.votedBy || [])];
+
+      const userVoteIdx = newVotedBy.findIndex(v => v.odine === odine);
+
+      if (existingVote === vote) {
+        // Same vote clicked -> Toggle OFF
+        if (vote === 'up') newUpvotes = Math.max(0, newUpvotes - 1);
+        else newDownvotes = Math.max(0, newDownvotes - 1);
+        if (userVoteIdx > -1) newVotedBy.splice(userVoteIdx, 1);
+      } else {
+        // Different vote or first vote -> Switch or Add
+        if (existingVote === 'up') newUpvotes = Math.max(0, newUpvotes - 1);
+        else if (existingVote === 'down') newDownvotes = Math.max(0, newDownvotes - 1);
+        
+        if (vote === 'up') newUpvotes += 1;
+        else newDownvotes += 1;
+        
+        if (userVoteIdx > -1) {
+          newVotedBy[userVoteIdx] = { odine, vote };
+        } else {
+          newVotedBy.push({ odine, vote });
+        }
+      }
+      
+      return { 
+        ...r, 
+        upvotes: newUpvotes, 
+        downvotes: newDownvotes, 
+        score: newUpvotes - newDownvotes,
+        votedBy: newVotedBy 
+      };
+    }));
+
     try {
       const res = await fetch('/api/reviews/vote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reviewId, odine, vote }),
       });
-      if (res.ok) {
+      
+      if (!res.ok) {
+        setReviews(previousReviews);
+      } else {
         const data = await res.json();
+        // Final sync with server to ensure counts are perfect
         setReviews(prev => prev.map(r =>
           r._id === reviewId ? { ...r, upvotes: data.upvotes, downvotes: data.downvotes, score: data.score } : r
         ));
       }
-    } catch { }
+    } catch {
+      setReviews(previousReviews);
+    }
   };
 
   // Submit reply
@@ -561,31 +611,45 @@ export default function SearchPage() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: "100%", opacity: 0 }}
               transition={{ type: "spring", damping: 32, stiffness: 300 }}
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={{ top: 0, bottom: 0.8 }}
+              onDragEnd={(_, info) => {
+                if (info.offset.y > 150 || info.velocity.y > 500) {
+                  setSelectedDish(null);
+                }
+              }}
               className={`
                 fixed z-[60] overflow-hidden flex flex-col shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border
-                inset-x-0 bottom-0 max-h-[94vh] rounded-t-[3rem]
+                inset-x-0 bottom-0 h-[92vh] md:h-auto max-h-[94vh] rounded-t-[3rem]
                 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2
                 md:max-w-2xl md:w-full md:rounded-[3rem] md:max-h-[85vh]
                 ${isDark ? "bg-[#050508] border-white/10" : "bg-white border-slate-200"}
+                touch-none
               `}
             >
+              {/* MOBILE DRAG HANDLE */}
+              <div className="md:hidden flex justify-center pt-4 pb-2 shrink-0">
+                <div className="w-12 h-1.5 rounded-full bg-zinc-800" />
+              </div>
+
               {/* FIXED CLOSE BUTTON */}
               <button
                 onClick={() => setSelectedDish(null)}
                 className={`
-                  absolute top-6 right-6 z-50 p-3 rounded-2xl backdrop-blur-3xl transition-all hover:scale-110 active:scale-90
+                  absolute top-4 right-4 md:top-6 md:right-6 z-50 p-2.5 md:p-3 rounded-xl md:rounded-2xl backdrop-blur-3xl transition-all hover:scale-110 active:scale-90
                   ${isDark ? "bg-white/10 text-white hover:bg-white/20" : "bg-black/5 text-black hover:bg-black/10"}
                 `}
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5 md:w-6 md:h-6" />
               </button>
 
               <div
-                className="overflow-y-auto flex-1 p-0 pb-12 overscroll-y-contain premium-scrollbar"
+                className="overflow-y-auto flex-1 p-0 pb-12 overscroll-y-contain premium-scrollbar touch-auto"
                 style={{ scrollbarWidth: "none" }}
               >
                 {/* Hero Header */}
-                <div className="relative h-[22rem] md:h-[26rem] overflow-hidden">
+                <div className="relative h-[20rem] md:h-[26rem] overflow-hidden">
                   <img src={selectedDish.image} alt={selectedDish.name[language]} className="w-full h-full object-cover" />
 
                   <div
@@ -596,7 +660,7 @@ export default function SearchPage() {
                     `}
                   />
 
-                  <div className="absolute bottom-10 left-10 right-10">
+                  <div className="absolute bottom-6 left-6 right-6 md:bottom-10 md:left-10 md:right-10">
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -611,7 +675,7 @@ export default function SearchPage() {
                         </span>
                       </div>
 
-                      <h2 className={`text-4xl md:text-6xl font-black leading-tight tracking-tight drop-shadow-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                      <h2 className={`text-3xl md:text-6xl font-black leading-tight tracking-tight drop-shadow-2xl ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         {selectedDish.name[language]}
                       </h2>
 
@@ -642,7 +706,7 @@ export default function SearchPage() {
                 </div>
 
                 <div className="px-6 md:px-12 pt-10">
-                  <p className={`text-xl leading-relaxed mb-16 font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
+                  <p className={`text-base md:text-xl leading-relaxed mb-12 md:mb-16 font-medium ${isDark ? 'text-zinc-400' : 'text-slate-600'}`}>
                     {selectedDish.description[language]}
                   </p>
 
@@ -664,7 +728,7 @@ export default function SearchPage() {
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className={`rounded-[3rem] p-10 mb-16 border transition-all ${isDark ? 'bg-white/[0.03] border-white/5' : 'bg-slate-50 border-slate-100'}`}
+                      className={`rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 mb-12 md:16 border transition-all ${isDark ? 'bg-white/[0.03] border-white/5' : 'bg-slate-50 border-slate-100'}`}
                     >
                       <div className="flex items-center gap-5 mb-8">
                         <div className={`w-14 h-14 rounded-[1.5rem] flex items-center justify-center shadow-2xl`} style={{ backgroundColor: accent, color: 'white' }}>
@@ -769,28 +833,28 @@ export default function SearchPage() {
 
                           return (
                             <motion.div key={review._id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
-                              className={`rounded-[2.5rem] p-8 border transition-all duration-300 ${isDark ? 'bg-white/[0.02] border-white/5 hover:border-white/10 hover:bg-white/[0.04]' : 'bg-white border-slate-100 hover:border-slate-200 shadow-sm'
+                              className={`rounded-[1.5rem] md:rounded-[2.5rem] p-5 md:p-8 border transition-all duration-300 ${isDark ? 'bg-white/[0.02] border-white/5 hover:border-white/10 hover:bg-white/[0.04]' : 'bg-white border-slate-100 hover:border-slate-200 shadow-sm'
                                 }`}>
 
                               {/* Review header */}
                               <div className="flex items-center justify-between mb-6">
-                                <div className="flex items-center gap-5">
+                                <div className="flex items-center gap-3 md:gap-5">
                                   <div className="relative group/avatar">
                                     <div
-                                      className="w-14 h-14 rounded-2xl flex items-center justify-center text-xl font-black transition-transform duration-500 group-hover/avatar:scale-110"
+                                      className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center text-sm md:text-xl font-black transition-transform duration-500 group-hover/avatar:scale-110"
                                       style={{ backgroundColor: `${accent}15`, color: accent, border: `1px solid ${accent}20` }}
                                     >
                                       {review.userName.charAt(0).toUpperCase()}
                                     </div>
-                                    <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg border-2 border-[#050508] flex items-center justify-center shadow-lg" style={{ backgroundColor: accent }}>
-                                      <Star className="w-3 h-3 text-white fill-current" />
+                                    <div className="absolute -bottom-1 -right-1 w-5 h-5 md:w-6 md:h-6 rounded-lg border-2 border-[#050508] flex items-center justify-center shadow-lg" style={{ backgroundColor: accent }}>
+                                      <Star className="w-2.5 h-2.5 md:w-3 md:h-3 text-white fill-current" />
                                     </div>
                                   </div>
                                   <div>
-                                    <p className={`text-lg font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{review.userName}</p>
-                                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-black/20 w-fit mt-1">
+                                    <p className={`text-base md:text-lg font-black ${isDark ? 'text-white' : 'text-slate-900'}`}>{review.userName}</p>
+                                    <div className="flex items-center gap-1 px-2 py-0.5 md:px-3 md:py-1 rounded-lg md:rounded-xl bg-black/20 w-fit mt-1">
                                       {[1, 2, 3, 4, 5].map(s => (
-                                        <Star key={s} className={`w-3.5 h-3.5 ${s <= review.rating ? 'text-amber-400 fill-current' : 'text-zinc-800'}`} />
+                                        <Star key={s} className={`w-2.5 h-2.5 md:w-3.5 md:h-3.5 ${s <= review.rating ? 'text-amber-400 fill-current' : 'text-zinc-800'}`} />
                                       ))}
                                     </div>
                                   </div>
@@ -802,34 +866,32 @@ export default function SearchPage() {
                               </div>
 
                               {/* Review content */}
-                              <div className="mb-8">
-                                <p className={`text-lg leading-relaxed font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
+                              <div className="mb-6 md:mb-8">
+                                <p className={`text-base md:text-lg leading-relaxed font-medium ${isDark ? 'text-zinc-300' : 'text-slate-700'}`}>
                                   {review.comment}
                                 </p>
                               </div>
 
                               {/* Interaction Footer */}
-                              <div className="flex items-center gap-4">
-                                <div className={`flex items-center p-1.5 rounded-2xl ${isDark ? 'bg-black/60 border border-white/5 shadow-inner' : 'bg-slate-50 border border-slate-100'}`}>
+                              <div className="flex flex-wrap items-center gap-3 md:gap-4">
+                                <div className={`flex items-center p-1 rounded-xl md:p-1.5 md:rounded-2xl ${isDark ? 'bg-black/60 border border-white/5 shadow-inner' : 'bg-slate-50 border border-slate-100'}`}>
                                   <button onClick={() => voteReview(review._id, 'up')}
-                                    className={`flex items-center gap-2.5 px-5 py-2.5 rounded-xl transition-all duration-300 font-black text-sm ${myVote === 'up'
+                                    className={`flex items-center gap-2 px-3 py-1.5 md:gap-2.5 md:px-5 md:py-2.5 rounded-lg md:rounded-xl transition-all duration-300 font-black text-xs md:text-sm ${myVote === 'up'
                                       ? 'bg-emerald-500 text-white shadow-xl shadow-emerald-500/20 scale-105'
                                       : isDark ? 'text-zinc-500 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                                       }`}>
-                                    <ThumbsUp className={`w-4 h-4 ${myVote === 'up' ? 'fill-current' : ''}`} />
+                                    <ThumbsUp className={`w-3.5 h-3.5 md:w-4 md:h-4 ${myVote === 'up' ? 'fill-current' : ''}`} />
                                     <span>{review.upvotes}</span>
                                   </button>
-
-                                  <div className={`w-px h-5 mx-2 ${isDark ? 'bg-white/10' : 'bg-slate-200'}`} />
-
+                                  <div className={`w-px h-4 md:h-5 mx-1 md:mx-2 ${isDark ? 'bg-white/10' : 'bg-slate-200'}`} />
                                   <button onClick={() => voteReview(review._id, 'down')}
-                                    className={`flex items-center gap-2.5 px-5 py-2.5 rounded-xl transition-all duration-300 font-black text-sm ${myVote === 'down'
+                                    className={`flex items-center gap-2 px-3 py-1.5 md:gap-2.5 md:px-5 md:py-2.5 rounded-lg md:rounded-xl transition-all duration-300 font-black text-xs md:text-sm ${myVote === 'down'
                                       ? 'text-white shadow-xl scale-105'
                                       : isDark ? 'text-zinc-500 hover:text-white' : 'text-slate-500 hover:text-slate-900'
                                       }`}
                                     style={{ backgroundColor: myVote === 'down' ? accent : undefined }}
                                   >
-                                    <ThumbsDown className={`w-4 h-4 ${myVote === 'down' ? 'fill-current' : ''}`} />
+                                    <ThumbsDown className={`w-3.5 h-3.5 md:w-4 md:h-4 ${myVote === 'down' ? 'fill-current' : ''}`} />
                                     <span>{review.downvotes}</span>
                                   </button>
                                 </div>
@@ -838,13 +900,13 @@ export default function SearchPage() {
                                   if (!user) { openAuthModal('signin'); return; }
                                   setReplyingTo(replyingTo === review._id ? null : review._id);
                                 }}
-                                  className={`flex items-center gap-2.5 px-6 py-3.5 rounded-2xl transition-all duration-300 ml-auto font-black text-xs uppercase tracking-widest shadow-lg ${replyingTo === review._id
+                                  className={`flex items-center gap-2 px-4 py-2.5 md:gap-2.5 md:px-6 md:py-3.5 rounded-xl md:rounded-2xl transition-all duration-300 ml-auto font-black text-[10px] md:text-xs uppercase tracking-widest shadow-lg ${replyingTo === review._id
                                     ? 'text-white'
                                     : isDark ? 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                                     }`}
                                   style={{ backgroundColor: replyingTo === review._id ? accent : undefined }}
                                 >
-                                  <MessageCircle className="w-5 h-5" />
+                                  <MessageCircle className="w-4 h-4 md:w-5 md:h-5" />
                                   <span>{isFr ? 'Répondre' : 'Reply'}</span>
                                 </button>
                               </div>

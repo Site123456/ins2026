@@ -10,16 +10,16 @@ function getAccentFromCookies() {
       .split("; ")
       .find((c) => c.startsWith("cs_settings="));
 
-    if (!raw) return "#8b5cf6"; // fallback
+    if (!raw) return "#f65c5cff"; // fallback
 
     const settings = JSON.parse(decodeURIComponent(raw.split("=")[1]));
-    return settings.accent || "#8b5cf6";
+    return settings.accent || "#f65c5cff";
   } catch {
-    return "#8b5cf6";
+    return "#f65c5cff";
   }
 }
 export function useAccentFromCookies() {
-  const [accent, setAccent] = useState<string>("#8b5cf6");
+  const [accent, setAccent] = useState<string>("#f65c5cff");
 
   // Load accent on mount
   useEffect(() => {
