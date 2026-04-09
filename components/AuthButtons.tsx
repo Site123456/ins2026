@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { LogIn, UserPlus, LogOut, Settings, ChevronDown, Bell } from 'lucide-react';
 import SettingsModal from './SettingsModal';
 import { useAuth } from '@/contexts/AuthContext';
@@ -60,12 +61,17 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
     return (
       <div className="relative" ref={triggerRef}>
         {/* Trigger Button */}
-        <button
+        <motion.button
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setShowDropdown(!showDropdown)}
           className={`
             flex h-10 items-center gap-2 rounded-xl px-3
             transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
-            hover:shadow-lg transform hover:scale-105 active:scale-95
+            hover:shadow-lg
             ${isDark
               ? 'text-white bg-black/60 hover:bg-black border border-white/10 focus:ring-white/20 focus:ring-offset-[#0a0a0f]'
               : 'text-zinc-900 bg-white/60 hover:bg-white border border-zinc-200 focus:ring-zinc-200 focus:ring-offset-white'
@@ -80,8 +86,13 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
             </div>
             <span className="text-sm font-medium hidden sm:inline">{user.name}</span>
           </div>
-          <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showDropdown ? 'rotate-180' : ''}`} />
-        </button>
+          <motion.div
+            animate={{ rotate: showDropdown ? 180 : 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          >
+            <ChevronDown className="h-4 w-4" />
+          </motion.div>
+        </motion.button>
 
         {/* DROPDOWN IN PORTAL */}
         <Portal>
@@ -144,11 +155,10 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
 
                   <div>
                     <Bell
-                      className={`h-4 w-4 mx-auto ${
-                        user.newsletterSubscribed
-                          ? isDark ? 'text-emerald-400' : 'text-emerald-600'
-                          : isDark ? 'text-zinc-500' : 'text-zinc-400'
-                      }`}
+                      className={`h-4 w-4 mx-auto ${user.newsletterSubscribed
+                        ? isDark ? 'text-emerald-400' : 'text-emerald-600'
+                        : isDark ? 'text-zinc-500' : 'text-zinc-400'
+                        }`}
                     />
                     <p className={`text-xs ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>Newsletter</p>
                   </div>
@@ -200,13 +210,20 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
 
   // NOT AUTHENTICATED UI
   return (
-    <div className="flex items-center gap-2">
-      <button
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+      className="flex items-center gap-2"
+    >
+      <motion.button
+        whileHover={{ scale: 1.05, y: -2 }}
+        whileTap={{ scale: 0.95 }}
         onClick={handleSignIn}
         className={`
           flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-medium
           transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
-          hover:shadow-lg transform hover:scale-105 active:scale-95
+          hover:shadow-lg
           ${isDark
             ? 'text-white bg-black/60 hover:bg-black border border-white/10 focus:ring-white/20 focus:ring-offset-[#0a0a0f]'
             : 'text-zinc-900 bg-white/60 hover:bg-white border border-zinc-200 focus:ring-zinc-200 focus:ring-offset-white'
@@ -215,14 +232,20 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
       >
         <LogIn className="h-4 w-4" />
         {t('signInBtn')}
-      </button>
+      </motion.button>
 
-      <button
+      <motion.button
+        whileHover={{
+          scale: 1.05,
+          y: -2,
+          boxShadow: `0 8px 25px ${accent}60`,
+        }}
+        whileTap={{ scale: 0.95 }}
         onClick={handleSignUp}
         className={`
           flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-medium
           transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
-          shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95
+          shadow-lg
           ${isDark ? 'focus:ring-offset-[#0a0a0f]' : 'focus:ring-offset-white'}
         `}
         style={{
@@ -233,7 +256,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
       >
         <UserPlus className="h-4 w-4" />
         <span className="hidden sm:inline">{t('signUpBtn')}</span>
-      </button>
-    </div>
+      </motion.button>
+    </motion.div>
   );
 }
