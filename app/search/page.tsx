@@ -629,7 +629,7 @@ export default function SearchPage() {
               `}
             >
               {/* MOBILE DRAG HANDLE */}
-              <div className="md:hidden flex justify-center pt-4 pb-2 shrink-0">
+              <div className="md:hidden absolute w-full flex justify-center pt-4 pb-2 shrink-0">
                 <div className="w-12 h-1.5 rounded-full bg-zinc-800" />
               </div>
 
