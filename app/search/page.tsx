@@ -723,10 +723,10 @@ export default function SearchPage() {
                                 : 'bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 shadow-sm'
                                 }`}
                               style={{ borderColor: newComment.length > 0 ? `${accent}40` : undefined }}
-                              maxLength={1000}
+                              maxLength={2000}
                             />
                             <div className="absolute bottom-6 right-8 text-[11px] font-black text-zinc-600 uppercase tracking-widest">
-                              {newComment.length}/1000
+                              {newComment.length}/2000
                             </div>
                           </div>
 
@@ -908,7 +908,7 @@ export default function SearchPage() {
                                         onChange={(e) => setReplyText(e.target.value)}
                                         placeholder={isFr ? 'Votre réponse...' : 'Your reply...'}
                                         className={`flex-1 rounded-2xl px-6 py-4 text-sm font-medium outline-none transition-all focus:border-[var(--accent)] ${isDark ? 'bg-white/5 border border-white/10 text-white placeholder:text-zinc-600 focus:bg-white/10' : 'bg-slate-50 border border-slate-200 text-slate-900 focus:bg-white'}`}
-                                        maxLength={500}
+                                        maxLength={2000}
                                         onKeyDown={(e) => { if (e.key === 'Enter') submitReply(review._id); }}
                                       />
                                       <button

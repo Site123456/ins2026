@@ -37,7 +37,7 @@ const ReviewReplySchema = new mongoose.Schema<IReviewReply>(
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Subscriber', required: true },
     userName: { type: String, required: true },
     blindEmail: { type: String, required: true },
-    comment: { type: String, required: true, trim: true, maxlength: 500 },
+    comment: { type: String, required: true, trim: true, maxlength: 2000 },
   },
   { timestamps: true }
 );
@@ -57,7 +57,7 @@ const MenuItemReviewSchema = new mongoose.Schema<IMenuItemReview>(
     userName: { type: String, required: true },
     blindEmail: { type: String, required: true },
     rating: { type: Number, required: true, min: 1, max: 5 },
-    comment: { type: String, required: true, trim: true, maxlength: 1000 },
+    comment: { type: String, required: true, trim: true, maxlength: 2000 },
     language: { type: String, enum: ['fr', 'en'], default: 'fr' },
 
     upvotes: { type: Number, default: 0 },

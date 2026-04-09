@@ -47,8 +47,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Rating must be between 1 and 5' }, { status: 400 });
     }
 
-    if (comment.trim().length < 3 || comment.trim().length > 1000) {
-      return NextResponse.json({ error: 'Comment must be between 3 and 1000 characters' }, { status: 400 });
+    if (comment.trim().length < 3 || comment.trim().length > 2000) {
+      return NextResponse.json({ error: 'Comment must be between 3 and 2000 characters' }, { status: 400 });
     }
 
     await dbConnect();

@@ -18,8 +18,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    if (comment.trim().length < 3 || comment.trim().length > 500) {
-      return NextResponse.json({ error: 'Comment must be between 3 and 500 characters' }, { status: 400 });
+    if (comment.trim().length < 3 || comment.trim().length > 2000) {
+      return NextResponse.json({ error: 'Comment must be between 3 and 2000 characters' }, { status: 400 });
     }
 
     await dbConnect();
