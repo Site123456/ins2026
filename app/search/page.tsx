@@ -620,7 +620,7 @@ export default function SearchPage() {
                 }
               }}
               className={`
-                fixed z-[60] overflow-hidden flex flex-col shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border
+                fixed z-20 overflow-hidden flex flex-col shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border
                 inset-x-0 bottom-0 h-[92vh] md:h-auto max-h-[94vh] rounded-t-[3rem]
                 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2
                 md:max-w-2xl md:w-full md:rounded-[3rem] md:max-h-[85vh]
@@ -629,7 +629,7 @@ export default function SearchPage() {
               `}
             >
               {/* MOBILE DRAG HANDLE */}
-              <div className="md:hidden absolute w-full flex justify-center pt-4 pb-2 shrink-0">
+              <div className="md:hidden absolute w-full flex justify-center pt-4 pb-2 shrink-0 z-24">
                 <div className="w-12 h-1.5 rounded-full bg-zinc-800" />
               </div>
 
