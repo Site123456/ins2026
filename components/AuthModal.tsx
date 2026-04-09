@@ -24,13 +24,13 @@ const shakeVariants: Variants = {
 
 const containerVariants: Variants = {
   hidden: { opacity: 0, scale: 0.95, y: 20 },
-  visible: { 
-    opacity: 1, 
-    scale: 1, 
+  visible: {
+    opacity: 1,
+    scale: 1,
     y: 0,
-    transition: { 
-      type: 'spring', 
-      damping: 25, 
+    transition: {
+      type: 'spring',
+      damping: 25,
       stiffness: 300,
       staggerChildren: 0.1
     }
@@ -356,11 +356,11 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
         </div>
 
         {/* Progress Bar (at very top) */}
-        <div className="absolute top-0 left-0 right-0 h-1.5 bg-black/10 z-10">
-          <motion.div 
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-black/10 z-10">
+          <motion.div
             className="h-full bg-[var(--accent)] shadow-[0_0_12px_var(--accent)]"
             initial={{ width: '0%' }}
-            animate={{ width: step === 1 ? '50%' : '100%' }}
+            animate={{ width: '100%' }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           />
         </div>
@@ -423,7 +423,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                   >
                     <CheckCircle className="w-16 h-16 text-emerald-500" />
                   </motion.div>
-                  <motion.div 
+                  <motion.div
                     className="absolute inset-0 rounded-full border-2 border-emerald-500/50"
                     animate={{ scale: [1, 1.4], opacity: [0.5, 0] }}
                     transition={{ duration: 1, repeat: Infinity }}
@@ -455,8 +455,8 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                     {mode === "signin"
                       ? t('welcomeBack')
                       : mode === "newsletter"
-                      ? t('joinMenu')
-                      : t('createAccount')}
+                        ? t('joinMenu')
+                        : t('createAccount')}
                   </h2>
 
                   <p
