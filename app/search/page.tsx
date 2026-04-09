@@ -681,7 +681,7 @@ export default function SearchPage() {
 
                       <div className="flex items-center gap-4 flex-wrap">
                         <span
-                          className="px-8 py-3 rounded-2xl font-black text-2xl shadow-2xl text-white"
+                          className={`text-3xl font-black transition-colors duration-500 ${selectedDish.prices[0] === 0 && "hidden"} `}
                           style={{ backgroundColor: accent }}
                         >
                           {selectedDish.prices[0].toFixed(2)}€
