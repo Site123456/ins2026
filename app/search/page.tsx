@@ -620,7 +620,7 @@ export default function SearchPage() {
                 }
               }}
               className={`
-                fixed z-21 overflow-hidden flex flex-col shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border
+                fixed z-41 overflow-hidden flex flex-col shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] border
                 inset-x-0 bottom-0 h-[92vh] md:h-auto max-h-[94vh] rounded-t-[3rem]
                 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2
                 md:max-w-2xl md:w-full md:rounded-[3rem] md:max-h-[85vh]
