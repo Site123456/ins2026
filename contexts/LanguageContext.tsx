@@ -67,7 +67,7 @@ export function LanguageProvider({ children, initialLang = 'fr' }: { children: R
       const browserLang = navigator.language.startsWith('fr') ? 'fr' : 'en';
       setLanguage(browserLang);
       // Toast
-      push?.("info", (browserLang ==='en' ? "Nous utilisons des cookies pour améliorer votre expérience. En continuant, vous acceptez notre politique de confidentialité. Pour changer votre langue, allez dans les paramètres." : "We use cookies to improve your experience. By continuing, you agree to our privacy policy. To change your language, go to settings."));
+      push?.("info", (browserLang ==='en' ? "Nous utilisons des cookies. Pour changer votre langue, allez dans les paramètres." : "We use cookies. To change your language, go to settings."));
       localStorage.setItem('ins_lang', browserLang);
     }
   }, []);
