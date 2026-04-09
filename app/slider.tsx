@@ -537,7 +537,7 @@ export function CookieConsent({
                     INS
                   </span> {language === 'en' ? 'and its services use cookies.' : 'et ses services utilisent des cookies.'}{" "}
                   <Link
-                    href="/mentions-legales"
+                    href="/terms"
                     className="relative inline-block"
                     style={{ color }}
                   >

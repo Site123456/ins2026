@@ -45,7 +45,6 @@ export const DICTIONARY: Translations = {
   signUpBtn: { fr: "S'inscrire / Newsletter", en: "Sign up / Newsletter" },
   settingsBtn: { fr: "Paramètres", en: "Settings" },
   logoutBtn: { fr: "Déconnexion", en: "Logout" },
-  cookiesusage: { fr: "Nous utilisons des cookies pour améliorer votre expérience. En continuant, vous acceptez notre politique de confidentialité.", en: "We use cookies to improve your experience. By continuing, you agree to our privacy policy." }
 };
 
 interface LanguageContextType {
@@ -68,7 +67,7 @@ export function LanguageProvider({ children, initialLang = 'fr' }: { children: R
       const browserLang = navigator.language.startsWith('fr') ? 'fr' : 'en';
       setLanguage(browserLang);
       // Toast
-      push?.("info", t("cookiesusage") + "\n" + (browserLang === 'en' ? "Language set to English go to settings to change it." : "Langue réglée sur le français, allez dans les paramètres pour la changer."));
+      push?.("info", (browserLang ==='en' ? "Nous utilisons des cookies pour améliorer votre expérience. En continuant, vous acceptez notre politique de confidentialité. Pour changer votre langue, allez dans les paramètres." : "We use cookies to improve your experience. By continuing, you agree to our privacy policy. To change your language, go to settings."));
       localStorage.setItem('ins_lang', browserLang);
     }
   }, []);
