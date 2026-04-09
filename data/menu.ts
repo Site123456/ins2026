@@ -28,7 +28,7 @@ const p = (price: number) => Array(7).fill(price);
 export const MENU_DATA: MenuItem[] = [
   {
     id: 1,
-    name: { fr: "Site Log", en: "Site Log" },
+    name: { fr: "Site Log (2026)", en: "Site Log (2026)" },
     description: {
       fr: "D'autres mis à jour à venir avec des nouveaux plats et des fonctionnalités supplémentaires. Restez à l'écoute !",
       en: "More updates coming soon with new dishes and additional features. Stay tuned!"

@@ -330,7 +330,7 @@ export default function SearchPage() {
           <div className="flex flex-col md:flex-row gap-3 items-stretch">
             {/* Search */}
             <div
-              className={`relative flex-1 rounded-[2rem] border transition-all duration-500 focus-within:ring-8 ${isDark
+              className={`relative flex-1 rounded-e-full rounded-s-full border transition-all duration-500 focus-within:ring-8 ${isDark
                 ? 'bg-white/[0.03] border-white/10 focus-within:bg-white/[0.06]'
                 : 'bg-white border-slate-200 shadow-sm'
                 }`}
