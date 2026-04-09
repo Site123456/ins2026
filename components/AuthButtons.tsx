@@ -213,7 +213,7 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
     <motion.div
       initial={{ opacity: 0, y: -50 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25, ease: 'easeOut' }}
+      transition={{ duration: 1, ease: 'easeOut' }}
       className="flex items-center gap-2"
     >
       <motion.button
