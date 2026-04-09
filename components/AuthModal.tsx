@@ -590,7 +590,7 @@ export default function AuthModal({ isOpen, onClose, mode: initialMode, email: i
                       <Loader2 className="w-6 h-6 animate-spin" />
                     ) : (
                       <>
-                        {t('receiveCode')} <ArrowLeft className="w-5 h-5 rotate-180" />
+                        {mode === "signin" ? t('receiveCode') : t('joinMenu')} <ArrowLeft className="w-5 h-5 rotate-180" />
                       </>
                     )}
                   </motion.button>
