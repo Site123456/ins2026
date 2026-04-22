@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useTheme } from "../../components/hooks/useTheme";
+import { useTheme } from "@/components/hooks/useTheme";
 
 const legalContent = {
   fr: {
