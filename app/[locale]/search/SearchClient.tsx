@@ -49,7 +49,7 @@ function getGuestOdine(): string {
   return id;
 }
 
-export default function SearchPage() {
+export default function SearchClient() {
   const { user, toggleFavorite, getFavorites, openAuthModal } = useAuth();
   const { language } = useLanguage();
   const { isDark } = useTheme();
@@ -157,7 +157,7 @@ export default function SearchPage() {
     finally { setReviewsLoading(false); }
   }, []);
 
-  const openDish = (item: MenuItem) => {
+  const openDish = useCallback((item: MenuItem) => {
     setSelectedDish(item);
     setNewRating(0);
     setNewComment('');
@@ -165,7 +165,20 @@ export default function SearchPage() {
     setReplyingTo(null);
     setExpandedReplies(new Set());
     loadReviews(item.id);
-  };
+  }, [loadReviews]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const itemId = urlParams.get('item');
+      if (itemId) {
+        const item = MENU_DATA.find(m => m.id === Number(itemId));
+        if (item) {
+          openDish(item);
+        }
+      }
+    }
+  }, [openDish]);
 
   // Submit review
   const submitReview = async () => {

@@ -1,4 +1,4 @@
-import "./globals.css";
+import "../globals.css";
 import type { Metadata, Viewport } from "next";
 import { ReactNode } from "react";
 import Slidercomponent from "./slider";
@@ -6,6 +6,7 @@ import { CinematicProvider } from "@/components/CinematicProvider";
 import { ToastProvider } from "@/components/ToastHandle";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import SmartPopup from "@/components/SmartPopup";
 import "leaflet/dist/leaflet.css";
 
 export const metadata: Metadata = {
@@ -37,7 +38,8 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://www.indian-nepaliswad.fr",
     languages: {
-      "fr-FR": "https://www.indian-nepaliswad.fr",
+      "fr-FR": "https://www.indian-nepaliswad.fr/fr",
+      "en-US": "https://www.indian-nepaliswad.fr/en",
     },
   },
 
@@ -193,9 +195,16 @@ function StructuredData() {
   );
 }
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({
+  children,
+  params,
+}: {
+  children: ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
   return (
-    <html lang="fr" className="auto" suppressHydrationWarning data-scroll-behavior="smooth">
+    <html lang={locale} className="auto" suppressHydrationWarning data-scroll-behavior="smooth">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -230,6 +239,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <ToastProvider>
             <LanguageProvider>
               <AuthProvider>
+                <SmartPopup />
                 <Slidercomponent>
                   <div id="main-content" role="main">
                     {children}

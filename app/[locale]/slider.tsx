@@ -42,7 +42,8 @@ import {
   Globe,
   Languages,
   Maximize2,
-  Minimize2
+  Minimize2,
+  Forklift
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCinematic } from "@/components/CinematicProvider";
@@ -251,6 +252,9 @@ export function CookieConsent({
 
   const handleAccept = useCallback(() => {
     set("cs_cookie_consent", "accepted");
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("cookieConsentAccepted"));
+    }
     onAccentChange?.(color);
     setPhase("out");
     run(() => {
@@ -395,6 +399,11 @@ export function CookieConsent({
             transform: isOut ? "translateY(100%)" : isReady ? "translateY(0)" : "translateY(100%)",
             transition: "all 0.4s cubic-bezier(.16,1,.3,1)",
           }}
+          onTouchStart={(e) => { (e.currentTarget as any)._touchY = e.touches[0].clientY; }}
+          onTouchEnd={(e) => {
+            const startY = (e.currentTarget as any)._touchY;
+            if (startY != null && e.changedTouches[0].clientY - startY > 80) handleAccept();
+          }}
         >
           <div
             className="relative overflow-hidden"
@@ -405,7 +414,17 @@ export function CookieConsent({
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="px-5 pt-4 pb-6 relative">
+            <div 
+              className="absolute inset-0 z-0 pointer-events-none" 
+              style={{ 
+                backgroundImage: 'url(/banner.png)', 
+                backgroundSize: 'cover', 
+                backgroundPosition: 'center',
+                opacity: isDark ? 0.08 : 0.06,
+                mixBlendMode: isDark ? 'lighten' : 'multiply'
+              }} 
+            />
+            <div className="px-5 pt-4 pb-6 relative z-10">
               <div className="flex justify-center mb-4">
                 <div className="w-10 h-1 rounded-full" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)" }} />
               </div>
@@ -501,7 +520,17 @@ export function CookieConsent({
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="p-4 relative">
+            <div 
+              className="absolute inset-0 z-0 pointer-events-none" 
+              style={{ 
+                backgroundImage: 'url(/banner.png)', 
+                backgroundSize: 'cover', 
+                backgroundPosition: 'center',
+                opacity: isDark ? 0.08 : 0.06,
+                mixBlendMode: isDark ? 'lighten' : 'multiply'
+              }} 
+            />
+            <div className="p-4 relative z-10">
               <div className="flex items-start gap-3.5 mb-4">
                 <div className="flex-1 min-w-0">
                   <Header logoSize="40px" brandSize="20px" themeSize="11px" />
@@ -686,10 +715,11 @@ const sections: NavSection[] = [
     ],
   },
   {
-    label: "Apps",
+    label: "Applications INS",
     links: [
+      { href: "/ia", label: "INS AI 2026", icon: Sparkles },
       { href: "https://bktk.indian-nepaliswad.fr/", label: "BKTK InterSociété", icon: Boxes },
-      { href: "/auth-demo", label: "Auth Demo", icon: Sparkles },
+      { href: "https://bktk.indian-nepaliswad.fr/deliveries", label: "InterSociété Livraisons", icon: Forklift },
     ],
   },
 ];
@@ -1377,7 +1407,9 @@ export default function SliderLayout({
   children?: ReactNode;
 }) {
   const { theme, setTheme, isDark } = useTheme();
-  const pathname = usePathname();
+  const { language } = useLanguage();
+  const rawPathname = usePathname();
+  const pathname = rawPathname.replace(/^\/(en|fr)/, "") || "/";
   const [mobileOpen, setMobileOpen] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<PanelTab>("appearance");

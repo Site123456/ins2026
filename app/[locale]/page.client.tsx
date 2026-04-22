@@ -22,7 +22,8 @@ import ReserverSites from "./reserver/page"
 import {
   ChevronDown,
   MapPin,
-  Search
+  Search,
+  X
 } from "lucide-react";
 import Image from "next/image";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -477,6 +478,8 @@ const Page: React.FC = () => {
               : "radial-gradient(circle at top, rgba(255,255,255,0.9), transparent 60%), radial-gradient(circle at bottom, var(--accent-dim), transparent 55%)",
           }}
         />
+
+
 
         {/* MAP */}
         <div className="absolute inset-0 z-0">
