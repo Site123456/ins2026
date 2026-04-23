@@ -165,6 +165,11 @@ export default function SearchClient() {
     setReplyingTo(null);
     setExpandedReplies(new Set());
     loadReviews(item.id);
+    
+    // Update URL without reloading
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', `?item=${item.id}`);
+    }
   }, [loadReviews]);
 
   useEffect(() => {
@@ -615,7 +620,10 @@ export default function SearchClient() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 bg-black/80 backdrop-blur-md z-40"
-              onClick={() => setSelectedDish(null)}
+              onClick={() => {
+                setSelectedDish(null);
+                if (typeof window !== 'undefined') window.history.pushState(null, '', window.location.pathname);
+              }}
             />
 
             {/* Modal */}
@@ -630,6 +638,7 @@ export default function SearchClient() {
               onDragEnd={(_, info) => {
                 if (info.offset.y > 150 || info.velocity.y > 500) {
                   setSelectedDish(null);
+                  if (typeof window !== 'undefined') window.history.pushState(null, '', window.location.pathname);
                 }
               }}
               className={`
@@ -648,7 +657,10 @@ export default function SearchClient() {
 
               {/* FIXED CLOSE BUTTON */}
               <button
-                onClick={() => setSelectedDish(null)}
+                onClick={() => {
+                  setSelectedDish(null);
+                  if (typeof window !== 'undefined') window.history.pushState(null, '', window.location.pathname);
+                }}
                 className={`
                   absolute top-4 right-4 md:top-6 md:right-6 z-50 p-2.5 md:p-3 rounded-xl md:rounded-2xl backdrop-blur-3xl transition-all hover:scale-110 active:scale-90
                   ${isDark ? "bg-white/10 text-white hover:bg-white/20" : "bg-black/5 text-black hover:bg-black/10"}

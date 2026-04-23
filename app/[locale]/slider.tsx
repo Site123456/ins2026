@@ -43,7 +43,8 @@ import {
   Languages,
   Maximize2,
   Minimize2,
-  Forklift
+  Forklift,
+  Calendar
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCinematic } from "@/components/CinematicProvider";
@@ -393,95 +394,92 @@ export function CookieConsent({
         role="dialog"
         aria-modal="true"
       >
-        <div
+        <motion.div
+          initial={{ y: "100%" }}
+          animate={{ y: isOut ? "100%" : isReady ? 0 : "100%" }}
+          transition={{ type: "spring", damping: 25, stiffness: 300 }}
+          drag="y"
+          dragConstraints={{ top: 0, bottom: 0 }}
+          dragElastic={0.4}
+          onDragEnd={(_, info) => { if (info.offset.y > 60 || info.velocity.y > 300) handleAccept(); }}
+          className="relative overflow-hidden rounded-t-[2rem] shadow-[0_-16px_50px_-16px_rgba(0,0,0,0.5)] touch-none cursor-grab active:cursor-grabbing"
           style={{
-            opacity: isOut ? 0 : isReady ? 1 : 0,
-            transform: isOut ? "translateY(100%)" : isReady ? "translateY(0)" : "translateY(100%)",
-            transition: "all 0.4s cubic-bezier(.16,1,.3,1)",
+            background: isDark ? "#0c0c10" : "#fafafa",
+            borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)"}`,
           }}
-          onTouchStart={(e) => { (e.currentTarget as any)._touchY = e.touches[0].clientY; }}
-          onTouchEnd={(e) => {
-            const startY = (e.currentTarget as any)._touchY;
-            if (startY != null && e.changedTouches[0].clientY - startY > 80) handleAccept();
-          }}
+          onClick={(e) => e.stopPropagation()}
         >
+          {/* MOBILE DRAG HANDLE */}
+          <div className="absolute w-full flex justify-center pt-3 pb-2 z-50">
+            <div className="w-12 h-1.5 rounded-full" style={{ backgroundColor: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)" }} />
+          </div>
           <div
-            className="relative overflow-hidden"
+            className="absolute inset-0 z-0 pointer-events-none"
             style={{
-              background: isDark ? "#0c0c10" : "#fafafa",
-              borderTop: `1px solid ${isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)"}`,
-              boxShadow: "0 -16px 50px -16px rgba(0,0,0,0.5)",
+              backgroundImage: 'url(/banner.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              opacity: isDark ? 0.08 : 0.06,
+              mixBlendMode: isDark ? 'lighten' : 'multiply'
             }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div 
-              className="absolute inset-0 z-0 pointer-events-none" 
-              style={{ 
-                backgroundImage: 'url(/banner.png)', 
-                backgroundSize: 'cover', 
-                backgroundPosition: 'center',
-                opacity: isDark ? 0.08 : 0.06,
-                mixBlendMode: isDark ? 'lighten' : 'multiply'
-              }} 
-            />
-            <div className="px-5 pt-4 pb-6 relative z-10">
-              <div className="flex justify-center mb-4">
-                <div className="w-10 h-1 rounded-full" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)" }} />
-              </div>
+          />
+          <div className="px-5 pt-4 pb-6 relative z-10">
+            <div className="flex justify-center mb-4">
+              <div className="w-10 h-1 rounded-full" style={{ background: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)" }} />
+            </div>
 
-              <Header logoSize="44px" brandSize="22px" themeSize="11px" />
+            <Header logoSize="44px" brandSize="22px" themeSize="11px" />
 
-              <div className="rounded-xl p-3.5 mb-4" style={{
-                background: rgba(color, isDark ? 0.06 : 0.03),
-                border: `1px solid ${rgba(color, 0.08)}`,
-              }}>
-                <p
-                  className="text-[12px] leading-[1.7] m-0"
-                  style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)" }}
-                >
-                  {language === 'en' ? 'To offer you a better experience, ' : 'Pour vous offrir une meilleure expérience, '}
-                  <span
-                    className="px-1"
-                    style={{
-                      fontWeight: 700,
-                      color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)"
-                    }}
-                  >
-                    INS
-                  </span> {language === 'en' ? 'and its services use cookies.' : 'et ses services utilisent des cookies.'}{" "}
-                  <Link
-                    href="/terms"
-                    className="relative inline-block"
-                    style={{ color }}
-                  >
-                    <span className="relative z-10">{language === 'en' ? 'Learn more' : 'En savoir plus'}</span>
-                  </Link>
-
-                </p>
-              </div>
-
-              <ColorGrid />
-
-              <button
-                onClick={handleAccept}
-                className="w-full py-3.5 rounded-xl text-[14px] font-bold text-white focus:outline-none transition-all duration-200"
-                style={{
-                  background: `linear-gradient(135deg, ${color}, ${rgba(color, 0.85)})`,
-                  boxShadow: `0 5px 20px -5px ${rgba(color, 0.55)}, inset 0 1px 0 ${rgba(color, 0.25)}`,
-                }}
+            <div className="rounded-xl p-3.5 mb-4" style={{
+              background: rgba(color, isDark ? 0.06 : 0.03),
+              border: `1px solid ${rgba(color, 0.08)}`,
+            }}>
+              <p
+                className="text-[12px] leading-[1.7] m-0"
+                style={{ color: isDark ? "rgba(255,255,255,0.45)" : "rgba(0,0,0,0.45)" }}
               >
-                <span className="flex items-center justify-center gap-2">
-                  {language === 'en' ? 'Accept' : 'Accepter'}
-                  <ArrowRight size={15} />
-                </span>
-              </button>
+                {language === 'en' ? 'To offer you a better experience, ' : 'Pour vous offrir une meilleure expérience, '}
+                <span
+                  className="px-1"
+                  style={{
+                    fontWeight: 700,
+                    color: isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)"
+                  }}
+                >
+                  INS
+                </span> {language === 'en' ? 'and its services use cookies.' : 'et ses services utilisent des cookies.'}{" "}
+                <Link
+                  href="/terms"
+                  className="relative inline-block"
+                  style={{ color }}
+                >
+                  <span className="relative z-10">{language === 'en' ? 'Learn more' : 'En savoir plus'}</span>
+                </Link>
 
-              <p className="text-center text-[9px] mt-3 m-0" style={{ color: isDark ? "rgba(255,255,255,0.62)" : "rgba(0,0,0,0.62)" }}>
-                {language === 'en' ? 'Click "Accept" or anywhere outside to continue' : 'Cliquez sur “Accepter” ou n\'importe où en dehors pour continuer'}
               </p>
             </div>
+
+            <ColorGrid />
+
+            <button
+              onClick={handleAccept}
+              className="w-full py-3.5 rounded-xl text-[14px] font-bold text-white focus:outline-none transition-all duration-200"
+              style={{
+                background: `linear-gradient(135deg, ${color}, ${rgba(color, 0.85)})`,
+                boxShadow: `0 5px 20px -5px ${rgba(color, 0.55)}, inset 0 1px 0 ${rgba(color, 0.25)}`,
+              }}
+            >
+              <span className="flex items-center justify-center gap-2">
+                {language === 'en' ? 'Accept' : 'Accepter'}
+                <ArrowRight size={15} />
+              </span>
+            </button>
+
+            <p className="text-center text-[9px] mt-3 m-0" style={{ color: isDark ? "rgba(255,255,255,0.62)" : "rgba(0,0,0,0.62)" }}>
+              {language === 'en' ? 'Click "Accept" or anywhere outside to continue' : 'Cliquez sur “Accepter” ou n\'importe où en dehors pour continuer'}
+            </p>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       <div
@@ -520,15 +518,15 @@ export function CookieConsent({
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div 
-              className="absolute inset-0 z-0 pointer-events-none" 
-              style={{ 
-                backgroundImage: 'url(/banner.png)', 
-                backgroundSize: 'cover', 
+            <div
+              className="absolute inset-0 z-0 pointer-events-none"
+              style={{
+                backgroundImage: 'url(/banner.png)',
+                backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 opacity: isDark ? 0.08 : 0.06,
                 mixBlendMode: isDark ? 'lighten' : 'multiply'
-              }} 
+              }}
             />
             <div className="p-4 relative z-10">
               <div className="flex items-start gap-3.5 mb-4">
@@ -668,6 +666,7 @@ const sections: NavSection[] = [
     label: "Acceuil",
     links: [
       { href: "/", label: "Acceuil", icon: Home },
+      { href: "/events", label: "Évènements & Planning", icon: Calendar },
     ],
   },
   {
@@ -2059,68 +2058,83 @@ export default function SliderLayout({
         </div>
       </aside>
       {!isDesktop && (
-        <div
+        <header
           className={`
-            fixed inset-x-0 top-0 z-30 flex items-center justify-between
-            h-14 px-3 sm:px-4 backdrop-blur-2xl transition-all duration-300 md:hidden
-            ${isDark
+      fixed inset-x-0 top-0 z-40 flex items-center
+      h-16 px-4 w-full
+      backdrop-blur-3xl transition-all duration-500 md:hidden
+      ${isDark
               ? scrolled
-                ? "bg-[#0a0a0f]/60 border-b border-white/10 shadow-lg shadow-black/20"
+                ? "bg-[#060609]/80 border-b border-white/5 shadow-2xl shadow-black/40"
                 : "bg-transparent border-b border-transparent"
               : scrolled
-                ? "bg-white/70 border-b border-zinc-200 shadow-lg shadow-black/5"
-                : "bg-white border-b border-transparent"
+                ? "bg-white/80 border-b border-zinc-100 shadow-xl shadow-black/5"
+                : "bg-white/50 border-b border-transparent"
             }
-          `}
+    `}
         >
-          {/* Left: Menu */}
           <button
             onClick={() => {
               setSetting("sidebarCollapsed", false);
               setMobileOpen(true);
             }}
             className={`
-              flex items-center justify-center rounded-xl
-              transition-all duration-200 h-9 w-9 sm:h-10 sm:w-10
-              ${isDark
-                ? "text-white bg-black/60 hover:bg-black border border-white/10"
-                : "text-zinc-900 bg-white/70 hover:bg-white border border-zinc-200"
+        flex items-center justify-center h-10 w-10 rounded-xl shrink-0
+        transition-all duration-300 active:scale-90
+        ${isDark
+                ? "text-white bg-white/5 hover:bg-white/10"
+                : "text-zinc-900 bg-black/5 hover:bg-black/10"
               }
-            `}
+      `}
+            style={{ boxShadow: scrolled ? `0 4px 12px ${accent}20` : "none" }}
           >
-            <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
+            <Menu className="h-5 w-5" />
           </button>
 
-          {/* Title */}
           <div
             className={`
-              flex-1 ml-3 truncate text-[11px] xs:text-xs sm:text-sm font-medium
-              ${isDark ? "text-white/80" : "text-zinc-800"}
-            `}
+        flex flex-col flex-1 min-w-0 ml-3 leading-tight
+        transition-all duration-300
+        ${scrolled ? "scale-[0.92] opacity-70" : "scale-100 opacity-100"}
+      `}
           >
-            {pageTitle}
+            <span
+              className={`
+          text-[11px] font-bold truncate tracking-wide
+          ${isDark ? "text-white/80" : "text-black/80"}
+        `}
+            >
+              INDIAN NEPALI SWAD
+            </span>
+
+            <span
+              className={`
+          text-[7px] font-semibold uppercase truncate tracking-[0.22em]
+          ${isDark ? "text-white/50" : "text-black/50"}
+        `}
+            >
+              {pageTitle.slice(21, 44) + "..." || (language === "fr" ? "Accueil" : "Home")}
+            </span>
           </div>
-
-          {/* Right */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center justify-center gap-2 shrink-0">
             <AuthButtons isDark={isDark} accent={accent} />
-
             <button
               onClick={() => openPanel("appearance")}
               className={`
-                flex items-center justify-center rounded-xl
-                transition-all duration-200 h-9 w-9 sm:h-10 sm:w-10
-                ${isDark
-                  ? "text-white bg-black/60 hover:bg-black border border-white/10"
-                  : "text-zinc-900 bg-white/70 hover:bg-white border border-zinc-200"
+          flex items-center justify-center h-10 w-10 rounded-xl
+          transition-all duration-300 active:scale-90
+          ${isDark
+                  ? "text-white bg-white/5 hover:bg-white/10 border border-white/10"
+                  : "text-zinc-900 bg-black/5 hover:bg-black/10 border border-black/5"
                 }
-              `}
+        `}
             >
-              <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
+              <Settings className="h-5 w-5" />
             </button>
           </div>
-        </div>
+        </header>
       )}
+
       {isDesktop && (
         <div
           className="

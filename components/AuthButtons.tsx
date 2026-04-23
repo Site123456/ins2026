@@ -211,52 +211,51 @@ export default function AuthButtons({ isDark, accent }: AuthButtonsProps) {
   // NOT AUTHENTICATED UI
   return (
     <motion.div
-      initial={{ opacity: 0, y: -50 }}
+      initial={{ opacity: 0, y: -30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1, ease: 'easeOut' }}
-      className="flex items-center gap-2"
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="flex items-center gap-1.5"
     >
       <motion.button
-        whileHover={{ scale: 1.05, y: -2 }}
-        whileTap={{ scale: 0.95 }}
+        whileHover={{ scale: 1.04, y: -1 }}
+        whileTap={{ scale: 0.94 }}
         onClick={handleSignIn}
         className={`
-          flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-medium
-          transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
-          hover:shadow-lg
-          ${isDark
-            ? 'text-white bg-black/60 hover:bg-black border border-white/10 focus:ring-white/20 focus:ring-offset-[#0a0a0f]'
-            : 'text-zinc-900 bg-white/60 hover:bg-white border border-zinc-200 focus:ring-zinc-200 focus:ring-offset-white'
+      flex h-8 items-center gap-1.5 rounded-lg px-3 text-[11px] font-medium
+      transition-all duration-200 hover:shadow-md shrink-0
+      ${isDark
+            ? "text-white bg-black/50 hover:bg-black/70 border border-white/10"
+            : "text-zinc-900 bg-white/70 hover:bg-white border border-zinc-200"
           }
-        `}
+    `}
       >
-        <LogIn className="h-4 w-4" />
-        {t('signInBtn')}
+        <LogIn className="h-3.5 w-3.5" />
+        <span className="truncate">{t("signInBtn")}</span>
       </motion.button>
 
       <motion.button
         whileHover={{
-          scale: 1.05,
-          y: -2,
-          boxShadow: `0 8px 25px ${accent}60`,
+          scale: 1.04,
+          y: -1,
+          boxShadow: `0 6px 18px ${accent}50`,
         }}
-        whileTap={{ scale: 0.95 }}
+        whileTap={{ scale: 0.94 }}
         onClick={handleSignUp}
         className={`
-          flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-medium
-          transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
-          shadow-lg
-          ${isDark ? 'focus:ring-offset-[#0a0a0f]' : 'focus:ring-offset-white'}
-        `}
+      flex h-8 items-center gap-1.5 rounded-lg px-3 text-[11px] font-medium
+      transition-all duration-200 shrink-0
+      ${isDark ? "" : ""}
+    `}
         style={{
           background: `linear-gradient(to right, ${accent}, ${accent}dd)`,
-          color: 'white',
-          boxShadow: `0 4px 16px ${accent}40`,
+          color: "white",
+          boxShadow: `0 3px 12px ${accent}35`,
         }}
       >
-        <UserPlus className="h-4 w-4" />
-        <span className="hidden sm:inline">{t('signUpBtn')}</span>
+        <UserPlus className="h-3.5 w-3.5" />
+        <span className="hidden xs:inline truncate">{t("signUpBtn")}</span>
       </motion.button>
     </motion.div>
+
   );
 }

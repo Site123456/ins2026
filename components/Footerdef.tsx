@@ -2,7 +2,7 @@ import React, { useState, useEffect, SVGProps } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowRight, ExternalLink } from "lucide-react";
+import { ArrowRight, ExternalLink, Sparkles } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -16,8 +16,8 @@ function getCookie(name: string): string | null {
   const match = document.cookie.match(
     new RegExp(
       "(?:^|; )" +
-        name.replace(/([.$?*|{}()\[\]\\\/+^])/g, "\\$1") +
-        "=([^;]*)"
+      name.replace(/([.$?*|{}()\[\]\\\/+^])/g, "\\$1") +
+      "=([^;]*)"
     )
   );
   return match ? decodeURIComponent(match[1]) : null;
@@ -51,7 +51,7 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
         const settings = JSON.parse(cookie);
         if (settings.accent) setAccent(settings.accent);
       }
-    } catch {}
+    } catch { }
   }, [accentProp]);
 
   const year = new Date().getFullYear();
@@ -59,7 +59,7 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.includes("@")) return;
-    
+
     setIsLoading(true);
     try {
       const res = await fetch(`/api/verify?email=${encodeURIComponent(email)}`);
@@ -80,13 +80,13 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
 
   const footerLinks = {
     product: [
-      { label: "Paris 15 - Pasteur", href: "https://deliveroo.fr/fr/menu/paris/Pasteur/bidit-risheb/" },
-      { label: "Bordeaux – Cour du Médoc", href: "https://deliveroo.fr/fr/menu/bordeaux/bordeaux-editions-cour-du-medoc/indian-nepali-swad-editions-bordeaux/" },
-      { label: "Courbevoie – La Défense", href: "https://deliveroo.fr/fr/menu/paris/editions-courbevoie/indian-nepali-swad-editions-courbevoie/" },
-      { label: "Saint‑Ouen – Aubervilliers", href: "https://deliveroo.fr/fr/menu/paris/editions-saint-ouen/indian-nepali-swad-editions-aubervilliers/" },
-      { label: "Bagneux", href: "https://deliveroo.fr/fr/menu/paris/editions-site-bagneux/indian-nepali-swad-editions-bagneux/" },
-      { label: "Ivry", href: "https://deliveroo.fr/fr/menu/paris/editions-ivry/indian-nepali-swad-editions-ivry/" },
-      { label: language === 'en' ? "Aubervilliers (Under renovation)" : "Aubervilliers (En cours de renovation)", href: "#" }
+      { label: "Paris 15 - Pasteur", href: "https://deliveroo.fr/fr/menu/paris/Pasteur/bidit-risheb/", hours: "11h15-14h45, 18h15-22h45", status: "open" },
+      { label: "Bordeaux – Cour du Médoc", href: "https://deliveroo.fr/fr/menu/bordeaux/bordeaux-editions-cour-du-medoc/indian-nepali-swad-editions-bordeaux/", hours: "11h15-14h45, 18h15-22h45", status: "open" },
+      { label: "Courbevoie – La Défense", href: "https://deliveroo.fr/fr/menu/paris/editions-courbevoie/indian-nepali-swad-editions-courbevoie/", hours: "11h15-14h45, 18h15-22h45", status: "open" },
+      { label: "Saint‑Ouen", href: "https://deliveroo.fr/fr/menu/paris/editions-saint-ouen/indian-nepali-swad-editions-aubervilliers/", hours: "11h15-14h45, 18h15-22h45", status: "open" },
+      { label: "Aubervilliers", href: "#", hours: language === 'en' ? "Closed for renovations" : "Fermé pour travaux", status: "renovating" },
+      { label: "Bagneux", href: "https://deliveroo.fr/fr/menu/paris/editions-site-bagneux/indian-nepali-swad-editions-bagneux/", hours: "11h15-14h45, 18h15-22h45", status: "open" },
+      { label: "Ivry", href: "https://deliveroo.fr/fr/menu/paris/editions-ivry/indian-nepali-swad-editions-ivry/", hours: "11h15-14h45, 18h15-22h45", status: "open" }
     ],
   };
 
@@ -112,7 +112,7 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
   );
   const TikTokIcon = ({ isDark, ...props }: SVGProps<SVGSVGElement> & { isDark?: boolean }) => (
     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/>
+      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
     </svg>
   );
 
@@ -133,36 +133,59 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
       )}
       <div className="relative mx-auto max-w-6xl px-5 py-10 md:px-8 md:py-14">
         <div className="grid gap-10 md:grid-cols-12 md:gap-12">
-          
+
           <div className="md:col-span-6 lg:col-span-4 flex flex-col items-center md:items-start text-center md:text-left space-y-5">
             <div className="relative">
               <div className="absolute inset-0 blur-2xl rounded-full" style={{ backgroundColor: hexToRgba(accent, 0.2) }} />
-              <Image src="/etc/logo.png" alt="Indian Nepali Swad" width={156} height={156} className={`relative rounded-xl ${isDark? "brightness-0 invert-100": ""}`} />
+              <Image src="/etc/logo.png" alt="Indian Nepali Swad" width={156} height={156} className={`relative rounded-xl ${isDark ? "brightness-0 invert-100" : ""}`} />
             </div>
             <p className={`text-[13px] leading-relaxed max-w-xs ${isDark ? "text-white/40" : "text-black/40"}`}>
               {language === 'en'
                 ? "Experience the authentic flavors of India and Nepal, crafted with passion and delivered with care. Join us on a culinary journey that celebrates tradition and innovation in every bite."
                 : "Découvrez les saveurs authentiques de l'Inde et du Népal, élaborées avec passion et livrées avec soin. Rejoignez-nous pour un voyage culinaire qui célèbre la tradition et l'innovation à chaque bouchée."}
-              <br />
-              <Link href="https://www.indian-nepaliswad.fr/" className="transition-colors duration-300 ps-1" style={{ color: accent }}>
-                {language === 'en' ? "Learn more" : "En savoir plus"}
+              <Link href="/events" className="group inline-flex items-center gap-1.5 mt-3 px-4 py-2 rounded-xl transition-all duration-300 font-bold text-xs border"
+                style={{
+                  color: isDark ? "white" : "black",
+                  borderColor: isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
+                  backgroundColor: isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)"
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = hexToRgba(accent, 0.4);
+                  e.currentTarget.style.backgroundColor = hexToRgba(accent, 0.1);
+                  e.currentTarget.style.color = accent;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
+                  e.currentTarget.style.backgroundColor = isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.02)";
+                  e.currentTarget.style.color = isDark ? "white" : "black";
+                }}
+              >
+                <Sparkles className="w-3.5 h-3.5 transition-transform group-hover:scale-110" />
+                {language === 'en' ? "Discover Our Events" : "Découvrir Nos Événements"}
+                <ArrowRight className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
               </Link>
             </p>
           </div>
 
           <div className="md:col-span-6 lg:col-span-4 flex flex-col items-center md:items-start text-center md:text-left">
-            <div className={`text-[10px] font-semibold uppercase tracking-wider mb-3 ${isDark ? "text-white/30" : "text-black/30"}`}>
-              {language === 'en' ? "Delivery by Deliveroo" : "Livraison par Deliveroo"}
+            <div className={`text-[10px] font-semibold uppercase tracking-wider mb-4 ${isDark ? "text-white/30" : "text-black/30"}`}>
+              {language === 'en' ? "Deliveroo & Hours" : "Deliveroo & Horaires"}
             </div>
-            <ul className="space-y-2">
+            <ul className="space-y-4">
               {footerLinks.product.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="group flex items-center gap-1.5 text-[13px] transition-all duration-300"
+                  <Link href={link.href} className="group block text-left"
                     style={{ color: isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)" }}
                     onMouseEnter={(e) => { e.currentTarget.style.color = accent; }}
                     onMouseLeave={(e) => { e.currentTarget.style.color = isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)"; }}>
-                    {link.label}
-                    <ExternalLink className="h-2.5 w-2.5 opacity-0 -translate-x-1 transition-all group-hover:opacity-40 group-hover:translate-x-0" />
+                    <div className="flex items-center gap-1.5 text-[13px] transition-all duration-300 font-bold">
+                      {link.label}
+                      <ExternalLink className="h-2.5 w-2.5 opacity-0 -translate-x-1 transition-all group-hover:opacity-40 group-hover:translate-x-0" />
+                    </div>
+                    <div className={`text-[11px] mt-0.5 transition-colors duration-300 ${link.status === "renovating" ? "text-rose-500" : (isDark ? "text-white/30" : "text-black/30")
+                      } group-hover:opacity-70`}>
+                      {link.hours}
+                    </div>
                   </Link>
                 </li>
               ))}
@@ -237,7 +260,7 @@ export default function FooterDef({ isDark = true, accent: accentProp }: FooterP
       <div className="px-6 pb-6 max-w-6xl mx-auto text-start">
         <div className="space-y-2 text-[10px] sm:text-[11px] leading-relaxed opacity-40">
           <p>
-            {language === 'en' 
+            {language === 'en'
               ? "To cancel or modify your reservation, please follow the instructions received by email or contact the INS team directly. Reservations are guaranteed up to 5 minutes after the scheduled time; after that, they may be reallocated."
               : "Pour annuler ou modifier votre réservation, veuillez suivre les instructions reçues par email ou contacter directement l’équipe Indian Nepali Swad. Les réservations sont garanties jusqu’à 5 minutes après l’heure prévue ; passé ce délai, elles peuvent être annulées ou réattribuées sans préavis."}
           </p>

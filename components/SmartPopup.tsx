@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/components/hooks/useTheme";
 import { useAccentFromCookies } from "@/components/hooks/useAccentFromCookies";
-import { X, Clock, Sparkles, ChefHat } from "lucide-react";
+import { X, Clock, Sparkles, ChefHat, MapPin } from "lucide-react";
 import Link from "next/link";
 import { MENU_DATA } from "@/data/menu";
 
@@ -26,8 +26,20 @@ function getParisDate(): Date {
   return new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }));
 }
 
+// ── Service windows (same for all active sites, every day) ────────
+const SERVICE_WINDOWS = [
+  { open: 11 * 60 + 15, close: 14 * 60 + 45 }, // 11:15 - 14:45
+  { open: 18 * 60 + 15, close: 22 * 60 + 45 }, // 18:15 - 22:45
+];
+
+function isCurrentlyOpen(): boolean {
+  const now = getParisDate();
+  const totalMins = now.getHours() * 60 + now.getMinutes();
+  return SERVICE_WINDOWS.some(w => totalMins >= w.open && totalMins < w.close);
+}
+
 // ── Types ─────────────────────────────────────────────────────────
-type PopupStep = "aubervilliers" | "recommendation" | "closed" | null;
+type PopupStep = "status" | "recommendation" | null;
 
 export default function SmartPopup() {
   const pathname = usePathname();
@@ -40,52 +52,41 @@ export default function SmartPopup() {
   const accent = useAccentFromCookies();
   const isFr = language === "fr";
 
-  // ── Determine what to show ────────────────────────────────────
-  const initialize = useCallback(() => {
-    const pariNow = getParisDate();
-    const hours = pariNow.getHours();
-    const minutes = pariNow.getMinutes();
-    const timeInMinutes = hours * 60 + minutes;
-
-    const closeTime = 23 * 60 + 30; // 23:30
-    const openTime = 11 * 60 + 30;  // 11:30
-
-    const currentlyClosed = timeInMinutes >= closeTime || timeInMinutes < openTime;
-
-    // Priority 1: Global closed
-    if (currentlyClosed) {
-      // Only show once per hour
-      if (getCk("ins_closed_popup") === "seen") return;
-      setStep("closed");
-      setTimeout(() => setIsVisible(true), 1500);
-      return;
-    }
-
-    // Priority 2: Aubervilliers renovation notice (show until end of June 2026, Paris time)
-    const isBeforeJune = pariNow.getFullYear() < 2026 ||
-      (pariNow.getFullYear() === 2026 && pariNow.getMonth() <= 5); // month 5 = June
-
-    if (isBeforeJune && getCk("ins_aubervilliers_seen") !== "seen") {
-      // Prepare recommendation data too (for after aubervilliers)
-      const popularItems = MENU_DATA.filter(item => item.id >= 10 && (item.popularity || 0) > 90);
-      if (popularItems.length > 0) {
-        setRecommendation(popularItems[Math.floor(Math.random() * popularItems.length)]);
-      }
-      setStep("aubervilliers");
-      setTimeout(() => setIsVisible(true), 1500);
-      return;
-    }
-
-    // Priority 3: Recommendation (every 1 hour)
+  const showRecommendation = useCallback(() => {
     if (getCk("ins_recommendation_popup") === "seen") return;
-    const popularItems = MENU_DATA.filter(item => item.id >= 10 && (item.popularity || 0) > 90);
-    if (popularItems.length > 0) {
-      const randomItem = popularItems[Math.floor(Math.random() * popularItems.length)];
+
+    const isLuckyMenu = Math.random() < 0.8;
+    const menuItems = MENU_DATA.filter(item => item.id >= 10 && item.category === "Menus");
+    const otherPopularItems = MENU_DATA.filter(item => item.id >= 10 && item.category !== "Menus" && (item.popularity || 0) > 90);
+
+    let pool = isLuckyMenu && menuItems.length > 0 ? menuItems : otherPopularItems;
+    if (pool.length === 0) pool = otherPopularItems;
+
+    if (pool.length > 0) {
+      const randomItem = pool[Math.floor(Math.random() * pool.length)];
       setRecommendation(randomItem);
       setStep("recommendation");
       setTimeout(() => setIsVisible(true), 1500);
     }
   }, []);
+
+  const initialize = useCallback(() => {
+    const pariNow = getParisDate();
+    const currentlyClosed = !isCurrentlyOpen();
+    const isBeforeJune = pariNow.getFullYear() < 2026 || (pariNow.getFullYear() === 2026 && pariNow.getMonth() <= 5);
+
+    // Priority 1: Status (Closed or Aubervilliers renovation)
+    if ((currentlyClosed && getCk("ins_status_popup") !== "seen") ||
+      (isBeforeJune && getCk("ins_aubervilliers_seen") !== "seen")) {
+
+      setStep("status");
+      setTimeout(() => setIsVisible(true), 1500);
+      return;
+    }
+
+    // Priority 2: Recommendation
+    showRecommendation();
+  }, [showRecommendation]);
 
   useEffect(() => {
     // Don't show on search page
@@ -105,38 +106,32 @@ export default function SmartPopup() {
   // ── Close handlers ────────────────────────────────────────────
   const closePopup = useCallback(() => {
     setIsVisible(false);
-    // Set cookie based on current step
-    if (step === "closed") {
-      setCk("ins_closed_popup", "seen", 1 / 24); // 1 hour
+
+    if (step === "status") {
+      setCk("ins_status_popup", "seen", 1 / 24); // 1 hour
+      setCk("ins_aubervilliers_seen", "seen", 365); // 1 year
+
+      // Transition to recommendation if applicable
+      setTimeout(() => {
+        showRecommendation();
+      }, 500); // Wait for modal to close first
     } else if (step === "recommendation") {
       setCk("ins_recommendation_popup", "seen", 1 / 24); // 1 hour
     }
-  }, [step]);
-
-  const handleAubervilliersNext = useCallback(() => {
-    // Mark aubervilliers as seen permanently
-    setCk("ins_aubervilliers_seen", "seen", 365);
-
-    // Transition to recommendation if we have one and it hasn't been seen
-    if (recommendation && getCk("ins_recommendation_popup") !== "seen") {
-      setStep("recommendation");
-    } else {
-      setIsVisible(false);
-    }
-  }, [recommendation]);
+  }, [step, showRecommendation]);
 
   if (!isVisible || !step) return null;
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 pb-0 md:p-4 pointer-events-none">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={closePopup}
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto"
         />
 
         {/* Modal */}
@@ -150,14 +145,18 @@ export default function SmartPopup() {
           dragConstraints={{ top: 0, bottom: 0 }}
           dragElastic={0.4}
           onDragEnd={(_, info) => { if (info.offset.y > 80) closePopup(); }}
-          className={`relative w-full max-w-md overflow-hidden rounded-[2.5rem] border shadow-2xl cursor-grab active:cursor-grabbing ${
-            isDark ? "bg-[#0c0c10] border-white/10" : "bg-white border-slate-200"
-          }`}
+          className={`relative w-full max-w-md overflow-hidden pointer-events-auto rounded-t-[2.5rem] rounded-b-none md:rounded-[2.5rem] border shadow-2xl cursor-grab active:cursor-grabbing ${isDark ? "bg-[#0c0c10] border-white/10" : "bg-white border-slate-200"
+            }`}
         >
+          {/* MOBILE DRAG HANDLE */}
+          <div className="absolute w-full flex justify-center pt-3 pb-2 z-50 md:hidden">
+            <div className="w-12 h-1.5 rounded-full" style={{ backgroundColor: isDark ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)" }} />
+          </div>
+
           {/* Decorative Glow */}
           <div
-            className="absolute -top-24 -right-24 w-48 h-48 rounded-full blur-[80px] opacity-50"
-            style={{ backgroundColor: step === "aubervilliers" ? "#f43f5e" : accent }}
+            className="absolute -top-24 -right-24 w-48 h-48 rounded-full blur-[80px] opacity-50 pointer-events-none"
+            style={{ backgroundColor: accent }}
           />
 
           <button
@@ -168,58 +167,86 @@ export default function SmartPopup() {
             <X className="w-5 h-5" />
           </button>
 
-          {step === "closed" ? (
-            // ── SITE CLOSED STATE ──────────────────────────────────
+          {step === "status" ? (
+            // ── RESTAURANT STATUS STATE ──────────────────────────────────
             <div className="p-8 pt-12 text-center flex flex-col items-center">
               <div
-                className="w-20 h-20 rounded-3xl flex items-center justify-center mb-6 shadow-xl relative"
+                className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-xl relative"
                 style={{ backgroundColor: `${accent}15` }}
               >
-                <div className="absolute inset-0 animate-pulse opacity-30 rounded-3xl" style={{ backgroundColor: accent }} />
-                <Clock className="w-10 h-10 relative z-10" style={{ color: accent }} />
+                <div className="absolute inset-0 animate-pulse opacity-30 rounded-2xl" style={{ backgroundColor: accent }} />
+                <Clock className="w-8 h-8 relative z-10" style={{ color: accent }} />
               </div>
 
-              <h2 className={`text-2xl font-black mb-3 ${isDark ? "text-white" : "text-slate-900"}`}>
-                {isFr ? "Nous sommes fermés" : "We are closed"}
+              <h2 className={`text-2xl font-black mb-2 ${isDark ? "text-white" : "text-slate-900"}`}>
+                {isFr ? "Horaires & Statuts" : "Hours & Status"}
               </h2>
-              <p className={`text-sm mb-8 leading-relaxed ${isDark ? "text-zinc-400" : "text-slate-500"}`}>
-                {isFr
-                  ? "Le restaurant est actuellement fermé. Vous pouvez toujours consulter notre menu et revenir pendant nos heures d'ouverture (11h30 - 23h30)."
-                  : "The restaurant is currently closed. You can still browse our menu and come back during our opening hours (11:30 AM - 11:30 PM)."}
+              <p className={`text-sm mb-6 ${isDark ? "text-zinc-400" : "text-slate-500"}`}>
+                {isFr ? "Vérifiez la disponibilité de nos restaurants" : "Check the availability of our restaurants"}
               </p>
+
+              <div className="w-full space-y-3 mb-8 text-left max-h-[40vh] overflow-y-auto premium-scrollbar pr-2">
+                {(() => {
+                  const hoursLabel = "11h15-14h45, 18h15-22h45";
+                  const renovatingLabel = isFr ? "Fermé pour travaux" : "Closed for renovations";
+                  const sites = [
+                    { name: "Paris 15 - Pasteur", hours: hoursLabel, status: "active" as const },
+                    { name: "Bordeaux – Cour du Médoc", hours: hoursLabel, status: "active" as const },
+                    { name: "Courbevoie – La Défense", hours: hoursLabel, status: "active" as const },
+                    { name: "Saint-Ouen", hours: hoursLabel, status: "active" as const },
+                    { name: "Aubervilliers", hours: renovatingLabel, status: "renovating" as const },
+                    { name: "Bagneux", hours: hoursLabel, status: "active" as const },
+                    { name: "Ivry", hours: hoursLabel, status: "active" as const },
+                  ];
+
+                  const open = isCurrentlyOpen();
+
+                  // Group sites by computed status & hours
+                  const groups: { names: string[], hours: string, status: string }[] = [];
+
+                  sites.forEach(site => {
+                    const currentStatus = site.status === "renovating" ? "renovating" : (open ? "open" : "closed");
+                    const existingGroup = groups.find(g => g.hours === site.hours && g.status === currentStatus);
+                    if (existingGroup) {
+                      existingGroup.names.push(site.name);
+                    } else {
+                      groups.push({ names: [site.name], hours: site.hours, status: currentStatus });
+                    }
+                  });
+
+                  return groups.map((g, i) => (
+                    <div key={i} className={`p-4 rounded-xl flex flex-col gap-3 border transition-all ${isDark ? "bg-white/5 border-white/10" : "bg-slate-50 border-slate-200"}`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <MapPin className={`w-4 h-4 ${isDark ? "text-zinc-500" : "text-slate-400"}`} />
+                          <span className={`text-[11px] font-bold ${isDark ? "text-zinc-400" : "text-slate-500"}`}>
+                            {g.names.length > 1 ? `${g.names.length} ${isFr ? 'Sites' : 'Locations'}` : '1 Site'}
+                          </span>
+                        </div>
+                        <div className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${g.status === "renovating" ? "bg-rose-500/10 text-rose-500 border border-rose-500/20" :
+                          g.status === "closed" ? "bg-orange-500/10 text-orange-500 border border-orange-500/20" :
+                            "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                          }`}>
+                          {g.status === "renovating" ? (isFr ? "Travaux" : "Renovating") :
+                            g.status === "closed" ? (isFr ? "Fermé" : "Closed") :
+                              (isFr ? "Ouvert" : "Open")}
+                        </div>
+                      </div>
+                      <div>
+                        <p className={`text-[13px] font-bold leading-relaxed ${isDark ? "text-white" : "text-slate-900"}`}>
+                          {g.names.map(name => name.split(" - ")[0]).join(", ")}
+                        </p>
+                        <p className={`text-[11px] mt-1.5 font-semibold ${isDark ? "text-zinc-500" : "text-slate-500"}`}>{g.hours}</p>
+                      </div>
+                    </div>
+                  ));
+                })()}
+              </div>
 
               <button
                 onClick={closePopup}
                 className="w-full py-4 rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 text-white"
                 style={{ backgroundColor: accent, boxShadow: `0 10px 25px ${accent}40` }}
-              >
-                {isFr ? "J'ai compris" : "Understood"}
-              </button>
-            </div>
-
-          ) : step === "aubervilliers" ? (
-            // ── AUBERVILLIERS CLOSED STATE ─────────────────────────
-            <div className="p-8 pt-12 text-center flex flex-col items-center">
-              <div
-                className="w-20 h-20 rounded-3xl flex items-center justify-center mb-6 shadow-xl relative bg-rose-500/10"
-              >
-                <div className="absolute inset-0 animate-pulse opacity-30 rounded-3xl bg-rose-500" />
-                <span className="text-4xl relative z-10">⚠️</span>
-              </div>
-
-              <h2 className={`text-2xl font-black mb-3 ${isDark ? "text-white" : "text-slate-900"}`}>
-                INS Aubervilliers
-              </h2>
-              <p className={`text-sm mb-8 leading-relaxed ${isDark ? "text-zinc-400" : "text-slate-500"}`}>
-                {isFr
-                  ? "INS Aubervilliers est actuellement fermé pour travaux. Réouverture prévue le mois prochain ! Nos autres sites restent ouverts."
-                  : "INS Aubervilliers is currently closed for renovations. It will reopen next month! Our other sites remain open."}
-              </p>
-
-              <button
-                onClick={handleAubervilliersNext}
-                className="w-full py-4 rounded-2xl font-bold transition-all hover:scale-105 active:scale-95 text-white"
-                style={{ backgroundColor: "#f43f5e", boxShadow: "0 10px 25px rgba(244,63,94,0.25)" }}
               >
                 {isFr ? "Compris" : "Understood"}
               </button>
@@ -231,11 +258,6 @@ export default function SmartPopup() {
               <div className="h-48 w-full relative">
                 <img src={recommendation.image} alt={recommendation.name[language]} className="w-full h-full object-cover" />
                 <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-[#0c0c10]' : 'from-white'} to-transparent`} />
-
-                <div className="absolute top-4 left-4 bg-white/20 backdrop-blur-md border border-white/20 text-white text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full flex items-center gap-2">
-                  <Sparkles className="w-3.5 h-3.5" style={{ color: accent }} />
-                  {isFr ? "Notre Recommandation" : "Our Recommendation"}
-                </div>
               </div>
 
               <div className="p-8 pt-2 text-center flex flex-col items-center">

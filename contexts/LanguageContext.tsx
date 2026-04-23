@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useToast } from "@/components/ToastHandle";
+import { usePathname, useRouter } from 'next/navigation';
 
 type Language = 'fr' | 'en';
 
@@ -58,23 +59,39 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children, initialLang = 'fr' }: { children: ReactNode, initialLang?: Language }) {
   const [language, setLanguage] = useState<Language>(initialLang);
   const { push } = useToast();
+  const router = useRouter();
+  const pathname = usePathname();
+
   useEffect(() => {
     // Attempt auto-detect on mount if no explicit language in local storage
     const stored = localStorage.getItem('ins_lang') as Language;
     if (stored && (stored === 'fr' || stored === 'en')) {
       setLanguage(stored);
+      document.cookie = `ins_lang=${stored}; path=/; max-age=31536000; SameSite=Lax`;
     } else {
       const browserLang = navigator.language.startsWith('fr') ? 'fr' : 'en';
       setLanguage(browserLang);
       // Toast
       push?.("info", (browserLang ==='en' ? "Nous utilisons des cookies. Pour changer votre langue, allez dans les paramètres." : "We use cookies. To change your language, go to settings."));
       localStorage.setItem('ins_lang', browserLang);
+      document.cookie = `ins_lang=${browserLang}; path=/; max-age=31536000; SameSite=Lax`;
     }
   }, []);
 
   const handleSetLanguage = (lang: Language) => {
     setLanguage(lang);
     localStorage.setItem('ins_lang', lang);
+    document.cookie = `ins_lang=${lang}; path=/; max-age=31536000; SameSite=Lax`;
+    
+    if (pathname) {
+      const segments = pathname.split('/');
+      if (segments[1] === 'en' || segments[1] === 'fr') {
+        segments[1] = lang;
+        router.push(segments.join('/'));
+      } else {
+        router.push(`/${lang}${pathname === '/' ? '' : pathname}`);
+      }
+    }
   };
 
   const t = (key: keyof typeof DICTIONARY): string => {
