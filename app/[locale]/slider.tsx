@@ -666,12 +666,14 @@ const sections: NavSection[] = [
     label: "Acceuil",
     links: [
       { href: "/", label: "Acceuil", icon: Home },
-      { href: "/events", label: "Évènements & Planning", icon: Calendar },
     ],
   },
   {
     label: "Liens utiles",
-    links: [{ href: "/search", label: "Rechercher", icon: Search }],
+    links: [
+      { href: "/search", label: "Rechercher", icon: Search },
+      { href: "/events", label: "Évènements & Planning", icon: Calendar },
+    ],
 
     groups: [
       {
