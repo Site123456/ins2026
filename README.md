@@ -3,9 +3,9 @@
 > [!IMPORTANT]
 > **Legacy Documentation Notice**
 >
-> This repository contains documentation for a previous version of Indian Nepali Swad.
+> This repository is outdated and refers for a previous version of Indian Nepali Swad.
 >
-> Our latest platforms and digital services are now operated internally across our locations in **Île-de-France** and **Bordeaux, France**.
+> Our latest platforms and digital services are now operated internally across our locations in **Île-de-France**, **Bordeaux**... All our sites with servers and compute modules are in France or Ireland.
 >
 > We are committed to protecting customer privacy and complying with **GDPR (RGPD)** and applicable European data protection regulations. Personal data is processed securely, encrypted when appropriate, and hosted within European infrastructure whenever possible.
 >
