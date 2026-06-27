@@ -87,5 +87,3 @@ Pour toute demande, réclamation ou suppression de compte, contactez-nous via le
 Indian Nepali Swad est une marque déposée opérant en France depuis 2017. Tous droits réservés. La reproduction partielle ou totale du contenu de ce site sans autorisation écrite préalable est interdite.
 
 &copy; 2017–2026 Indian Nepali Swad — [indian-nepaliswad.fr](https://indian-nepaliswad.fr)
-
-&copy; 2017–2026 Indian Nepali Swad — [indian-nepaliswad.fr](https://indian-nepaliswad.fr)
