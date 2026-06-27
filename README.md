@@ -1,91 +1,91 @@
-<p align="center">
-  <img src="/public/etc/logo.png" alt="Indian Nepali Swad Logo" width="180">
-</p>
-<p align="center">
-  <img src="https://img.shields.io/badge/license-2026-red" alt="License">
-  <img src="https://img.shields.io/website?url=https%3A%2F%2Fwww.indian-nepaliswad.fr" alt="Website Status">
-</p>
+# Indian Nepali Swad — La Gastronomie Indienne et Népalaise
 
-# 🥘 **Indian Nepali Swad**  
-### 🇫🇷 *Meilleur restaurant indien & népalais en France*  
-### 🇬🇧 *The leading Indo‑Nepali restaurant brand in France*
+> [!IMPORTANT]
+> **Legacy Documentation Notice**
+>
+> This repository contains documentation for a previous version of Indian Nepali Swad.
+>
+> Our latest platforms and digital services are now operated internally across our locations in **Île-de-France** and **Bordeaux, France**.
+>
+> We are committed to protecting customer privacy and complying with **GDPR (RGPD)** and applicable European data protection regulations. Personal data is processed securely, encrypted when appropriate, and hosted within European infrastructure whenever possible.
+>
+> Indian Nepali Swad does not sell customer data. Users maintain their rights of access, correction, portability, and deletion under European law.
+>
+> Some information contained in this documentation may be outdated.
 
-**Indian Nepali Swad**, fondé en **2017**, est aujourd’hui reconnu comme l’un des **meilleurs restaurants indiens et népalais en France**, spécialisé dans :  
-- **Indian cuisine**  
-- **Nepali cuisine**  
-- **Momos (Nepali dumplings)**  
-- **Curries & Biryanis**  
-- **Authentic handcrafted dishes**
 
-Nous opérons à **Paris**, **Aubervilliers**, **Bordeaux**, et dans plusieurs villes d’**Île‑de‑France**, avec une réputation solide et une croissance continue.
+**Indian Nepali Swad** (INS) est une enseigne de restauration indienne et népalaise, fondée en 2017, présente en Île-de-France et au-delà. Nous proposons une cuisine authentique, généreuse et épicée, fidèle aux traditions culinaires du sous-continent indien et des vallées himalayennes du Népal.
 
 ---
 
-## ⭐ Pourquoi nous sommes parmi les meilleurs  
-- Notes moyennes entre **4.6 et 4.8/5**  
-- Plats faits maison, authentiques et généreux  
-- Livraison rapide et fiable  
-- Hospitalité chaleureuse
+## Notre histoire
+
+Depuis 2017, Indian Nepali Swad perpétue les saveurs du Nord de l'Inde, du Népal et des régions himalayennes, au cœur de la France. Chaque plat est préparé avec des épices soigneusement sélectionnées, des marinades maison et un savoir-faire transmis de génération en génération. Notre objectif : vous offrir une expérience gastronomique unique, loin des standards occidentalisés, profondément ancrée dans l'authenticité.
 
 ---
 
-## 📜 **Our Story / Notre Histoire (2017 → 2026)**
+## Nos restaurants
 
-- **2017** — Ouverture du premier restaurant à Paris 15  
-- **2019** — Lancement du site web & services de livraison  
-- **2020–2026** — Expansion en Île‑de‑France & Bordeaux  
+| Restaurant | Adresse | Ville |
+|---|---|---|
+| **Paris 15** | Quartier Pasteur | Paris 75015 |
+| **Aubervilliers** | Éditions Saint-Ouen / Aubervilliers | Seine-Saint-Denis |
+| **Et pleins d'autres sites...** | ILE-DE-FRANCE, BORDEAUX... |
 
-Indian Nepali Swad est devenu une référence incontournable pour ceux qui recherchent **la meilleure cuisine indienne et népalaise en France**.
-
----
-
-## 📍 **Restaurants & Delivery Zones**
-
-### 🇫🇷 Paris 15  
-📍 4 Rue Bargue, 75015 Paris  
-⭐ **4.8/5** — l’un des restaurants indiens les mieux notés de Paris  
-
-### 🚚 Delivery Zones  
-- Paris  
-- Bordeaux  
-- Courbevoie  
-- Saint‑Ouen  
-- Bagneux  
-- Ivry  
-
-Indian Nepali Swad est souvent recherché comme :  
-- *best Indian restaurant Paris*  
-- *meilleur restaurant indien Paris 15*  
-- *Nepali food France*
+Nous sommes également disponibles en livraison via **Deliveroo** dans plusieurs villes de France, dont Paris, Bordeaux, Courbevoie, Bagneux, Ivry-sur-Seine et La Courneuve...
 
 ---
 
-## 🍽️ **Our Cuisine / Notre Cuisine**
+## Notre cuisine
 
-### Popular dishes / Plats populaires  
-- Chicken Tikka Masala  
-- Butter Chicken  
-- Nepali Momos (steamed & fried)  
-- Biryani (chicken, lamb, veg)  
-- Naan (plain, cheese, garlic)  
-- Vegetarian & vegan options  
+La carte Indian Nepali Swad est une invitation au voyage :
 
-Cuisine authentique, épicée avec finesse, préparée avec des ingrédients frais et un savoir‑faire traditionnel.
+- **Plats indiens** : Tikka Masala, Dal Makhani, Palak Paneer, Biryani, Korma, Vindaloo, Tandoori Chicken, Saag Aloo, Chana Masala, Aloo Gobi, Butter Chicken, Peshwari Naan, Garlic Naan, Paratha, Samosa, Pakoras…
+- **Spécialités népalaises** : Momo (raviolis vapeur ou frits), Dal Bhat, Thali Népalais, Gundruk, Sekuwa (brochettes marinées), Sel Roti, Achar maison…
+- **Menus végétariens et vegan** : Une large sélection de plats entièrement végétaux, conformes aux régimes végétariens, vegan, halal et sans gluten.
+- **Desserts** : Gulab Jamun, Kheer, Mango Lassi, Chai Masala, Rasgulla…
 
 ---
 
-## 🔗 **Official Links / Liens Officiels**
+## Commander et réserver
 
-| Service | URL |
-|--------|-----|
-| 🌐 Official Website | https://www.indian-nepaliswad.fr |
-| 🔍 Search Engine | https://search.indian-nepaliswad.fr |
-| 📅 Reservations | https://reservations.indian-nepaliswad.fr |
-| Bot Mail | noreply@bot.indian-nepaliswad.fr |
+Réservez une table directement sur notre site : **[indian-nepaliswad.fr](https://indian-nepaliswad.fr/reserver)**
+
+Commandez en ligne via **Deliveroo** et faites-vous livrer à domicile depuis l'un de nos établissements partenaires.
 
 ---
 
-## 📄 **Licence & Droits / License & Rights**
+## Nos valeurs
 
-© 2017–2026 Indian Nepali Swad  
-All rights reserved.
+Indian Nepali Swad s'engage à :
+
+- Utiliser des **ingrédients frais** et des épices authentiques importées directement d'Inde et du Népal
+- Proposer une **cuisine sans compromis**, ni occidentalisée ni édulcorée
+- Accueillir **tous les régimes alimentaires** : végétariens, vegan, halal, sans gluten, sans noix, sans lactose
+- Offrir un service chaleureux et généreux, dans l'esprit de l'hospitalité sud-asiatique
+
+---
+
+## Programme de fidélité
+
+Créez votre compte sur notre site web et accumulez des **points de fidélité** à chaque commande et réservation. Consultez votre historique, gérez vos préférences alimentaires et bénéficiez d'offres exclusives réservées aux membres.
+
+---
+
+## Conditions générales
+
+L'utilisation du site **indian-nepaliswad.fr** implique l'acceptation de nos conditions générales d'utilisation. En accédant à notre plateforme, vous acceptez nos politiques en matière de confidentialité, de cookies, de réservation et d'annulation.
+
+Nos données utilisateurs sont hébergées en **France** et en **Irlande** (Union Européenne), conformément au Règlement Général sur la Protection des Données (RGPD). Nous ne revendons jamais vos données personnelles à des tiers.
+
+Pour toute demande, réclamation ou suppression de compte, contactez-nous via le formulaire disponible sur le site ou par email à l'adresse indiquée dans nos mentions légales.
+
+---
+
+## Mentions légales
+
+Indian Nepali Swad est une marque déposée opérant en France depuis 2017. Tous droits réservés. La reproduction partielle ou totale du contenu de ce site sans autorisation écrite préalable est interdite.
+
+&copy; 2017–2026 Indian Nepali Swad — [indian-nepaliswad.fr](https://indian-nepaliswad.fr)
+
+&copy; 2017–2026 Indian Nepali Swad — [indian-nepaliswad.fr](https://indian-nepaliswad.fr)
