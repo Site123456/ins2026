@@ -13,7 +13,6 @@
 >
 > Some information contained in this documentation may be outdated.
 
-
 **Indian Nepali Swad** (INS) est une enseigne de restauration indienne et népalaise, fondée en 2017, présente en Île-de-France et au-delà. Nous proposons une cuisine authentique, généreuse et épicée, fidèle aux traditions culinaires du sous-continent indien et des vallées himalayennes du Népal.
 
 ---
@@ -30,7 +29,6 @@ Depuis 2017, Indian Nepali Swad perpétue les saveurs du Nord de l'Inde, du Nép
 |---|---|---|
 | **Paris 15** | Quartier Pasteur | Paris 75015 |
 | **Aubervilliers** | Éditions Saint-Ouen / Aubervilliers | Seine-Saint-Denis |
-| **Et pleins d'autres sites...** | ILE-DE-FRANCE, BORDEAUX... |
 
 Nous sommes également disponibles en livraison via **Deliveroo** dans plusieurs villes de France, dont Paris, Bordeaux, Courbevoie, Bagneux, Ivry-sur-Seine et La Courneuve...
 
